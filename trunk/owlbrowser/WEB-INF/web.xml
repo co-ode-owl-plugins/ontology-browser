@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+    <display-name>OWLDoc Server</display-name>
+    <description>server for navigating through OWL ontologies</description>
+    <distributable/>
+    <servlet>
+        <servlet-name>ManageOntologies</servlet-name>
+        <display-name>Load Ontology</display-name>
+        <servlet-class>org.coode.www.servlet.ManageOntologies</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SignOut</servlet-name>
+        <display-name>Sign Out</display-name>
+        <description>Kills the current session and reallocates resources</description>
+        <servlet-class>org.coode.www.servlet.SignOut</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Index</servlet-name>
+        <display-name>OWLDoc Frames</display-name>
+        <servlet-class>org.coode.www.servlet.Index</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Contents</servlet-name>
+        <display-name>Render Contents</display-name>
+        <servlet-class>org.coode.www.servlet.Contents</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Summary</servlet-name>
+        <display-name>RenderOWLClass</display-name>
+        <servlet-class>org.coode.www.servlet.Summary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Find</servlet-name>
+        <display-name>Name Service</display-name>
+        <servlet-class>org.coode.www.servlet.Find</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QueryExtend</servlet-name>
+        <display-name>Query Extend</display-name>
+        <description>Adds a conjunct to the form</description>
+        <servlet-class>org.coode.www.servlet.QueryExtend</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QueryConstrain</servlet-name>
+        <display-name>Query Constrain</display-name>
+        <description>Get a set of fillers</description>
+        <servlet-class>org.coode.www.servlet.QueryConstrain</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QueryReasoner</servlet-name>
+        <display-name>Query Reasoner</display-name>
+        <description>Query the reasoner</description>
+        <servlet-class>org.coode.www.servlet.QueryReasoner</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QueryCreateForm</servlet-name>
+        <display-name>Query Create Form</display-name>
+        <description>Creates a form for the given description</description>
+        <servlet-class>org.coode.www.servlet.QueryCreateForm</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Cloud</servlet-name>
+        <display-name>Cloud</display-name>
+        <description>Generates a tag cloud for the active ontologies</description>
+        <servlet-class>org.coode.www.servlet.Cloud</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ServerOptions</servlet-name>
+        <display-name>Set Option</display-name>
+        <description>allows configuration of the server</description>
+        <servlet-class>org.coode.www.servlet.ServerOptions</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DLQuery</servlet-name>
+        <display-name>DL Query Page</display-name>
+        <description>generates a page with a form on which DL Queries can take place</description>
+        <servlet-class>org.coode.www.servlet.DLQuery</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FramesHeader</servlet-name>
+        <display-name>Frames Header</display-name>
+        <servlet-class>org.coode.www.servlet.FramesHeader</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ManageOntologies</servlet-name>
+        <url-pattern>/manage/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Find</servlet-name>
+        <url-pattern>/find/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SignOut</servlet-name>
+        <url-pattern>/signout.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Contents</servlet-name>
+        <url-pattern>/contents.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Index</servlet-name>
+        <url-pattern>/index.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Summary</servlet-name>
+        <url-pattern>/entities/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Summary</servlet-name>
+        <url-pattern>/classes/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Summary</servlet-name>
+        <url-pattern>/objectproperties/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Summary</servlet-name>
+        <url-pattern>/dataproperties/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Summary</servlet-name>
+        <url-pattern>/individuals/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Summary</servlet-name>
+        <url-pattern>/ontologies/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QueryExtend</servlet-name>
+        <url-pattern>/QueryExtend/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QueryConstrain</servlet-name>
+        <url-pattern>/QueryConstrain/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QueryCreateForm</servlet-name>
+        <url-pattern>/QueryCreateForm/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QueryReasoner</servlet-name>
+        <url-pattern>/query/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Cloud</servlet-name>
+        <url-pattern>/cloud/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServerOptions</servlet-name>
+        <url-pattern>/options/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DLQuery</servlet-name>
+        <url-pattern>/dlquery/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FramesHeader</servlet-name>
+        <url-pattern>/header.html</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>20</session-timeout>
+    </session-config>
+</web-app>
