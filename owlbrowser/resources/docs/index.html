@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Ontology Browser: Documentation</title>
+
+    <link rel='stylesheet' href='../default.css' type='text/css' />
+    <style>
+        a {color: #0000ff;}
+        em {font-weight: bold; color: #dd8800;}
+    </style>
+</head>
+<body>
+
+<div id='content'>
+<h1>Ontology Browser v1.1.3</h1>
+
+<h2>Index</h2>
+<div class='codebox' id='index'>
+
+    <a href="index.html#getting-started">Getting Started</a><br />
+    <a href="index.html#api">API</a><br />
+    <a href="index.html#support">Support</a><br /><br />
+
+    <a href="release-notes.html">Release Notes</a><br /><br />
+    <a href="bugs.html">Bugs</a><br /><br />
+
+    <a href="../">Back to Server</a>
+</div>
+
+<h2>Getting Started</h2>
+<div class='codebox' id='getting-started'>
+
+    <img style="float: right;" src="images/load.png" alt="contents page" width="700" />
+    <p>To load an ontology (and its imports) into the browser, enter the physical location of the OWL file.
+        This must be publicly accessible for the server to find it.</p>
+    <p>If you want to load local files or files on an internal network like the
+        example on the right, you will have to download the server
+        (see here for <a href="http://www.co-ode.org/downloads/owldoc-server/">details of downloading the .war file</a>)
+        and run it locally.</p>
+
+    <p style="clear: both; height: 20px;"></p>
+
+    <img style="float: right;" src="images/missing-imports.png" alt="contents page" width="700" />
+    <p>The server will attempt to find any imported ontologies in the same folder as the root ontology and load these as well.
+        If it cannot find them there, it will default to looking on the web at a URL matching the ontology URI.</p>
+    <p>If you still have any missing imports, you will be taken straight to the manage
+        page where you can specify a different location for the missing ontologies.</p>
+    <p>You do not have to load missing imports - everything will behave as expected, and you can carry choose to
+        ignore this step and go straight to browsing.</p>
+    <p>A good place to start is the content page.</p>
+
+
+    <p style="clear: both; height: 20px;"></p>
+
+    <img style="float: right;" src="images/contents.png" alt="contents page" width="700" />
+    <p>Once an ontology has been successfully opened you will be presented with the contents page (right).</p>
+    <p>From here it should be easy to navigate around your ontology by class, property or individual.
+        Alternatively, you can do a search on the name of the entity you are looking for. Autocomplete is
+        implemented to help you with this.</p>
+    <p>Once you have ontologies loaded, at any time you can select or copy the <code>permalink</code> link and bookmark
+        it or send it to your friends. The permalink takes into account any settings you have updated, and includes
+        pointers to where you loaded the ontologies from.</p>
+
+    <p style="clear: both; height: 20px;"></p>
+
+    <img style="float: right;" src="images/frag-rendering.png" alt="contents page" width="700" />
+    <p>If your ontology appears with lots of meaningless names (like right), it is possible that the human-intended labels are in annotations.</p>
+    <p>If this is the case, choose <code>renderer:label</code> in the top right of the toolbar.</p>
+    <p>By default, this will render entities using their
+        <code>rdfs:label</code>.</p>
+    <p>If you wish to change this, edit <code>option_label_uri</code> under <code>more options</code> and press return (see below).</p>
+
+    <p style="clear: both; height: 20px;"></p>
+
+    <img style="float: right;" src="images/options.png" alt="contents page" width="700" />
+    <p>Further options can be changed on this page. For example, options like DL Query can be disabled by setting
+        reasoner.enabled to false or changing the css property to "alt.css" renders using
+        a different stylesheet with larger fonts.</p>
+    <p>After editing a value, press return for the change to be made.</p>
+    <p>All options are saved along with the session data that is retrieved when a permalink is used.</p>
+
+</div>
+
+<h2>API</h2>
+<div class='codebox' id='api'>
+    <p>The server has been written with a RESTful interface such that programmatic or user interaction is possible over HTTP.
+        For example, an ontology repository (or a user's own HTML pages) could incorporate a link to the browser to show a particular
+        ontology. Such a link might look like this:</p>
+
+    <code>http://rpc133.cs.man.ac.uk:8080/browser/manage/?action=load&clear=true&uri=http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl</code>
+
+    <p>This loads a particular ontology (pizza.owl) from the physical location specified by the <code>uri</code> parameter. This ontology (and its imports
+        replaces all existing loaded ontologies in this session because of the <code>clear=true</code> parameter.</p>
+
+    <h3>Parameters</h3>
+
+    <table style="border: 1px black solid;">
+        <tr><th>URL</th><th style="width:300px;">parameters</th><th>usage notes</th></tr>
+
+        <tr><td>manage/</td><td>
+            <em>action</em> = [load|remove|reload|browse|hide|unhide] <br />
+            <em>uri</em> = the physical location the ontology (for loading) or the ontology URI otherwise<br />
+            <em>clear</em> = true in combination with load to dump all existing loaded ontologies</td>
+            <td>browse makes the ontology and its imports closure active (much like the active ontology in Protege4).</td></tr>
+
+        <tr><td>find/</td>
+            <td>
+                <em>type</em> = [entities|classes|objectproperties|dataproperties|individuals|ontologies]<br />
+                <em>input</em> = name search string<br />*</td><td></td></tr>
+
+        <tr><td>entities/</td><td>
+            <em>uri</em> = the full URI of the entity<br />
+            <em>baseURI</em> = the base URI of the entity (without the #)<br />
+            <em>name</em> = the rendered name of the entity or the URI fragment of its identifier<br />
+            <em>ontology</em> = the URI of the ontology to produce an index for<br />*</td>
+            <td>If no parameters are specified, an index of all entities will be shown.<br />
+                if the baseURI is only specified, an index of all entities with that baseURI will be shown (NOT IMPLEMENTED YET).<br />
+                If the name is specified on its own the entity(ies) with that rendering will be shown.</td></tr>
+
+        <tr><td>classes/</td><td>
+            see entities/<br />*</td><td></td></tr>
+
+        <tr><td>objectproperties/</td><td>
+            see entities/<br />*</td><td></td></tr>
+
+        <tr><td>dataproperties/</td><td>
+            see entities/<br />*</td><td></td></tr>
+
+        <tr><td>individuals/</td><td>
+            see entities/<br />*</td><td></td></tr>
+
+        <tr><td>ontologies/</td><td>
+            <em>uri</em> = the full URI of the ontology<br />*</td><td></td></tr>
+
+        <tr><td>query/</td>
+            <td>
+                <em>q</em> = [subclasses|equivalents|instances|reciprocal-subclasses]<br />
+                <em>class</em> = the OWL class description<br />*</td>
+            <td>Reasoner query of the type specified.<br />
+                The OWL description can only be an intersection with named classes,
+                existential/universal/value restrictions with named fillers</td></tr>
+
+        <tr><td>cloud/</td><td>
+            <em>type</em> = [class-usage|objprop-usage]</td><td>More to follow</td></tr>
+
+        <tr><td>signout.html</td><td></td><td>Kill this session, clearing all ontologies.</td></tr>
+        <tr><td>option</td><td>
+            <em>opt</em> = [option]<br />
+            <em>value</em> = [value]</td>
+            <td>Options<br />ren: [frag|label]</td></tr>
+
+        <!--tr><td>QueryExtend/</td></tr>
+        <tr><td>QueryConstrain/</td></tr>
+        <tr><td>QueryCreateForm/</td></tr-->
+
+    </table>
+
+    <p>* - indicates that a format for the results can be specified: [xml|html|html-frag]</p>
+
+    <p>XML is of the form:<br />
+        &lt;results&gt;<br />
+        &nbsp;&lt;rs id="[entity url]" info="[for future use]"&gt;[entity name]&lt;rs&gt;<br />
+        &lt;/results&gt;
+    </p>
+
+    <p>html creates a full html page, with CSS and title etc</p>
+    <p>html-frag creates just the bit of html required to add to an existing page (useful for AJAX)</p>
+
+    <p>json may be supported in the future as an alternative to XML</p>
+
+</div>
+
+<h2>Support</h2>
+<div class='codebox' id='support'>
+    <p>The Ontology server has been developed by the <a href="http://www.co-ode.org/">CO-ODE</a> project.</p>
+    <p>Author: Nick Drummond, The University of Manchester</p>
+    <p>Bug reports: </p>
+</div><!-- author -->
+
+</div>
+
+</body>
+</html>

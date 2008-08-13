@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Ontology Browser: Bugs</title>
+
+    <link rel='stylesheet' href='../default.css' type='text/css' />
+    <style>
+        a {color: #0000ff;}
+        em {font-weight: bold; color: #dd8800;}
+    </style>
+</head>
+<body>
+
+<div id='content'>
+<h1>Ontology Browser v1.1.3</h1>
+
+<h2>Index</h2>
+<div class='codebox' id='index'>
+
+    <a href="index.html#getting-started">Getting Started</a><br />
+    <a href="index.html#api">API</a><br />
+    <a href="index.html#support">Support</a><br /><br />
+
+    <a href="release-notes.html">Release Notes</a><br /><br />
+    <a href="bugs.html">Bugs</a><br /><br />
+
+    <a href="../">Back to Server</a>
+</div>
+
+<h1>Known Bugs:</h1>
+
+<ul>
+    <li><em>Renderer switches</em> - causes DL Query parser to go mad (try Pizza and hasTopping some MeatTopping then switching renderer)</li>
+    <li><em>Persistence</em> - require persistence of renderer etc otherwise some URLs will fail (particularly name searches)</li>
+    <li><em>unsatisfiable dl query</em> - should return "unsatifiable"</li>
+    <li><em>Hierarchy renderer</em> - in IE the indentation is off</li>
+</ul>
+
+<h1>Feature Requests:</h1>
+
+<ul>
+    <li><em>regexp search</em> - could make switchable between regexp and starts with (then optimise starts with)</li>
+    <li><em>full syntax parser/autocomplete</em> - including keywords etc for man syntax (javascript would need to handle wrapped parse exceptions)</li>
+    <li><em>list of used annotation URIs</em> - would be useful (esp for settings)</li>
+    <li><em>Search</em> - on annotation values</li>
+</ul>
+
+    </div>
+</body>
+</html>
