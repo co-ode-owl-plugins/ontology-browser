@@ -38,7 +38,10 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
     public EmptyOWLDocPage(OWLHTMLServer server) {
         this.server = server;
-        addCSS(server.getURLScheme().getURLForRelativePage(server.getProperties().get(OWLHTMLConstants.OPTION_DEFAULT_CSS)));
+        String css = server.getProperties().get(OWLHTMLConstants.OPTION_DEFAULT_CSS);
+        if (css != null){
+            addCSS(server.getURLScheme().getURLForRelativePage(css));
+        }
         if (isSingleFrameNavigation()){
             addJavascript(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
             if (!server.getOntologies().isEmpty()){
@@ -51,11 +54,11 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
     protected final void renderHeader(URL pageURL, PrintWriter out) {
         super.renderHeader(pageURL, out);
 
-        out.println("<div id='content'>");
+//        out.println("<div id='content'>");
     }
 
     protected final void renderFooter(URL pageURL, PrintWriter out) {
-        out.println("</div> <!-- content -->");
+//        out.println("</div> <!-- content -->");
 
         out.println("<p class='footer'>");
 

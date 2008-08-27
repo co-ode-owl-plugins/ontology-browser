@@ -62,7 +62,7 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
         if (focusedComponent != null){
             onloadJS += "document.getElementById(\"" + focusedComponent + "\").focus();";
         }
-        if (onloadJS != null){
+        if (onloadJS.length() > 0){
             out.print(" onload='" + onloadJS + "'");
         }
         out.println(">");

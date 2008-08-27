@@ -83,6 +83,8 @@ public abstract class ElementsDoclet<O, E> extends AbstractHTMLDoclet<O> {
 
     
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        renderBoxEnd(getID(), out);
+        if (!getElements().isEmpty()){        
+            renderBoxEnd(getID(), out);
+        }
     }
 }

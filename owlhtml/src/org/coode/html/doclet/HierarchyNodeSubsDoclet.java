@@ -28,6 +28,8 @@ public class HierarchyNodeSubsDoclet<O extends OWLNamedObject> extends AbstractH
 
     private int subThreshold = 3;
 
+    private List<O> children;
+
     public HierarchyNodeSubsDoclet(OWLHTMLServer server, TreeFragment<O> model) {
         super(server, model);
     }
@@ -45,14 +47,14 @@ public class HierarchyNodeSubsDoclet<O extends OWLNamedObject> extends AbstractH
 
         if (isShowSubsEnabled()){
 
-            List<O> children = getModel().getChildren(getUserObject());
+            List<O> children = getChildren();
 
             if (!children.isEmpty()){
 
                 out.println("<ul>");
 
                 //+1 takes into account additional line used for link
-                final boolean hideSomeChildren = !isAutoExpandSubs() && children.size() > subThreshold + 1;
+                final boolean hideSomeChildren = hideSomeChildren();
 
                 final OWLHTMLRenderer owlhtmlRenderer = new OWLHTMLRenderer(getServer());
 
@@ -76,6 +78,20 @@ public class HierarchyNodeSubsDoclet<O extends OWLNamedObject> extends AbstractH
         }
     }
 
+
+    private List<O> getChildren() {
+        if (children == null){
+            children = getModel().getChildren(getUserObject());
+        }
+        return children;
+    }
+
+
+    private boolean hideSomeChildren() {
+        return !isAutoExpandSubs() && getChildren().size() > subThreshold + 1;
+    }
+
+
     protected void renderFooter(URL pageURL, PrintWriter out) {
         //@@TODO implement
     }
@@ -83,7 +99,9 @@ public class HierarchyNodeSubsDoclet<O extends OWLNamedObject> extends AbstractH
 
     public Set<URL> getRequiredJS() {
         Set<URL> js = super.getRequiredJS();
-        js.add(getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_TREE));
+        if (hideSomeChildren()){
+            js.add(getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_TREE));
+        }
         return js;
     }
 }
