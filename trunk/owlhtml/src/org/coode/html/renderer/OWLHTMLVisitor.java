@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -147,11 +149,11 @@ public class OWLHTMLVisitor  extends OWLObjectVisitorAdapter {
         }
 
         write(" <span style='color:gray;'>(" +
-                "c:" + ontology.getReferencedClasses().size() +
-                ", op:" + ontology.getReferencedObjectProperties().size() +
-                ", dp:" + ontology.getReferencedDataProperties().size() +
-                ", i:" + ontology.getReferencedIndividuals().size() +
-                ")</span>");
+              "c:" + ontology.getReferencedClasses().size() +
+              ", op:" + ontology.getReferencedObjectProperties().size() +
+              ", dp:" + ontology.getReferencedDataProperties().size() +
+              ", i:" + ontology.getReferencedIndividuals().size() +
+              ")</span>");
     }
 
     public void visit(OWLImportsDeclaration axiom) {
@@ -681,9 +683,9 @@ public class OWLHTMLVisitor  extends OWLObjectVisitorAdapter {
     // useful to add brackets around the anonymous operators of unions and intersections and the fillers of restrictions
     private void writeOp(OWLObject op) {
         if (op instanceof OWLEntity ||
-                op instanceof OWLObjectOneOf ||
-                op instanceof OWLDataOneOf ||
-                op instanceof OWLDataRangeRestriction){
+            op instanceof OWLObjectOneOf ||
+            op instanceof OWLDataOneOf ||
+            op instanceof OWLDataRangeRestriction){
             op.accept(this);
         }
         else{ // provide brackets for clarity
@@ -769,9 +771,24 @@ public class OWLHTMLVisitor  extends OWLObjectVisitorAdapter {
     // @@TODO literal should use <pre> to make sure that fomatting inside the string doesn't disrupt the html
     // but it appears java ignores this tag so for now just disable tags completely
     private void writeLiteralContents(String literal) {
-        literal = literal.replace("<", "&lt;");
-        literal = literal.replace(">", "&gt;");
-        write(literal);
+        boolean writtenExternalRef = false;
+        try {
+            URI uri = new URI(literal);
+            if (uri.isAbsolute()){
+                write("<a href='" + uri + "' target='ext_ref'>" + uri + "</a>");
+                writtenExternalRef = true;
+            }
+        }
+        catch (URISyntaxException e) {
+            // do nothing
+        }
+        finally{
+            if (!writtenExternalRef){
+                literal = literal.replace("<", "&lt;");
+                literal = literal.replace(">", "&gt;");
+                write(literal);
+            }
+        }
     }
 
     private void writeAnnotationAxiom(OWLAnnotationAxiom axiom) {
