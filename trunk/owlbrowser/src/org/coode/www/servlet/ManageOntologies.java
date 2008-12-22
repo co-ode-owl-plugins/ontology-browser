@@ -335,7 +335,7 @@ public class ManageOntologies extends AbstractOntologyServerServlet {
         Map<String, URI> bookmarks = Collections.emptyMap();
         File bookmarksFile = SessionManager.getFile(OntologyBrowserConstants.BOOKMARKS_XML);
         if (!bookmarksFile.exists()){
-            FileUtils fileUtils = new FileUtils("resources/"); // path not used
+            FileUtils fileUtils = new FileUtils("resources/", "UTF8"); // path not used
             InputStream in = getClass().getResourceAsStream("default.bookmarks.xml");
             try {
                 fileUtils.saveFile(in, bookmarksFile);

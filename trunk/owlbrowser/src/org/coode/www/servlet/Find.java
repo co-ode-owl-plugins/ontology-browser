@@ -101,9 +101,15 @@ public class Find extends AbstractOntologyServerServlet {
             }
         }
         else{
+            if (!input.endsWith(WILDCARD)){
+                input = input + WILDCARD;
+            }
             if (input.length() > 0){
-                input = "^" + input.replace(WILDCARD, ".*"); // starts with and wildcard
-                results.addAll(finder.getOWLNamedObjects(input, type, ont));
+                results.addAll(finder.getOWLNamedObjects("^" + input.replace(WILDCARD, ".*"), type, ont));
+            }
+
+            if (results.isEmpty()){
+                results.addAll(finder.getOWLNamedObjects(".*" + input.replace(WILDCARD, ".*"), type, ont));
             }
         }
         return results;

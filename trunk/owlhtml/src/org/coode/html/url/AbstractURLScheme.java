@@ -73,4 +73,8 @@ public abstract class AbstractURLScheme implements URLScheme {
     public URL getBaseURL(){
         return server.getBaseURL();
     }
+
+    protected OWLHTMLServer getServer(){
+        return server;
+    }
 }

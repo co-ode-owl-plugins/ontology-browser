@@ -131,7 +131,7 @@ public class OntologyExporter {
 
     public OntologyExporter(OWLHTMLServer server) {
         this.server = server;
-        this.fileUtils = new FileUtils("resources/");
+        this.fileUtils = new FileUtils("resources/", "UTF8");
     }
 
     public File export(File root) throws Exception {
@@ -281,6 +281,9 @@ public class OntologyExporter {
 
     private void exportEntity(OWLEntity entity, EmptyOWLDocPage ren) throws IOException {
         ren.setUserObject(entity);
+        if (entity.getURI().toString().contains("hasIn")){
+            System.out.println("entity = " + entity);
+        }
         URL entityURL = server.getURLScheme().getURLForNamedObject(entity);
         String localFilename = URLUtils.createRelativeURL(server.getBaseURL(), entityURL);
         File entitySummaryFile = getFileAndEnsurePathExists(root, localFilename);
