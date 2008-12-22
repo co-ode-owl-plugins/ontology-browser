@@ -158,7 +158,7 @@ public class Summary extends AbstractOntologyServerServlet {
         final String message = "Cannot render a page for unknown " + type + ": " + entityName;
         if (entityName != null){
             OWLNamedObjectFinder finder = server.getFinder();
-            Set<? extends OWLNamedObject> entities = finder.getOWLNamedObjects(entityName, type);
+            Set<? extends OWLNamedObject> entities = finder.getOWLNamedObjects(entityName + ".*", type);
             return createIndexRenderer(message, entities, server);
         }
         throw new OntServerException(message);

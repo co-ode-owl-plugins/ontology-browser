@@ -41,6 +41,8 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
 
         out.println("<title>" + getTitle() + "</title>");
 
+        out.println("<meta http-equiv='content-type' content='text/html;charset=" + getEncoding() + "'>");
+
         for (URL cssURL : getRequiredCSS()){
             out.println("<link rel='stylesheet' href='" + URLUtils.createRelativeURL(pageURL, cssURL) +
                         "' type='text/css' />");
@@ -67,6 +69,12 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
         }
         out.println(">");
     }
+
+
+    protected String getEncoding() {
+        return "utf-8";
+    }
+
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
         out.println("</body></html>");

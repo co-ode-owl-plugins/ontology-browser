@@ -161,7 +161,7 @@ public class OWLNamedObjectFinderImpl implements OWLNamedObjectFinder {
         Pattern pattern = Pattern.compile(str.toLowerCase());
         for (String rendering : mapper.getNames(type)) {
             Matcher m = pattern.matcher(rendering.toLowerCase());
-            if (m.find()) {
+            if (m.matches()) {
                 mapper.get(rendering, results, type);
             }
         }

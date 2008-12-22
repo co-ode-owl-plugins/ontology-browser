@@ -28,6 +28,10 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
     public static final String ID = "doclet.menubar";
 
+    private static final String RENDERER_NAME = "renderLabels";
+
+    private static final String RENDERER_FORM = "rendererForm";
+
 
     public MenuBarDoclet(OWLHTMLServer server) {
         super(server);
@@ -75,21 +79,31 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
             out.println("<a onclick=\"option('frames', 'false', getContentURL(), '" + optionsURL + "');\">no frames</a> | ");
         }
 
-        out.println("renderer: "); // only render the non-selected one as a link
-        if (getServer().getNameRenderer().getClass().equals(FragmentShortFormProvider.class)){
-            out.print(OWLHTMLConstants.RENDERER_FRAG + "/");
-            out.println("<a onclick=\"option('ren', '" + OWLHTMLConstants.RENDERER_LABEL + "', null, '" + optionsURL + "');\">" + OWLHTMLConstants.RENDERER_LABEL + "</a>");
+        final boolean renderLabels = !getServer().getNameRenderer().getClass().equals(FragmentShortFormProvider.class);
+        out.println("<form id='" + RENDERER_FORM + "' style='display: inline;'>");
+        out.println("<label for='" + RENDERER_NAME + "' />Render labels</label>");
+        out.println("<input type='checkbox' name='"+ RENDERER_NAME +"' onclick='" + renderCheckAction(optionsURL) + "'");
+        if (renderLabels){
+            out.println(" checked='checked'");
         }
-        else{
-            out.print("<a onclick=\"option('ren', '" + OWLHTMLConstants.RENDERER_FRAG + "', null, '" + optionsURL + "');\">" + OWLHTMLConstants.RENDERER_FRAG + "</a>/");
-            out.println(OWLHTMLConstants.RENDERER_LABEL);
-        }
+        out.println(" />");
+        out.println("</form>");
 
         out.print(" | ");
         renderLink("more options", getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML), OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
 
         out.println("</div> <!-- options -->");
     }
+
+
+    private String renderCheckAction(String optionsURL) {
+        return "var rendererName = \"" + OWLHTMLConstants.RENDERER_FRAG + "\";" +
+               "if (document.getElementById(\"" + RENDERER_FORM + "\")." + RENDERER_NAME + ".checked == true){" +
+               "rendererName = \"" + OWLHTMLConstants.RENDERER_LABEL + "\";" +
+               "}" +
+               "option(\"ren\", rendererName, null, \"" + optionsURL + "\");";
+    }
+
 
     public String getID() {
         return ID;

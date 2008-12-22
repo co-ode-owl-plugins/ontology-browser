@@ -34,12 +34,12 @@ import java.io.*;
  */
 public class FileUtils {
 
-    // the directory that javascript and css files are copied from
-    private final String RESOURCES_DIR;
+    private String encoding;
 
-    public FileUtils(String resourcesDir) {
-        this.RESOURCES_DIR = resourcesDir;
+    public FileUtils(String resourcesDir, String encoding) {
+        this.encoding = encoding;
     }
+
 
     public  void copyFile(File in, File out) throws Exception {
         FileInputStream fis  = new FileInputStream(in);
@@ -53,6 +53,7 @@ public class FileUtils {
         fos.close();
     }
 
+
     public  void saveFile(InputStream fis, File file) throws IOException {
         OutputStream fos = new FileOutputStream(file);
         byte[] buffer = new byte[1024];
@@ -64,8 +65,15 @@ public class FileUtils {
         fos.close();
     }
 
+
     public  PrintWriter open(File file) throws IOException {
-        Writer fileWriter = new FileWriter(file);
-        return new PrintWriter(fileWriter);
+        return new PrintWriter(getFileWriter(file));
+    }
+
+
+    private Writer getFileWriter(File file) throws IOException{
+        OutputStream fos = new FileOutputStream(file);
+        OutputStream buffer= new BufferedOutputStream(fos);
+        return new OutputStreamWriter(buffer, encoding);
     }
 }

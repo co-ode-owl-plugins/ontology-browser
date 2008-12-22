@@ -9,10 +9,9 @@ import org.coode.owl.mngr.impl.FragmentShortFormProvider;
 import org.semanticweb.owl.model.OWLNamedObject;
 import org.semanticweb.owl.model.OWLOntology;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
+import java.io.UnsupportedEncodingException;
+import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -48,12 +47,15 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
         // always use the fragment instead of the rendering
         String name = shortFormProvider.getShortForm(object);
-        name = name.replaceAll("/", "&#47;");
 
         try {
+            name = URLEncoder.encode(name, "UTF-8");
             return new URL(getBaseURL(), NamedObjectType.getType(object) + "/" + name + OWLHTMLConstants.DEFAULT_EXTENSION);
         }
         catch (MalformedURLException e) {
+            logger.error(e);
+        }
+        catch (UnsupportedEncodingException e) {
             logger.error(e);
         }
         return null;
@@ -62,27 +64,23 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
     public OWLNamedObject getNamedObjectForURL(URL url) {
 
         NamedObjectType type = getType(url);
-        String[] path = url.getPath().split("/");
-        String name = path[path.length-1].substring(0, path[path.length-1].indexOf(OWLHTMLConstants.DEFAULT_EXTENSION));
+        if (type != null){
+            String[] path = url.getPath().split("/");
+            String name = path[path.length-1].substring(0, path[path.length-1].indexOf(OWLHTMLConstants.DEFAULT_EXTENSION));
 
-        try {
-            logger.warn("getNamedObjectForURL() not implemented for multiple ontologies");
-            name = name.replaceAll("&#47;", "/");
-            URI entityURI = new URI(server.getActiveOntology().getURI() + "#" + name);
-            return type.getExistingObject(entityURI, server);
-        }
-        catch (URISyntaxException e) {
-            logger.error(e);
-        }
-        return null;
-    }
-
-    public URL getURLForOntology(OWLOntology ontology) {
-        try {
-            return new URL(getBaseURL(), NamedObjectType.ontologies + "/" + shortFormProvider.getShortForm(ontology) + OWLHTMLConstants.DEFAULT_EXTENSION);
-        }
-        catch (MalformedURLException e) {
-            logger.error(e);
+            try {
+                name = URLDecoder.decode(name, "UTF-8");
+                Set<? extends OWLNamedObject> objs = getServer().getFinder().getOWLNamedObjects(name, type);
+                if (objs.size() > 0){
+                    if (objs.size() > 1){
+                        logger.warn("Found more than one " + type + " that matches the name: " + name);
+                    }
+                    return objs.iterator().next();
+                }
+            }
+            catch (UnsupportedEncodingException e) {
+                logger.error(e);
+            }
         }
         return null;
     }
