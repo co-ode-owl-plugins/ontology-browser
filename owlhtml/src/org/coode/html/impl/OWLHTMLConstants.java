@@ -83,17 +83,6 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String SHOW_FRAMES = "frames";
 
 
-    // supported formats
-    public static final String FORMAT_XML = "xml";
-    public static final String FORMAT_HTML = "html";
-    public static final String FORMAT_HTML_FRAGMENT = "html-frag";
-
-    
-    // and their mime types
-    public static final String MIME_XML = "text/xml";
-    public static final String MIME_HTML = "text/html";
-
-
     // keys for options on the server
     public static final String OPTION_CONTENT_WINDOW = "content-window";
     public static final String OPTION_INDEX_ALL_URL = "index-all-url";
