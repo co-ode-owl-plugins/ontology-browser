@@ -76,7 +76,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
             }
         }
         else{
-            out.println("<a onclick=\"option('frames', 'false', getContentURL(), '" + optionsURL + "');\">no frames</a> | ");
+            out.println("<a onclick=\"option('frames', 'false', getContentURL(), '" + optionsURL + "');\">hide frames</a> | ");
         }
 
         final boolean renderLabels = !getServer().getNameRenderer().getClass().equals(FragmentShortFormProvider.class);
