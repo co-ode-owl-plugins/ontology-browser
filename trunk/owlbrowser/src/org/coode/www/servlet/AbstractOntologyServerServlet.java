@@ -81,21 +81,23 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 response.sendRedirect(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.MANAGE_HTML).toString());
             }
             else{
-                PrintWriter out = response.getWriter();
-
                 // the param map is actually multivalued <String, String[]>, but to save hassle we'll simplify it
                 final Map<String, String> params = checkAndCreateParams(request, server);
 
-                if (OWLHTMLConstants.FORMAT_XML.equals(format)){
-                    response.setContentType(OWLHTMLConstants.MIME_XML);
+                if (OntologyBrowserConstants.FORMAT_XML.equals(format)){
+                    response.setContentType(OntologyBrowserConstants.MIME_XML);
+                    PrintWriter out = response.getWriter();
+
                     handleXMLRequest(params, server, pageURL, out);
                 }
                 else {
-                    response.setContentType(OWLHTMLConstants.MIME_HTML);
+                    response.setContentType(OntologyBrowserConstants.MIME_HTML);
                     HTMLDoclet ren = handleHTMLRequest(params, server, pageURL);
 
                     if (ren != null){
                         prepareMenuBar(ren, server, pageURL);
+                        PrintWriter out = response.getWriter();
+                        
                         ren.renderAll(pageURL, out);
                     }
                     else{
@@ -204,12 +206,12 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     }
 
     private void renderError(String message, Throwable e, OWLHTMLServer server, URL servletURL, String format, HttpServletResponse response) throws IOException {
-        if (OWLHTMLConstants.FORMAT_XML.equals(format)){
-            response.setContentType(OWLHTMLConstants.MIME_XML);
+        if (OntologyBrowserConstants.FORMAT_XML.equals(format)){
+            response.setContentType(OntologyBrowserConstants.MIME_XML);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println();
         }
-        else if (OWLHTMLConstants.FORMAT_HTML_FRAGMENT.equals(format)){
+        else if (OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(format)){
             DefaultHTMLPage errorRenderer = createHTMLError(message, e, server, response);
             errorRenderer.removeDoclet(errorRenderer.getDoclet(MenuBarDoclet.ID));
             errorRenderer.removeDoclet(errorRenderer.getDoclet(TabsDoclet.ID));
@@ -222,7 +224,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     }
 
     private DefaultHTMLPage createHTMLError(String message, Throwable e, OWLHTMLServer server, HttpServletResponse response) {
-        response.setContentType(OWLHTMLConstants.MIME_HTML);
+        response.setContentType(OntologyBrowserConstants.MIME_HTML);
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         EmptyOWLDocPage errorRenderer = new EmptyOWLDocPage(server);
         if (message != null){
