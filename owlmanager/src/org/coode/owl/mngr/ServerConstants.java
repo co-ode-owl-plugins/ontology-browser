@@ -46,6 +46,7 @@ public class ServerConstants {
     public static final String OPTION_RENDER_SUBS = "option_render_subs";
     public static final String OPTION_REN = "ren";
     public static final String OPTION_LABEL_URI = "option_label_uri";
+    public static final String OPTION_LABEL_LANG = "option_label_lang";
     public static final String OPTION_ACTIVE_ONT = "option_active_ont";
 
 

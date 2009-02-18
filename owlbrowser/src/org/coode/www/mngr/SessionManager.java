@@ -337,6 +337,8 @@ public class SessionManager {
         properties.set(OWLHTMLConstants.OPTION_SHOW_INFERRED_HIERARCHIES, ServerConstants.FALSE);
 
         properties.set(ServerConstants.OPTION_RENDER_SUB_EXPAND_LINKS, ServerConstants.FALSE);
+
+        properties.set(ServerConstants.OPTION_LABEL_LANG, "");
     }
 
 
