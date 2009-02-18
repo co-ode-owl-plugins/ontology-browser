@@ -329,7 +329,13 @@ public class OWLServerImpl implements OWLServer {
                 renderer = new FragmentShortFormProvider();
             }
             else if (ren.equals(ServerConstants.RENDERER_LABEL)){
-                renderer = new LabelShortFormProvider(this, URI.create(properties.get(ServerConstants.OPTION_LABEL_URI)));
+                String lang = properties.get(ServerConstants.OPTION_LABEL_LANG);
+                if ("".equals(lang)){
+                    lang = null;
+                }
+                renderer = new LanguageLabelShortFormProvider(this,
+                                                              URI.create(properties.get(ServerConstants.OPTION_LABEL_URI)),
+                                                              lang);
             }
         }
         return renderer;

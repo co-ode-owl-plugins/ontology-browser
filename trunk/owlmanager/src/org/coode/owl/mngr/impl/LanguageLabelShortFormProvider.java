@@ -1,9 +1,12 @@
 package org.coode.owl.mngr.impl;
 
+import org.coode.owl.mngr.NamedObjectShortFormProvider;
 import org.coode.owl.mngr.OWLServer;
 import org.semanticweb.owl.model.*;
+import org.semanticweb.owl.util.AnnotationValueShortFormProvider;
 
 import java.net.URI;
+import java.util.Collections;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -28,36 +31,28 @@ import java.net.URI;
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Aug 8, 2007<br><br>
+ * Date: Feb 18, 2009<br><br>
  */
-public class LabelShortFormProvider extends FragmentShortFormProvider {
+public class LanguageLabelShortFormProvider extends FragmentShortFormProvider {
 
-    private OWLServer server;
+    private AnnotationValueShortFormProvider sfp;
 
-    private URI uri;
-
-
-    public LabelShortFormProvider(OWLServer server, URI annotationURI) {
-        this.server = server;
-        this.uri = annotationURI;
+    public LanguageLabelShortFormProvider(OWLServer server, URI annotationURI, String lang) {
+        sfp = new AnnotationValueShortFormProvider(Collections.singletonList(annotationURI),
+                                                   Collections.singletonMap(annotationURI, Collections.singletonList(lang)),
+                                                   server.getOWLOntologyManager());
     }
 
 
     public String getShortForm(OWLEntity entity) {
-        for (OWLOntology ont : server.getActiveOntologies()){
-            for (OWLAnnotation annot : (entity).getAnnotations(ont)){
-                final URI annotationURI = annot.getAnnotationURI();
-                if (annotationURI.equals(uri)){
-                    if (annot instanceof OWLConstantAnnotation){
-                        return ((OWLConstantAnnotation)annot).getAnnotationValue().getLiteral();
-                    }
-                }
-            }
+        String label = sfp.getShortForm(entity);
+        if (label != null){
+            return label;
         }
         return super.getShortForm(entity);
     }
