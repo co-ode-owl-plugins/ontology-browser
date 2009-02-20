@@ -38,6 +38,9 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
     private NamedObjectShortFormProvider shortFormProvider;
 
+    private static final String ID_SPLITTER = "___";
+
+
     public StaticFilesURLScheme(OWLHTMLServer server) {
         super(server);
         this.shortFormProvider = new FragmentShortFormProvider(); // always use the fragment as it will be safe in URLs
@@ -46,7 +49,7 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
     public URL getURLForNamedObject(OWLNamedObject object) {
 
         // always use the fragment instead of the rendering
-        String name = shortFormProvider.getShortForm(object);
+        String name = shortFormProvider.getShortForm(object) + ID_SPLITTER + object.getURI().hashCode();
 
         try {
             name = URLEncoder.encode(name, "UTF-8");
@@ -66,16 +69,19 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
         NamedObjectType type = getType(url);
         if (type != null){
             String[] path = url.getPath().split("/");
-            String name = path[path.length-1].substring(0, path[path.length-1].indexOf(OWLHTMLConstants.DEFAULT_EXTENSION));
+            String filename = path[path.length-1].substring(0, path[path.length-1].indexOf(OWLHTMLConstants.DEFAULT_EXTENSION));
 
             try {
-                name = URLDecoder.decode(name, "UTF-8");
-                Set<? extends OWLNamedObject> objs = getServer().getFinder().getOWLNamedObjects(name, type);
+                filename = URLDecoder.decode(filename, "UTF-8");
+                String[] nameIdPair = filename.split(ID_SPLITTER);
+                
+                Set<? extends OWLNamedObject> objs = getServer().getFinder().getOWLNamedObjects(nameIdPair[0], type);
                 if (objs.size() > 0){
-                    if (objs.size() > 1){
-                        logger.warn("Found more than one " + type + " that matches the name: " + name);
+                    for (OWLNamedObject o : objs){
+                        if (o.getURI().hashCode() == Integer.parseInt(nameIdPair[1])){
+                            return o;
+                        }
                     }
-                    return objs.iterator().next();
                 }
             }
             catch (UnsupportedEncodingException e) {

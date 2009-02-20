@@ -281,9 +281,6 @@ public class OntologyExporter {
 
     private void exportEntity(OWLEntity entity, EmptyOWLDocPage ren) throws IOException {
         ren.setUserObject(entity);
-        if (entity.getURI().toString().contains("hasIn")){
-            System.out.println("entity = " + entity);
-        }
         URL entityURL = server.getURLScheme().getURLForNamedObject(entity);
         String localFilename = URLUtils.createRelativeURL(server.getBaseURL(), entityURL);
         File entitySummaryFile = getFileAndEnsurePathExists(root, localFilename);
