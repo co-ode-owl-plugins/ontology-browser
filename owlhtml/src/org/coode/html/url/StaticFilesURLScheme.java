@@ -74,12 +74,14 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
             try {
                 filename = URLDecoder.decode(filename, "UTF-8");
                 String[] nameIdPair = filename.split(ID_SPLITTER);
-                
-                Set<? extends OWLNamedObject> objs = getServer().getFinder().getOWLNamedObjects(nameIdPair[0], type);
-                if (objs.size() > 0){
-                    for (OWLNamedObject o : objs){
-                        if (o.getURI().hashCode() == Integer.parseInt(nameIdPair[1])){
-                            return o;
+
+                if (nameIdPair.length > 1){ // otherwise it might be an index
+                    Set<? extends OWLNamedObject> objs = getServer().getFinder().getOWLNamedObjects(nameIdPair[0], type);
+                    if (objs.size() > 0){
+                        for (OWLNamedObject o : objs){
+                            if (o.getURI().hashCode() == Integer.parseInt(nameIdPair[1])){
+                                return o;
+                            }
                         }
                     }
                 }
