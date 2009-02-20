@@ -182,9 +182,11 @@ public class OntologyExporter {
         OWLOntologySummaryHTMLPage ontologySummary = new OWLOntologySummaryHTMLPage(server);
         logger.debug("ont = " + ont);
         ontologySummary.setUserObject(ont);
-        String ontID = server.getNameRenderer().getShortForm(ont);
         URL pageURL = server.getURLScheme().getURLForNamedObject(ont);
-        PrintWriter out = fileUtils.open(new File(subDirFile, ontID + OWLHTMLConstants.DEFAULT_EXTENSION));
+        String localFilename = URLUtils.createRelativeURL(server.getBaseURL(), pageURL);
+        File ontologySummaryFile = getFileAndEnsurePathExists(root, localFilename);
+
+        PrintWriter out = fileUtils.open(ontologySummaryFile);
         ontologySummary.renderAll(pageURL, out);
 
         out.flush();
