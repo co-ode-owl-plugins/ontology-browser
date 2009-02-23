@@ -12,6 +12,9 @@ import org.semanticweb.owl.model.OWLOntology;
 import java.net.*;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Author: Nick Drummond<br>
@@ -40,6 +43,9 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
     private static final String ID_SPLITTER = "___";
 
+    private Map<URL, OWLNamedObject> url2ObjMap = new HashMap<URL, OWLNamedObject>();
+    private Map<OWLNamedObject, URL> obj2UrlMap = new HashMap<OWLNamedObject, URL>();
+
 
     public StaticFilesURLScheme(OWLHTMLServer server) {
         super(server);
@@ -48,12 +54,16 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
     public URL getURLForNamedObject(OWLNamedObject object) {
 
+        URL url = obj2UrlMap.get(object);
+        if (url == null){
         // always use the fragment instead of the rendering
         String name = shortFormProvider.getShortForm(object) + ID_SPLITTER + object.getURI().hashCode();
 
         try {
             name = URLEncoder.encode(name, "UTF-8");
-            return new URL(getBaseURL(), NamedObjectType.getType(object) + "/" + name + OWLHTMLConstants.DEFAULT_EXTENSION);
+            url = new URL(getBaseURL(), NamedObjectType.getType(object) + "/" + name + OWLHTMLConstants.DEFAULT_EXTENSION);
+            obj2UrlMap.put(object, url);
+            url2ObjMap.put(url, object);
         }
         catch (MalformedURLException e) {
             logger.error(e);
@@ -61,36 +71,12 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
         catch (UnsupportedEncodingException e) {
             logger.error(e);
         }
-        return null;
+        }
+        return url;
     }
 
     public OWLNamedObject getNamedObjectForURL(URL url) {
-
-        NamedObjectType type = getType(url);
-        if (type != null){
-            String[] path = url.getPath().split("/");
-            String filename = path[path.length-1].substring(0, path[path.length-1].indexOf(OWLHTMLConstants.DEFAULT_EXTENSION));
-
-            try {
-                filename = URLDecoder.decode(filename, "UTF-8");
-                String[] nameIdPair = filename.split(ID_SPLITTER);
-
-                if (nameIdPair.length > 1){ // otherwise it might be an index
-                    Set<? extends OWLNamedObject> objs = getServer().getFinder().getOWLNamedObjects(nameIdPair[0], type);
-                    if (objs.size() > 0){
-                        for (OWLNamedObject o : objs){
-                            if (o.getURI().hashCode() == Integer.parseInt(nameIdPair[1])){
-                                return o;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (UnsupportedEncodingException e) {
-                logger.error(e);
-            }
-        }
-        return null;
+        return url2ObjMap.get(url);
     }
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
