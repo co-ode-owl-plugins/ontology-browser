@@ -120,6 +120,8 @@ public class OntologyExporter {
             exporter.export(outputDirectory);
 
             logger.info("Done!");
+
+            server.dispose();
         }
         catch (Exception e) {
             logger.error("Problem exporting OWLDoc", e);
