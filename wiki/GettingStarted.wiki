@@ -1,0 +1,60 @@
+= Getting Started =
+
+== Load an ontology ==
+
+To load an ontology (and its imports) into the browser, enter the physical location of the OWL file. This must be publicly accessible for the server to find it.
+
+If you want to load local files or files on an internal network like the example on the right, you will have to [Installation download the server and run it locally].
+
+<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/load.png" />
+
+
+== Loading ontologies with imports ==
+
+The server will attempt to find any imported ontologies in the same folder as the root ontology and load these as well. If it cannot find them there, it will default to looking on the web at a URL matching the ontology URI.
+
+If you still have any missing imports, you will be taken straight to the manage page where you can specify a different location for the missing ontologies.
+
+<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/missing-imports.png" />
+
+
+You do not have to load missing imports - everything will behave as expected, and you can carry choose to ignore this step and go straight to browsing.
+
+A good place to start is the content page.
+
+== Finding your way around ==
+
+Once an ontology has been successfully opened you will be presented with the contents page.
+
+<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/contents.png" />
+
+
+From here it should be easy to navigate around your ontology by class, property or individual. Alternatively, you can do a search on the name of the entity you are looking for. Autocomplete is implemented to help you with this.
+
+=== Permalinking ===
+
+Once you have ontologies loaded, at any time you can select or copy the permalink link and bookmark it or send it to your friends. The permalink takes into account any settings you have updated, and includes pointers to where you loaded the ontologies from.
+
+== Display Names ==
+
+If your ontology appears with lots of meaningless names (like right), it is possible that the human-intended labels are in annotations.
+
+<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/frag-rendering.png" />
+
+
+If this is the case, choose `renderer:label` in the top right of the toolbar.
+
+By default, this will render entities using their `rdfs:label`.
+
+If you wish to change this, edit `option_label_uri` under more options and press return (see below).
+
+
+== Further Configuration ==
+
+<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/options.png" />
+
+Further options can be changed on this page. For example, options like DL Query can be disabled by setting reasoner.enabled to false or changing the css property to "alt.css" renders using a different stylesheet with larger fonts.
+
+After editing a value, press return for the change to be made.
+
+All options are saved along with the session data that is retrieved when a permalink is used.
