@@ -7,7 +7,7 @@ For example, an ontology repository (or a user's own HTML pages) could incorpora
 Such a link might look like this:
 
 {{{
-http://rpc133.cs.man.ac.uk:8080/browser/manage/?action=load&clear=true&uri=http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl
+http://owl.cs.manchester.ac.uk/browser/manage/?action=load&clear=true&uri=http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl
 }}}
 
 This loads a particular ontology (pizza.owl) from the physical location specified by the uri parameter. This ontology (and its imports) replaces all existing loaded ontologies in this session because of the `clear=true` parameter.
