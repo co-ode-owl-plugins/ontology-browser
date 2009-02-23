@@ -81,8 +81,3 @@ As with most new software, things are changing rapidly, so we do not have the re
 Made available under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License</a>
 
 Copyright © 2007 The University Of Manchester
-Acknowledgements
-
-This work is funded by <a href="http://www.jisc.ac.uk/">JISC</a>.
-
-We work in collaboration with partners from <a href="http://www.co-ode.org/about/associates.php">Stanford University and other institutions in the UK</a>.
