@@ -1,0 +1,89 @@
+= API =
+
+The server has been written with a RESTful interface such that programmatic or user interaction is possible over HTTP.
+
+For example, an ontology repository (or a user's own HTML pages) could incorporate a link to the browser to show a particular ontology.
+
+Such a link might look like this:
+
+{{{
+http://rpc133.cs.man.ac.uk:8080/browser/manage/?action=load&clear=true&uri=http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl
+}}}
+
+This loads a particular ontology (pizza.owl) from the physical location specified by the uri parameter. This ontology (and its imports) replaces all existing loaded ontologies in this session because of the `clear=true` parameter.
+
+== Parameters ==
+
+<table border="1px black solid">
+        <tr><th>URL</th><th style="width:300px;">parameters</th><th>usage notes</th></tr>
+
+        <tr><td>manage/</td><td>
+<em>action</em> = [load|remove|reload|browse|hide|unhide] <br />
+<em>clear=true</em><br />
+<em>uri</em> = the physical location the ontology (for loading) or the ontology URI otherwise<br />
+<em>clear</em> = true in combination with load to dump all existing loaded ontologies</td>
+<td>browse makes the ontology and its imports closure active (much like the active ontology in Protege4).<br />clear = true causes the existing state of the browser to be cleared on a load</td></tr>
+
+        <tr><td>find/</td><td>
+<em>type</em> = [entities|classes|objectproperties|dataproperties|individuals|ontologies]<br />
+<em>input</em> = name search string<br />`*`</td><td></td></tr>
+
+        <tr><td>entities/</td><td>
+<em>uri</em> = the full URI of the entity<br />
+<em>baseURI</em> = the base URI of the entity (without the #)<br />
+<em>name</em> = the rendered name of the entity or the URI fragment of its identifier<br />
+<em>ontology</em> = the URI of the ontology to produce an index for<br />`*`</td>
+
+<td>If no parameters are specified, an index of all entities will be shown.<br />
+If the baseURI is only specified, an index of all entities with that baseURI will be shown (NOT IMPLEMENTED YET).<br />
+If the name is specified on its own the entity(ies) with that rendering will be shown.</td></tr>
+
+        <tr><td>classes/</td><td>
+see entities/<br />`*`</td><td></td></tr>
+
+        <tr><td>objectproperties/</td><td>
+see entities/<br />`*`</td><td></td></tr>
+
+        <tr><td>dataproperties/</td><td>
+see entities/<br />`*`</td><td></td></tr>
+
+        <tr><td>individuals/</td><td>
+see entities/<br />`*`</td><td></td></tr>
+
+        <tr><td>ontologies/</td><td>
+<em>uri</em> = the full URI of the ontology<br />`*`</td><td></td></tr>
+
+        <tr><td>query/</td><td>
+<em>q</em> = [subclasses|equivalents|instances|reciprocal-subclasses]<br />
+<em>class</em> = the OWL class description<br />`*`</td>
+
+            <td>Reasoner query of the type specified.<br />
+The OWL description can only be an intersection with named classes, existential/universal/value restrictions with named fillers</td></tr>
+
+        <tr><td>cloud/</td><td>
+<em>type</em> = [class-usage|objprop-usage]</td><td>More to follow</td></tr>
+
+        <tr><td>signout.html</td><td></td><td>Kill this session, clearing all ontologies.</td></tr>
+        <tr><td>option</td><td>
+<em>opt</em> = [option]<br />
+<em>value</em> = [value]</td>
+
+            <td>Options<br />ren: [frag|label]</td></tr>
+
+    </table>
+
+
+
+`*` indicates that a format for the results can be specified: `[xml|html|html-frag]`
+
+XML is of the form:
+{{{
+<results>
+ <rs id="[entity url]" info="[for future use]">[entity name]<rs>
+</results>
+}}}
+html creates a full html page, with CSS and title etc
+
+html-frag creates just the bit of html required to add to an existing page (useful for AJAX)
+
+json may be supported in the future as an alternative to XML
