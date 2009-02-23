@@ -1,3 +1,5 @@
+# Run the browser on a local server
+
 = Ontology Browser: Installation =
 
 == Try it yourself ==
