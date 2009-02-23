@@ -1,8 +1,6 @@
 # Run the browser on a local server
 
-= Ontology Browser: Installation =
-
-== Try it yourself ==
+= Installation =
 
 If your ontologies are just too private to send to the server (not that we're watching), you can run the server on any machine with a servlet engine installed (eg Tomcat).
 
