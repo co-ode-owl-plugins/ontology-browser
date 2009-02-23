@@ -1,4 +1,4 @@
-# Run the browser on a local server
+#summary Run the browser on a local server
 
 = Installation =
 
