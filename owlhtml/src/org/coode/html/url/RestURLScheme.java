@@ -5,6 +5,7 @@ package org.coode.html.url;
 
 import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLServer;
+import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owl.model.OWLNamedObject;
@@ -101,7 +102,7 @@ public class RestURLScheme extends AbstractURLScheme {
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            String encodedURI = URLEncoder.encode(ont.getURI().toString(), "UTF-8");
+            String encodedURI = URLEncoder.encode(ont.getURI().toString(), OWLHTMLConstants.DEFAULT_ENCODING);
 
             return new URL(getBaseURL(), type + "/?" + PARAM_ONTOLOGY + "=" + encodedURI);
         }

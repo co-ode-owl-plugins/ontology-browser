@@ -1,6 +1,9 @@
 package org.coode.html.impl;
 
 import org.coode.owl.mngr.ServerConstants;
+
+import java.net.URL;
+import java.net.MalformedURLException;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -33,6 +36,9 @@ import org.coode.owl.mngr.ServerConstants;
  * Date: Oct 2, 2007<br><br>
  */
 public class OWLHTMLConstants extends ServerConstants {
+
+    public static final String DEFAULT_ENCODING = "utf8";
+
 
     public static final String JS_DEFAULT = "default.js";
     public static final String JS_FORM = "form.js";
@@ -73,6 +79,16 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
 
+    public static final URL HOME_PAGE;
+
+    static {
+        try {
+            HOME_PAGE = new URL("http://code.google.com/p/ontology-browser/");
+        }
+        catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     public enum LinkTarget{_top, content, nav, subnav, header, _blank}

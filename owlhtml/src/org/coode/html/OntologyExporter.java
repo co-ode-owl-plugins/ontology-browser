@@ -133,7 +133,7 @@ public class OntologyExporter {
 
     public OntologyExporter(OWLHTMLServer server) {
         this.server = server;
-        this.fileUtils = new FileUtils("resources/", "UTF8");
+        this.fileUtils = new FileUtils("resources/", OWLHTMLConstants.DEFAULT_ENCODING);
     }
 
     public File export(File root) throws Exception {

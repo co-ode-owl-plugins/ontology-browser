@@ -22,16 +22,20 @@ public class BlurbDoclet extends AbstractHTMLDoclet {
 
     private static final String ID = "doclet.blurb";
 
+    private static final String DOCUMENTATION_BOX = "Documentation";
+
+
     protected void renderHeader(URL pageURL, PrintWriter out) {
         out.println("<h1>" + OntologyBrowserConstants.ONTOLOGY_SERVER_NAME + " " + OntologyBrowserConstants.VERSION + "</h1>");
-        renderBoxStart("Author", out);
-        out.println("<p>Nick Drummond, The University of Manchester</p>\n" +
-                    "<p>Made available as part of the <a href=\"http://www.co-ode.org/downloads/owldoc-server/\">CO-ODE</a> project.</p>" +
-                    "<p><a href=\"" + OWLHTMLConstants.ONTOLOGY_SERVER + "docs/index.html\">Documentation</a></p>");
+        renderBoxStart(DOCUMENTATION_BOX, out);
+        out.println("<p style='font-weight: bold;/*text-decoration: underline;*/'><a href=\"" + OWLHTMLConstants.HOME_PAGE + "\" target=\"docs\">Ontology Browser Homepage</a><br />" +
+                    "<a href=\"" + OWLHTMLConstants.HOME_PAGE + "wiki/GettingStarted\" target=\"docs\">Getting started</a><br />" +
+                    "<a href=\"" + OWLHTMLConstants.HOME_PAGE + "wiki/ReleaseNotes\" target=\"docs\">Release notes</a><br />" +
+                    "<a href=\"" + OWLHTMLConstants.HOME_PAGE + "issues/list\" target=\"docs\">Bugs/Feature requests</a></p>");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        renderBoxEnd("Author", out);
+        renderBoxEnd(DOCUMENTATION_BOX, out);
     }
 
     public String getID() {

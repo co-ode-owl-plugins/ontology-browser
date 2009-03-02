@@ -83,6 +83,12 @@
         <display-name>Frames Header</display-name>
         <servlet-class>org.coode.www.servlet.FramesHeader</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <display-name>Test Servlet</display-name>
+        <description>Tests for the TOmcat framework</description>
+        <servlet-class>org.coode.www.test.TestServlet</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>ManageOntologies</servlet-name>
@@ -159,6 +165,10 @@
     <servlet-mapping>
         <servlet-name>FramesHeader</servlet-name>
         <url-pattern>/header.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/test/</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>20</session-timeout>

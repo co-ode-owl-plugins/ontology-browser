@@ -25,8 +25,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -86,9 +89,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
                 if (OntologyBrowserConstants.FORMAT_XML.equals(format)){
                     response.setContentType(OntologyBrowserConstants.MIME_XML);
-                    PrintWriter out = response.getWriter();
-
-                    handleXMLRequest(params, server, pageURL, out);
+                    handleXMLRequest(params, server, pageURL, response.getWriter());
                 }
                 else {
                     response.setContentType(OntologyBrowserConstants.MIME_HTML);
@@ -96,9 +97,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
                     if (ren != null){
                         prepareMenuBar(ren, server, pageURL);
-                        PrintWriter out = response.getWriter();
-                        
-                        ren.renderAll(pageURL, out);
+                        ren.renderAll(pageURL, response.getWriter());
                     }
                     else{
                         renderError("Could not get renderer for request", null, server, pageURL, format, response);
@@ -107,7 +106,9 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             }
         }
         catch(RedirectException e){
-            response.sendRedirect(e.getRedirectPage().toString());
+            response.setCharacterEncoding(OWLHTMLConstants.DEFAULT_ENCODING);
+            String redir = e.getRedirectPage().toString();
+            response.sendRedirect(redir);
         }
         catch (Throwable e) {
             logger.error(e);
@@ -157,7 +158,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 }
 
                 menuDoclet.addToMenu(new MenuItemDoclet("Help",
-                                                        server.getURLScheme().getURLForRelativePage(OntologyBrowserConstants.DOCS_HTML),
+                                                        OWLHTMLConstants.HOME_PAGE,
                                                         OWLHTMLConstants.LinkTarget._blank,
                                                         server));
 
@@ -194,7 +195,18 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             if (!OWLHTMLConstants.PARAM_SESSION_LABEL.equals(param) &&
                     !OntologyBrowserConstants.PARAM_FORMAT.equals(param)){
                 String[] v = (String[])request.getParameterMap().get(param);
-                params.put(param.toString(), v[0]);
+                try {
+                    String value = v[0];
+                    // hack to ensure that params are decoded (if not already uri escaped)
+                    if (request.getCharacterEncoding() == null && !value.startsWith("%")){
+                        value = new String(value.getBytes("8859_1"), OWLHTMLConstants.DEFAULT_ENCODING);
+                    }
+                    value = URLDecoder.decode(value, OWLHTMLConstants.DEFAULT_ENCODING);
+                    params.put(param.toString(), value);
+                }
+                catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return params;
@@ -269,7 +281,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     protected final void renderXMLResults(Set<OWLNamedObject> results,
                                           OWLServer server,
                                           PrintWriter out) {
-        out.println("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+        out.println("<?xml version=\"1.0\" encoding=\"" + OWLHTMLConstants.DEFAULT_ENCODING + "\" ?>");
         out.println("<results>");
         for (OWLNamedObject result : results){
             final String name = server.getNameRenderer().getShortForm(result);

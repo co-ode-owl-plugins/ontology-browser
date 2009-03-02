@@ -251,9 +251,9 @@ _bsn.AutoSuggest.prototype.doAjaxRequest = function ()
     // create ajax request
     //
     if (typeof(this.oP.script) == "function")
-        var url = this.oP.script(escape(value));
+        var url = this.oP.script(encodeURI(value));
     else
-        var url = this.oP.script+this.oP.varname+"="+escape(value);
+        var url = this.oP.script+this.oP.varname+"="+encodeURI(value);
 
     if (!url)
         return false;

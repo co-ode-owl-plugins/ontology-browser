@@ -53,12 +53,9 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
     protected final void renderHeader(URL pageURL, PrintWriter out) {
         super.renderHeader(pageURL, out);
-
-//        out.println("<div id='content'>");
     }
 
     protected final void renderFooter(URL pageURL, PrintWriter out) {
-//        out.println("</div> <!-- content -->");
 
         out.println("<p class='footer'>");
 
@@ -69,7 +66,7 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
             out.print(" | ");
         }
 
-        out.println("created with <a href='http://www.co-ode.org/downloads/protege-x/plugins/#browser' target='_blank'>OWLDoc</a></p>");
+        out.println("<a href='" + OWLHTMLConstants.HOME_PAGE + "' target='_blank'>OWL HTML inside</a></p>");
 
         super.renderFooter(pageURL, out);
     }

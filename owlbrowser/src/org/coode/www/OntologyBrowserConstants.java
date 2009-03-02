@@ -15,7 +15,7 @@ import org.coode.html.impl.OWLHTMLConstants;
  */
 public class OntologyBrowserConstants extends OWLHTMLConstants {
 
-    public static String VERSION = "1.1.4";
+    public static String VERSION = "1.1.5";
 
     public static final String SERVER_STATES_DIR = "caches/";
     public static final String SERVER_STATES_EXT = ".saved";
@@ -44,6 +44,6 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
 
 
     // and their mime types
-    public static final String MIME_XML = "text/xml";
-    public static final String MIME_HTML = "text/html;charset=utf8";
+    public static final String MIME_XML = "text/xml;charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
+    public static final String MIME_HTML = "text/html;charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
 }
