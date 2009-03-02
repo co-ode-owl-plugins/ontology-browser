@@ -60,7 +60,7 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
         String name = shortFormProvider.getShortForm(object) + ID_SPLITTER + object.getURI().hashCode();
 
         try {
-            name = URLEncoder.encode(name, "UTF-8");
+            name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
             url = new URL(getBaseURL(), NamedObjectType.getType(object) + "/" + name + OWLHTMLConstants.DEFAULT_EXTENSION);
             obj2UrlMap.put(object, url);
             url2ObjMap.put(url, object);

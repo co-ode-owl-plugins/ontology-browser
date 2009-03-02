@@ -89,7 +89,9 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         if (submitURL != null){
             actionStr = URLUtils.createRelativeURL(pageURL, submitURL);
         }
-        out.println("<form class='autocomplete' method='" + method + "' id='chooser' name='" + id + "Form' action='" + actionStr + "'");
+        out.println("<form class='autocomplete' method='" + method + "' id='chooser'" +
+//                    " accept-charset='" + OWLHTMLConstants.DEFAULT_ENCODING + "'" + 
+                    " name='" + id + "Form' action='" + actionStr + "'");
 
         if (!isSingleFrameNavigation() && target != null){
             out.print(" target='" + target + "'");

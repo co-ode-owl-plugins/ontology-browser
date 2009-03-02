@@ -73,7 +73,7 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
                     css = " class='active-ontology-uri'";
                 }
                 try {
-                    String encodedURI = URLEncoder.encode(ontURI.toString(), "UTF-8");
+                    String encodedURI = URLEncoder.encode(ontURI.toString(), OWLHTMLConstants.DEFAULT_ENCODING);
                     out.println("<tr" + css + "><td>");
                     owlRen.render(ont, pageURL, out);
                     out.println("</td><td>" + physicalURI + "</td><td style='width: 150px;'>");

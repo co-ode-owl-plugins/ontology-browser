@@ -75,46 +75,46 @@ public class Summary extends AbstractOntologyServerServlet {
         String expanded = params.get(PARAM_EXPAND);
 
         NamedObjectType type = server.getURLScheme().getType(pageURL);
+        try {
 
-        if (uri != null){
-            try {
-                String findURL = "find/?format=html&type=" + type + "&uri=" + URLEncoder.encode(uri, "UTF-8");
+            if (uri != null){
+                String findURL = "find/?format=html&type=" + type + "&uri=" + URLEncoder.encode(uri, OWLHTMLConstants.DEFAULT_ENCODING);
                 if (ontology != null){
                     findURL += "&ontology=" + ontology;
                 }
                 throw new RedirectException(server.getURLScheme().getURLForRelativePage(findURL));
             }
-            catch (UnsupportedEncodingException e) {
-                throw new OntServerException(e);
+            else if (entityName != null){
+                String findURL = "find/?format=html&type=" + type + "&input=" + URLEncoder.encode(entityName, OWLHTMLConstants.DEFAULT_ENCODING);
+                if (ontology != null){
+                    findURL += "&ontology=" + ontology;
+                }
+                throw new RedirectException(server.getURLScheme().getURLForRelativePage(findURL));
             }
-        }
-        else if (entityName != null){
-            String findURL = "find/?format=html&type=" + type + "&input=" + entityName;
-            if (ontology != null){
-                findURL += "&ontology=" + ontology;
-            }
-            throw new RedirectException(server.getURLScheme().getURLForRelativePage(findURL));
-        }
-        else{
-            OWLNamedObject object = server.getURLScheme().getNamedObjectForURL(pageURL);
+            else{
+                OWLNamedObject object = server.getURLScheme().getNamedObjectForURL(pageURL);
 
-            if (object == null){
-                final OWLOntology ont = getOntology(ontology, server);
-                String title = type.getPluralRendering();
-                if (ont != null){
-                    title += " referenced in " + server.getNameRenderer().getShortForm(ont);
+                if (object == null){
+                    final OWLOntology ont = getOntology(ontology, server);
+                    String title = type.getPluralRendering();
+                    if (ont != null){
+                        title += " referenced in " + server.getNameRenderer().getShortForm(ont);
+                    }
+                    else{
+                        title = "All " + title;
+                    }
+                    Set<OWLNamedObject> results = getIndexResults(params, server, type);
+                    OWLEntityIndexHTMLPage ren = createIndexRenderer(title, results, server);
+                    prepareIndex(ren, ont, type, server);
+                    return ren;
                 }
-                else{
-                    title = "All " + title;
+                else {
+                    return getSummaryRenderer(object, server, ServerConstants.TRUE.equals(expanded));
                 }
-                Set<OWLNamedObject> results = getIndexResults(params, server, type);
-                OWLEntityIndexHTMLPage ren = createIndexRenderer(title, results, server);
-                prepareIndex(ren, ont, type, server);
-                return ren;
             }
-            else {
-                return getSummaryRenderer(object, server, ServerConstants.TRUE.equals(expanded));
-            }
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new OntServerException(e);
         }
     }
 

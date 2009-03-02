@@ -67,7 +67,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
         if (isSingleFrameNavigation()){
             try {
-                String encodedURI = URLEncoder.encode(pageRelToBase, "UTF-8");
+                String encodedURI = URLEncoder.encode(pageRelToBase, OWLHTMLConstants.DEFAULT_ENCODING);
                 String relOptionURL = URLUtils.createRelativeURL(pageURL, getServer().getURLScheme().getURLForRelativePage("?content=" + encodedURI));
                 out.println("<a onclick=\"option('frames', 'true', '" + relOptionURL + "', '" + optionsURL + "');\">frames</a> | ");
             }

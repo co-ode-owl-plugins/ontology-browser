@@ -72,7 +72,7 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
 
 
     protected String getEncoding() {
-        return "utf-8";
+        return OWLHTMLConstants.DEFAULT_ENCODING;
     }
 
 
