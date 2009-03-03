@@ -1,5 +1,9 @@
 = Release Notes =
 
+== *v1.1.5* 3 Mar 2009 ==
+
+  * fixed non-ascii handling in forms
+
 == *v1.1.4* 18 Feb 2009 ==
 
   * Support for non-ascii characters
