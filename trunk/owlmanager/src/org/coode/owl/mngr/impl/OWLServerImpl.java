@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.*;
 
 
@@ -77,13 +78,17 @@ public class OWLServerImpl implements OWLServer {
                 }
                 reasoner = null;
             }
-            else if (ServerConstants.OPTION_REN.equals(property)){
+            else if (ServerConstants.OPTION_REN.equals(property) ||
+                     ServerConstants.OPTION_LABEL_LANG.equals(property)){
                 resetRendererCache();
             }
             else if (ServerConstants.OPTION_LABEL_URI.equals(property)){
-                URI uri = URI.create((String)propertyChangeEvent.getNewValue());
-                if (uri != null){ // only allow valid URI values
+                try {
+                    new URI((String)propertyChangeEvent.getNewValue());
                     resetRendererCache();
+                }
+                catch (URISyntaxException e) {
+                    // invalid URI - do not change the renderer
                 }
             }
         }
