@@ -223,6 +223,8 @@ public class OWLServerImpl implements OWLServer {
                 getProperties().remove(ServerConstants.OPTION_ACTIVE_ONT);
             }
 
+
+
             clear();
 
             for (OWLServerListener l : listeners){

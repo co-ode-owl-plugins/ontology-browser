@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
+import java.util.List;
 
 /**
  * Author: Nick Drummond<br>
@@ -36,4 +37,8 @@ public interface ServerProperties {
     void load(InputStream in) throws IOException;
 
     boolean isSet(String booleanOption);
+
+    void setAllowedValues(String key, List<String> values);
+
+    List<String> getAllowedValues(String key);
 }
