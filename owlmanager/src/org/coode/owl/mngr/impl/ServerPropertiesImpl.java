@@ -27,6 +27,9 @@ public class ServerPropertiesImpl implements ServerProperties {
 
     private List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 
+    private Map<String, List<String>> allowedValues = new HashMap<String, List<String>>();
+
+
     public String get(String key) {
         return properties.getProperty(key);
     }
@@ -90,6 +93,18 @@ public class ServerPropertiesImpl implements ServerProperties {
     public boolean isSet(String booleanOption) {
         return ServerConstants.TRUE.equals(properties.get(booleanOption));
     }
+
+
+    public void setAllowedValues(String key, List<String> values) {
+        allowedValues.put(key, values);
+    }
+
+
+    public List<String> getAllowedValues(String key) {
+        List<String> result = allowedValues.get(key);
+        return result != null ? result : Collections.EMPTY_LIST;
+    }
+
 
     private void notifyPropertyChanged(String key, String oldValue, String newValue) {
         for (PropertyChangeListener l : listeners){

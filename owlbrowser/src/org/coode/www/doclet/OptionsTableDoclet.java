@@ -9,6 +9,7 @@ import org.coode.html.doclet.AbstractHTMLDoclet;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Author: Nick Drummond<br>
@@ -48,13 +49,39 @@ public class OptionsTableDoclet extends AbstractHTMLDoclet {
             out.println("<tr" + css + ">");
             out.println("<td>" + option + "</td>");
             out.println("<td>");
-            out.println("<form method='POST' action='./'><input style='width:100%;' name='"
-                            + option + "' type='text' value='" + value + "' /><input style='display: none;' type='submit' /></form></td>");
+            out.println("<form method='POST' action='./'>");
+
+            List<String> allowedValues = server.getProperties().getAllowedValues(option);
+            if (allowedValues.isEmpty()){
+                renderEditor(option, value, out);
+            }
+            else{
+                renderSelector(option, value, allowedValues, out);
+            }
+            out.println("<input style='display: none;' type='submit' /></form></td>");
             out.println("<td style='width: 150px;'></td>");
             out.println("</tr>");
         }
 
         out.println("</table>");
+    }
+
+
+    private void renderEditor(String option, String value, PrintWriter out) {
+        out.println("<input style='width:100%;' name='" + option + "' type='text' value='" + value + "' />");
+    }
+
+
+    private void renderSelector(String option, String value, List<String> allowedValues, PrintWriter out) {
+        out.println("<select style='width:100%;' name='" + option + "'>");
+        for (String allowedValue : allowedValues){
+            out.print("<option value='" + allowedValue + "'");
+            if (allowedValue.equals(value)){
+                out.print(" selected='selected'");
+            }
+            out.println(">" + allowedValue + "</option>");
+        }
+        out.println("</select>");
     }
 
 
