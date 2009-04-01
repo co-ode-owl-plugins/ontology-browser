@@ -7,13 +7,10 @@ import org.coode.html.OWLHTMLServer;
 import org.coode.html.hierarchy.TreeFragment;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLEntity;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.net.URL;
-
-import sun.security.pkcs11.Config;
 
 /**
  * Author: Nick Drummond<br>
@@ -35,7 +32,7 @@ public class HierarchyNodeDoclet<O extends OWLNamedObject> extends AbstractHiera
     protected void renderHeader(URL pageURL, PrintWriter out) {
         renderNode(getUserObject(), new OWLHTMLRenderer(getServer()), pageURL, out);
         if (getSubDocletCount() > 0){
-            out.println("<ul style='list-style-type: disc;'>");
+            out.println("<ul class='minihierarchy'>");
         }
     }
 
@@ -58,13 +55,19 @@ public class HierarchyNodeDoclet<O extends OWLNamedObject> extends AbstractHiera
                 addDoclet(nodeSubsDoclet);
             }
             else{
+                HierarchyNodeDoclet<O> lastPathContainingFocusedNode = null;
                 for (O child : getModel().getChildren(object)){
-                    final HierarchyNodeDoclet<O> subDoclet = new HierarchyNodeDoclet<O>(getServer(), getModel());
-                    subDoclet.setShowSubs(isShowSubsEnabled());
+                    HierarchyNodeDoclet<O> subDoclet = new HierarchyNodeDoclet<O>(getServer(), getModel());
                     subDoclet.setPinned(true); // you will never change the subs as they will be regenerated each time this changed
                     subDoclet.setAutoExpandEnabled(isAutoExpandSubs());
                     subDoclet.setUserObject(child);
                     addDoclet(subDoclet);
+                    if (getModel().pathContainsNode(child, getModel().getFocus())){
+                        lastPathContainingFocusedNode = subDoclet;
+                    }
+                }
+                if (lastPathContainingFocusedNode != null){ // only show for the last node
+                    lastPathContainingFocusedNode.setShowSubs(isShowSubsEnabled());
                 }
             }
         }

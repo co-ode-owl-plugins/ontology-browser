@@ -3,6 +3,8 @@
 */
 package org.coode.html.hierarchy;
 
+import org.semanticweb.owl.model.OWLClass;
+
 import java.util.List;
 import java.util.Set;
 
@@ -26,9 +28,17 @@ public interface TreeFragment<O> {
 
     List<O> getChildren(O node);
 
+    List<O> getParents(O node);
+
+    List<O> getSynonyms(O node);
+
     boolean isLeaf(O node);
 
     void setFocus(O focus);
 
     O getFocus();
+
+    boolean contains(O node);
+
+    boolean pathContainsNode(O root, O searchNode);
 }

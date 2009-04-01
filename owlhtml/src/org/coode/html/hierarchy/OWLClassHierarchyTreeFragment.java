@@ -42,10 +42,12 @@ public class OWLClassHierarchyTreeFragment extends AbstractTreeFragment<OWLClass
         setComparator(server.getComparator());
     }
 
+
     public String getTitle() {
         return title;
     }
-    
+
+
     protected void generateDescendantHierarchy(OWLClass currentCls, int depth) throws OWLReasonerException {
         if (getDescendantLevels() < 0 || depth < getDescendantLevels()){
             // search for subclasses of the node
@@ -65,39 +67,45 @@ public class OWLClassHierarchyTreeFragment extends AbstractTreeFragment<OWLClass
         }
     }
 
-    protected void generateAncestorHierarchy(OWLClass currentCls, int depth) throws OWLReasonerException {
-        if (depth < getAncestorLevels() && !currentCls.equals(getOWLThing())){
-            // search for superclasses of the node
+
+    protected void generateAncestorHierarchy(OWLClass cls, int depth) throws OWLReasonerException {
+        if (depth < getAncestorLevels()){
             Set<OWLClass> namedSupers = new HashSet<OWLClass>();
 
-            for (OWLDescription superclass : OWLReasonerAdapter.flattenSetOfSets(hp.getSuperClasses(currentCls))){
+            for (OWLDescription superclass : OWLReasonerAdapter.flattenSetOfSets(hp.getSuperClasses(cls))){
                 if (superclass instanceof OWLClass){
                     namedSupers.add((OWLClass)superclass);
                 }
             }
 
             // check equivalent classes for a named member of an intersection
-            for (OWLDescription equivClass : hp.getEquivalentClasses(currentCls)){
+            for (OWLDescription equivClass : hp.getEquivalentClasses(cls)){
                 if (equivClass instanceof OWLObjectIntersectionOf){
                     addClsesFromFlatIntersection((OWLObjectIntersectionOf)equivClass, namedSupers);
                 }
+                else if (equivClass instanceof OWLClass){
+                    namedSupers.remove((OWLClass)equivClass);
+                    addSynonym(cls, (OWLClass)equivClass);
+                    generateAncestorHierarchy((OWLClass)equivClass, depth+1);
+                }
             }
+
+            namedSupers.remove(cls);
 
             // add owlThing if no supers found
-            if (namedSupers.isEmpty()){
+            if (!getOWLThing().equals(cls) && namedSupers.isEmpty()){
                 namedSupers.add(getOWLThing());
             }
-
-            // and recurse
+            else if (namedSupers.size() > 1 && namedSupers.contains(getOWLThing())){
+                namedSupers.remove(getOWLThing());
+            }
             for (OWLClass namedSuper : namedSupers){
-                addChild(currentCls, namedSuper);
+                addChild(cls, namedSuper);
                 generateAncestorHierarchy(namedSuper, depth+1);
             }
         }
-        else{
-            addRoot(currentCls);
-        }
     }
+
 
     private void addClsesFromFlatIntersection(OWLObjectIntersectionOf inters, Set<OWLClass> accum) {
         for (OWLDescription op : inters.getOperands()){

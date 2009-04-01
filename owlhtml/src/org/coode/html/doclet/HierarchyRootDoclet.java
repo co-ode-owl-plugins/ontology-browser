@@ -28,7 +28,7 @@ public class HierarchyRootDoclet<O extends OWLNamedObject> extends AbstractHiera
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
         renderBoxStart(getModel().getTitle(), out);
-        out.println("<ul style='list-style-type: disc;'>");
+        out.println("<ul class='minihierarchy'>");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
@@ -44,17 +44,21 @@ public class HierarchyRootDoclet<O extends OWLNamedObject> extends AbstractHiera
         clear();
         getModel().setFocus(object);
         if (object != null){
-            boolean firstBranchVisited = false;
+            HierarchyNodeDoclet<O> lastPathContainingFocusedNode = null;
             for (O root : getModel().getRoots()){
-                final HierarchyNodeDoclet<O> subDoclet = new HierarchyNodeDoclet<O>(getServer(), getModel());
-                if(!firstBranchVisited){
-                    // only show subs for the first branch
-                    subDoclet.setShowSubs(getServer().getProperties().isSet(ServerConstants.OPTION_RENDER_SUBS));
-                }
+                HierarchyNodeDoclet<O> subDoclet = new HierarchyNodeDoclet<O>(getServer(), getModel());
                 subDoclet.setAutoExpandEnabled(isAutoExpandSubs());
                 subDoclet.setUserObject(root);
                 addDoclet(subDoclet);
-                firstBranchVisited = true;
+                if (getModel().pathContainsNode(root, getModel().getFocus())){
+                    lastPathContainingFocusedNode = subDoclet;
+                }
+            }
+            if(lastPathContainingFocusedNode != null){ // only show subs for the last branch
+                lastPathContainingFocusedNode.setShowSubs(getServer().getProperties().isSet(ServerConstants.OPTION_RENDER_SUBS));
+            }
+            else{
+                throw new RuntimeException("Root: cannot find a path containing the node: " + object);
             }
         }
         super.setUserObject(object);
