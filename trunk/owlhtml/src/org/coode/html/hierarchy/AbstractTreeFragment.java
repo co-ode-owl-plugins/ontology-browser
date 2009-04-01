@@ -4,7 +4,6 @@
 package org.coode.html.hierarchy;
 
 import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.apache.log4j.Logger;
 
@@ -23,7 +22,10 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
     private static final Logger logger = Logger.getLogger(AbstractTreeFragment.class);
 
     private Set<O> roots = new HashSet<O>();
-    private final Map<O, Set<O>> nodeMap = new HashMap<O, Set<O>>();
+
+    private final Map<O, Set<O>> parent2ChildMap = new HashMap<O, Set<O>>();
+    private final Map<O, Set<O>> child2ParentMap = new HashMap<O, Set<O>>();
+    private final Map<O, Set<O>> synonymMap = new HashMap<O, Set<O>>();
 
     private Comparator<OWLObject> comparator;
 
@@ -34,12 +36,15 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
     private int ancestorLevels = 3;
     private int descendantLevels = 2; // actually needs one more layer than displayed, as this is required for determining if leaf
 
-    private Set<O> toldNodes = new HashSet<O>();
+//    private Set<O> toldChildren = new HashSet<O>();
+//    private Set<O> toldParents = new HashSet<O>();
 
 
     public final void setFocus(O focus){
-        this.focus = focus;
-        refreshRequired = true;
+        if (this.focus != focus){
+            this.focus = focus;
+            refreshRequired = true;
+        }
     }
 
     /**
@@ -72,11 +77,30 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
         return focus;
     }
 
+
+    public boolean contains(O node) {
+        return parent2ChildMap.keySet().contains(node) || child2ParentMap.keySet().contains(node);
+    }
+
+
+    public boolean pathContainsNode(O root, O searchNode) {
+        if (searchNode.equals(root)){
+            return true;
+        }
+        for (O child : getChildren(root)){
+            if (pathContainsNode(child, searchNode)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public final boolean isEmpty() {
         if (refreshRequired){
             refresh();
         }
-        return nodeMap.isEmpty();
+        return parent2ChildMap.isEmpty();
     }
 
     public Set<O> getRoots() {
@@ -86,59 +110,78 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
         return Collections.unmodifiableSet(roots);
     }
 
+    
     public List<O> getChildren(O parent) {
+        return getResults(parent, parent2ChildMap);
+    }
+
+
+    public List<O> getParents(O child) {
+        return getResults(child, child2ParentMap);
+    }
+
+
+    public List<O> getSynonyms(O node) {
+        return getResults(node, synonymMap);
+    }
+
+
+    private List<O> getResults(O child, Map<O, Set<O>> map) {
         if (refreshRequired){
             refresh();
         }
-        toldNodes.add(parent);
-        final Set<O> subs = nodeMap.get(parent);
-        if (subs != null){
-            if (subs.removeAll(toldNodes)){
-            logger.debug("Preventing cycle in hierarchy for parent: " + parent);
-            }
-            List<O> children = new ArrayList<O>(subs);
+        final Set<O> resultSet = map.get(child);
+        if (resultSet != null){
+            List<O> parents = new ArrayList<O>(resultSet);
             if (comparator != null){
-                Collections.sort(children, comparator);
+                Collections.sort(parents, comparator);
             }
-            return Collections.unmodifiableList(children);
+            return parents;
         }
         return Collections.emptyList();
     }
+
 
     public boolean isLeaf(O node) {
         if (refreshRequired){
             refresh();
         }
-        return nodeMap.get(node) == null || nodeMap.get(node).isEmpty();
+        return parent2ChildMap.get(node) == null || parent2ChildMap.get(node).isEmpty();
     }
 
-    public void addChild(O child, O parent){
-//        if (child.equals(parent) || nodeMap.get(child) != null){ // prevent cycles
-//            logger.debug("Detected cycle in hierarchy for child/parent: " + child + "/" + parent);
-//        }
-//        else{
-            // get node for given class out of the map (or add if none exists)
-            Set<O> subs = nodeMap.get(parent);
-            if (subs == null){
-                subs = new HashSet<O>();
-                nodeMap.put(parent, subs);
-            }
 
-            // add the sub to the node
-            if (child != null){
-                subs.add(child);
-            }
-//        }
+    protected void addChild(O child, O parent){
+        addToMap(parent, child, parent2ChildMap);
+        addToMap(child, parent, child2ParentMap);
     }
 
-    public void addRoot(O root) {
-        roots.add(root);
+
+    protected void addSynonym(O o1, O o2){
+        addToMap(o1, o2, synonymMap);
+        addToMap(o2, o1, synonymMap);
     }
+
+
+    private void addToMap(O key, O value, Map<O, Set<O>> map) {
+        Set<O> values = map.get(key);
+        if (values == null){
+            values = new HashSet<O>();
+            map.put(key, values);
+        }
+
+        // add the sub to the node
+        if (value != null){
+            values.add(value);
+        }
+    }
+
 
     public void clear(){
         roots.clear();
-        nodeMap.clear();
-        toldNodes.clear();
+        parent2ChildMap.clear();
+        child2ParentMap.clear();
+//        toldChildren.clear();
+//        toldParents.clear();
     }
 
     public void setComparator(Comparator<OWLObject> comparator){
@@ -150,6 +193,9 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
         try {
             generateAncestorHierarchy(getFocus(), 0);
             generateDescendantHierarchy(getFocus(), 0);
+
+            roots.addAll(parent2ChildMap.keySet());
+            roots.removeAll(child2ParentMap.keySet());
         }
         catch (OWLReasonerException e) {
             logger.error("Error generating mini hierarchy", e);

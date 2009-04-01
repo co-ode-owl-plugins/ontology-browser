@@ -64,36 +64,36 @@ public class OWLPropertyHierarchyTreeFragment<O extends OWLProperty> extends Abs
     }
 
     protected void generateAncestorHierarchy(O node, int depth) throws OWLReasonerException {
-        if (depth < getAncestorLevels()){
-            // search for supers of the node
-            Set<O> namedSupers = new HashSet<O>();
-
-            if (node instanceof OWLObjectProperty){
-                Set<OWLObjectProperty> supers = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLObjectProperty)node));
-                for (OWLObjectProperty s : supers) {
-                    namedSupers.add((O) s);
-                }
-            }
-            else if (node instanceof OWLDataProperty){
-                Set<OWLDataProperty> supers = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLDataProperty)node));
-                for (OWLDataProperty s : supers) {
-                    namedSupers.add((O) s);
-                }
-            }
-
-            if (namedSupers.isEmpty()){
-                addRoot(node);
-            }
-            else{
-                // recurse
-                for (O namedSuper : namedSupers){
-                    addChild(node, namedSuper);
-                    generateAncestorHierarchy(namedSuper, depth+1);
-                }
-            }
-        }
-        else{
-            addRoot(node);
-        }
+//        if (depth < getAncestorLevels()){
+//            // search for supers of the node
+//            Set<O> namedSupers = new HashSet<O>();
+//
+//            if (node instanceof OWLObjectProperty){
+//                Set<OWLObjectProperty> supers = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLObjectProperty)node));
+//                for (OWLObjectProperty s : supers) {
+//                    namedSupers.add((O) s);
+//                }
+//            }
+//            else if (node instanceof OWLDataProperty){
+//                Set<OWLDataProperty> supers = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLDataProperty)node));
+//                for (OWLDataProperty s : supers) {
+//                    namedSupers.add((O) s);
+//                }
+//            }
+//
+//            if (namedSupers.isEmpty()){
+//                addRoot(node);
+//            }
+//            else{
+//                // recurse
+//                for (O namedSuper : namedSupers){
+//                    addChild(node, namedSuper);
+//                    generateAncestorHierarchy(namedSuper, depth+1);
+//                }
+//            }
+//        }
+//        else{
+//            addRoot(node);
+//        }
     }
 }

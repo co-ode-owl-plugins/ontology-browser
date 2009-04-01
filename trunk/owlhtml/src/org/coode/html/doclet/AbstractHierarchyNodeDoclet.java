@@ -41,17 +41,31 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
 
 
     public final void setAutoExpandEnabled(boolean enabled) {
-        this.autoExpandSubs = enabled;
-        for (HTMLDoclet subdoclet : getDoclets()){
-            if (subdoclet instanceof AbstractHierarchyNodeDoclet){
-                ((AbstractHierarchyNodeDoclet)subdoclet).setAutoExpandEnabled(enabled);
+        if (autoExpandSubs != enabled){
+            this.autoExpandSubs = enabled;
+            for (HTMLDoclet subdoclet : getDoclets()){
+                if (subdoclet instanceof AbstractHierarchyNodeDoclet){
+                    ((AbstractHierarchyNodeDoclet)subdoclet).setAutoExpandEnabled(enabled);
+                }
             }
         }
     }
 
 
     public final void setShowSubs(boolean enabled) {
-        this.showSubs = enabled;
+        if (showSubs != enabled){
+            this.showSubs = enabled;
+            AbstractHierarchyNodeDoclet lastPathContainingFocusedNode = null;
+            for (HTMLDoclet subdoclet : getDoclets()){
+                if (subdoclet instanceof AbstractHierarchyNodeDoclet &&
+                    getModel().pathContainsNode(((AbstractHierarchyNodeDoclet<O>)subdoclet).getUserObject(), getModel().getFocus())){
+                    lastPathContainingFocusedNode = ((AbstractHierarchyNodeDoclet)subdoclet);
+                }
+            }
+            if (lastPathContainingFocusedNode != null){
+                lastPathContainingFocusedNode.setShowSubs(enabled);
+            }
+        }
     }
 
 
@@ -64,13 +78,16 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
         return autoExpandSubs;
     }
 
+
     protected final boolean isShowSubsEnabled(){
         return showSubs;
     }
 
+
     public String getID() {
         return getServer().getNameRenderer().getShortForm(getUserObject());
     }
+
 
     protected void renderNode(O node, OWLHTMLRenderer objRenderer, URL pageURL, PrintWriter out) {
         if (!model.isLeaf(node)){
@@ -81,24 +98,29 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
             out.print("<li>");
         }
         objRenderer.render(node, pageURL, out);
+        for (O synonym : model.getSynonyms(node)){
+            out.print(" = ");
+            objRenderer.render(synonym, pageURL, out);
+        }
         out.print("</li>");
     }
 
-    protected void renderExpandLink(O node, URL pageURL, PrintWriter out) {
-            if (isRenderSubExpandLinksEnabled()){
-                String link = URLUtils.createRelativeURL(pageURL, getServer().getURLScheme().getURLForNamedObject(node));
-                if (!link.contains("?")){
-                    link += "?";
-                }
-                else{
-                    link += "&";
-                }
 
-                out.println(" <a href='" + link + "expanded=true'>[+]</a>");
+    protected void renderExpandLink(O node, URL pageURL, PrintWriter out) {
+        if (isRenderSubExpandLinksEnabled()){
+            String link = URLUtils.createRelativeURL(pageURL, getServer().getURLScheme().getURLForNamedObject(node));
+            if (!link.contains("?")){
+                link += "?";
             }
             else{
-                out.println(" +");
+                link += "&";
             }
+
+            out.println(" <a href='" + link + "expanded=true'>[+]</a>");
+        }
+        else{
+            out.println(" +");
+        }
     }
 
 
