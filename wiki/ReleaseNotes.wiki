@@ -1,5 +1,9 @@
 = Release Notes =
 
+== *v1.1.6* 1 Apr 2009 ==
+
+  * multiple fixes to the mini hierarchies
+
 == *v1.1.5* 3 Mar 2009 ==
 
   * fixed non-ascii handling in forms
