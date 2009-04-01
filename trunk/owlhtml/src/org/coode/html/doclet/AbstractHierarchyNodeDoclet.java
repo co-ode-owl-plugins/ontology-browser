@@ -5,6 +5,7 @@ package org.coode.html.doclet;
 
 import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLServer;
+import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.hierarchy.TreeFragment;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.coode.html.util.URLUtils;
@@ -99,7 +100,9 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
         }
         objRenderer.render(node, pageURL, out);
         for (O synonym : model.getSynonyms(node)){
-            out.print(" = ");
+            out.print(" ");
+            out.print(OWLHTMLConstants.EQUIV_CHAR);
+            out.print(" ");
             objRenderer.render(synonym, pageURL, out);
         }
         out.print("</li>");

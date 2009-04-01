@@ -88,8 +88,25 @@ public class ToldPropertyHierarchyReasoner implements OWLPropertyReasoner {
     }
 
     public Set<OWLObjectProperty> getEquivalentProperties(OWLObjectProperty property) throws OWLReasonerException {
-        throw new NotImplementedException();
+        Set<OWLObjectProperty> results = new HashSet<OWLObjectProperty>();
+        for (OWLObjectPropertyExpression subProp : property.getEquivalentProperties(onts)){
+            if (subProp instanceof OWLObjectProperty){
+                results.add((OWLObjectProperty)subProp);
+            }
+        }
+        return results;
     }
+
+        public Set<OWLDataProperty> getEquivalentProperties(OWLDataProperty property) throws OWLReasonerException {
+        Set<OWLDataProperty> results = new HashSet<OWLDataProperty>();
+        for (OWLDataPropertyExpression subProp : property.getEquivalentProperties(onts)){
+            if (subProp instanceof OWLDataProperty){
+                results.add((OWLDataProperty)subProp);
+            }
+        }
+        return results;
+    }
+
 
     public Set<Set<OWLDescription>> getDomains(OWLObjectProperty property) throws OWLReasonerException {
         throw new NotImplementedException();
@@ -132,10 +149,6 @@ public class ToldPropertyHierarchyReasoner implements OWLPropertyReasoner {
     }
 
     public Set<Set<OWLDataProperty>> getDescendantProperties(OWLDataProperty property) throws OWLReasonerException {
-        throw new NotImplementedException();
-    }
-
-    public Set<OWLDataProperty> getEquivalentProperties(OWLDataProperty property) throws OWLReasonerException {
         throw new NotImplementedException();
     }
 

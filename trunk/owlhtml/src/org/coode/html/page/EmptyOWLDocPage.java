@@ -12,6 +12,8 @@ import org.coode.owl.mngr.ServerConstants;
 import org.semanticweb.owl.model.OWLObject;
 
 import java.io.PrintWriter;
+import java.io.PrintStream;
+import java.io.StringWriter;
 import java.net.URL;
 
 /**
@@ -104,7 +106,15 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
         while (cause.getCause() != null){
             cause = cause.getCause();
         }
-        addError(cause.getMessage());
+        String msg = cause.getMessage();
+        if (msg == null){
+            StringWriter stringWriter = new StringWriter();
+            final PrintWriter printWriter = new PrintWriter(stringWriter);
+            cause.printStackTrace(printWriter);
+            printWriter.flush();
+            msg = stringWriter.toString();
+        }
+        addError(msg);
     }
 
     protected final OWLHTMLServer getServer() {
