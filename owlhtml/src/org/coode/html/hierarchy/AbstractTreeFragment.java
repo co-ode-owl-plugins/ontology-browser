@@ -180,8 +180,6 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
         roots.clear();
         parent2ChildMap.clear();
         child2ParentMap.clear();
-//        toldChildren.clear();
-//        toldParents.clear();
     }
 
     public void setComparator(Comparator<OWLObject> comparator){
@@ -196,6 +194,10 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
 
             roots.addAll(parent2ChildMap.keySet());
             roots.removeAll(child2ParentMap.keySet());
+
+            if (roots.isEmpty()){
+                roots.add(focus); // this can happen for properties as there is currently no top property
+            }
         }
         catch (OWLReasonerException e) {
             logger.error("Error generating mini hierarchy", e);

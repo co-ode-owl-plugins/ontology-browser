@@ -44,18 +44,22 @@ public class HierarchyRootDoclet<O extends OWLNamedObject> extends AbstractHiera
         clear();
         getModel().setFocus(object);
         if (object != null){
+            HierarchyNodeDoclet<O> lastPath = null;
             HierarchyNodeDoclet<O> lastPathContainingFocusedNode = null;
             for (O root : getModel().getRoots()){
-                HierarchyNodeDoclet<O> subDoclet = new HierarchyNodeDoclet<O>(getServer(), getModel());
-                subDoclet.setAutoExpandEnabled(isAutoExpandSubs());
-                subDoclet.setUserObject(root);
-                addDoclet(subDoclet);
+                lastPath = new HierarchyNodeDoclet<O>(getServer(), getModel());
+                lastPath.setAutoExpandEnabled(isAutoExpandSubs());
+                lastPath.setUserObject(root);
+                addDoclet(lastPath);
                 if (getModel().pathContainsNode(root, getModel().getFocus())){
-                    lastPathContainingFocusedNode = subDoclet;
+                    lastPathContainingFocusedNode = lastPath;
                 }
             }
             if(lastPathContainingFocusedNode != null){ // only show subs for the last branch
                 lastPathContainingFocusedNode.setShowSubs(getServer().getProperties().isSet(ServerConstants.OPTION_RENDER_SUBS));
+            }
+            else if (lastPath != null) { // the node only appears in the hierarchy due to an equivalence
+                lastPath.setShowSubs(getServer().getProperties().isSet(ServerConstants.OPTION_RENDER_SUBS));
             }
             else{
                 throw new RuntimeException("Root: cannot find a path containing the node: " + object);

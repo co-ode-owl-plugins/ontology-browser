@@ -81,6 +81,10 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static final URL HOME_PAGE;
 
+    public static final String EQUIV_CHAR = "\u2261";
+    public static final String SUBCLASS_CHAR = "\u2286";
+
+
     static {
         try {
             HOME_PAGE = new URL("http://code.google.com/p/ontology-browser/");

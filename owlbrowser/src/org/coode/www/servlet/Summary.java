@@ -233,7 +233,15 @@ public class Summary extends AbstractOntologyServerServlet {
             ren = summaryRenderer;
         }
         else if (owlObject instanceof OWLDataProperty){
-            ren = new OWLDataPropertySummaryHTMLPage(server);
+            OWLDataPropertySummaryHTMLPage summaryRenderer = new OWLDataPropertySummaryHTMLPage(server);
+
+            if (server.getProperties().isSet(OWLHTMLConstants.OPTION_SHOW_MINI_HIERARCHIES)){
+                final OWLPropertyHierarchyTreeFragment treeModel = new OWLPropertyHierarchyTreeFragment(server, server.getPropertyHierarchyProvider());
+                HierarchyRootDoclet<OWLDataProperty> hierarchyRenderer = new HierarchyRootDoclet<OWLDataProperty>(server, treeModel);
+                hierarchyRenderer.setAutoExpandEnabled(expand);
+                summaryRenderer.setOWLHierarchyRenderer(hierarchyRenderer);
+            }
+            ren = summaryRenderer;
         }
         else if (owlObject instanceof OWLIndividual){
             ren = new OWLIndividualSummaryHTMLPage(server);

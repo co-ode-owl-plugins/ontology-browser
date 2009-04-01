@@ -7,9 +7,7 @@ import org.coode.html.OWLHTMLServer;
 import org.semanticweb.owl.inference.OWLPropertyReasoner;
 import org.semanticweb.owl.inference.OWLReasonerAdapter;
 import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLProperty;
-import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -63,37 +61,45 @@ public class OWLPropertyHierarchyTreeFragment<O extends OWLProperty> extends Abs
         }
     }
 
-    protected void generateAncestorHierarchy(O node, int depth) throws OWLReasonerException {
-//        if (depth < getAncestorLevels()){
-//            // search for supers of the node
-//            Set<O> namedSupers = new HashSet<O>();
-//
-//            if (node instanceof OWLObjectProperty){
-//                Set<OWLObjectProperty> supers = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLObjectProperty)node));
-//                for (OWLObjectProperty s : supers) {
-//                    namedSupers.add((O) s);
-//                }
-//            }
-//            else if (node instanceof OWLDataProperty){
-//                Set<OWLDataProperty> supers = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLDataProperty)node));
-//                for (OWLDataProperty s : supers) {
-//                    namedSupers.add((O) s);
-//                }
-//            }
-//
-//            if (namedSupers.isEmpty()){
-//                addRoot(node);
-//            }
-//            else{
-//                // recurse
-//                for (O namedSuper : namedSupers){
-//                    addChild(node, namedSuper);
-//                    generateAncestorHierarchy(namedSuper, depth+1);
-//                }
-//            }
-//        }
-//        else{
-//            addRoot(node);
-//        }
+    protected void generateAncestorHierarchy(O prop, int depth) throws OWLReasonerException {
+        if (depth < getAncestorLevels()){
+            Set<O> namedSupers = new HashSet<O>();
+            Set<O> equivs = new HashSet<O>();
+
+            if (prop instanceof OWLObjectProperty){
+                Set<OWLObjectProperty> subs = OWLReasonerAdapter.flattenSetOfSets(hp.getSuperProperties((OWLObjectProperty)prop));
+                for (OWLObjectProperty sub : subs) {
+                    namedSupers.add((O) sub);
+                }
+                Set<OWLObjectProperty> equivObjProps = hp.getEquivalentProperties((OWLObjectProperty)prop);
+                for (OWLObjectProperty equiv : equivObjProps) {
+                    equivs.add((O) equiv);
+                }
+            }
+            else if (prop instanceof OWLDataProperty){
+                Set<OWLDataProperty> subs = OWLReasonerAdapter.flattenSetOfSets(hp.getSuperProperties((OWLDataProperty)prop));
+                for (OWLDataProperty sub : subs) {
+                    namedSupers.add((O) sub);
+                }
+                Set<OWLDataProperty> equivObjProps = hp.getEquivalentProperties((OWLDataProperty)prop);
+                for (OWLDataProperty equiv : equivObjProps) {
+                    equivs.add((O) equiv);
+                }
+            }
+
+            // check equivalent classes for a named member of an intersection
+            for (O equiv : equivs){
+                    namedSupers.remove((O)equiv);
+                    addSynonym(prop, (O)equiv);
+                    generateAncestorHierarchy((O)equiv, depth+1);
+            }
+
+            namedSupers.remove(prop);
+
+            for (O namedSuper : namedSupers){
+                addChild(prop, namedSuper);
+                generateAncestorHierarchy(namedSuper, depth+1);
+            }
+        }
     }
 }
