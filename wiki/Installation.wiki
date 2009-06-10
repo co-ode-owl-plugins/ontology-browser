@@ -12,7 +12,7 @@ The following instructions are for installing and running on linux under tomcat5
 
   * Install <a href="http://tomcat.apache.org/">tomcat</a>. The browser has been run in a tomcat 5.5 and tomcat 6 environment.
   * Download the <a href="http://code.google.com/p/ontology-browser/downloads/list">war file</a> or build it from scratch (see below)
-  * Copy the war file into the `CATALINA_HOME/webapps/` folder and rename it to "browser"
+  * Rename the war file to "browser.war" and copy into the `CATALINA_HOME/webapps/` folder
   * You might want to consider giving the tomcat jvm a reasonable amount of memory if you will be browsing lots of medium-large ontologies. Use the java parameter -Xmx1000M wherever you start tomcat. Try 500M-2500M depending on the size of your machine.
   * Start tomcat
   * The browser should be available off the root of your tomcat server (typically by default this will be `http://yourmachine.com:8080/browser/`) 
