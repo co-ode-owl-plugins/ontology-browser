@@ -1,10 +1,13 @@
 package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLServer;
+import org.coode.html.page.EmptyOWLDocPage;
 import org.coode.html.doclet.HTMLDoclet;
+import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.owl.mngr.OWLDescriptionParser;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.QueryType;
+import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.doclet.ReasonerResultsDoclet;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owl.model.OWLDescription;
@@ -64,8 +67,33 @@ public class QueryReasoner extends AbstractOntologyServerServlet {
 
     protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
         final String query = params.get(PARAM_QUERY);
-        OWLDescription classDescription = parse(params.get(PARAM_EXPRESSION), params.get(PARAM_SYNTAX), server);
-        return new ReasonerResultsDoclet(QueryType.valueOf(query), classDescription, server);
+        final String expression = params.get(PARAM_EXPRESSION);
+        final OWLDescription classDescription = parse(expression, params.get(PARAM_SYNTAX), server);
+
+        if (OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(getReturnFormat())){
+            return new ReasonerResultsDoclet(QueryType.valueOf(query), classDescription, server);
+        }
+        else{
+            EmptyOWLDocPage page = new EmptyOWLDocPage(server);
+            page.addDoclet(new AbstractOWLDocDoclet(server){
+
+                protected void renderHeader(URL pageURL, PrintWriter out) {
+                    out.println("<h1>");
+                    out.println(expression);
+                    out.println("</h1>");
+                }
+
+                protected void renderFooter(URL pageURL, PrintWriter out) {
+                    // do nothing
+                }
+
+                public String getID() {
+                    return "doclet.expression.header";
+                }
+            });
+            page.addDoclet(new ReasonerResultsDoclet(QueryType.valueOf(query), classDescription, server));
+            return page;
+        }
     }
 
     protected Map<String, Set<String>> getRequiredParams(OWLServer server) {

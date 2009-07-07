@@ -50,6 +50,8 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     protected Logger logger = Logger.getLogger(getClass().getName());
 
+    private String format = null;
+
     protected abstract void handleXMLRequest(Map<String, String> params,
                                              OWLHTMLServer server, URL servletURL,
                                              PrintWriter out) throws OntServerException;
@@ -71,7 +73,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     private void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final String sessionLabel = request.getParameter(OWLHTMLConstants.PARAM_SESSION_LABEL);
-        final String format = request.getParameter(OntologyBrowserConstants.PARAM_FORMAT);
+        format = request.getParameter(OntologyBrowserConstants.PARAM_FORMAT);
 
         final URL pageURL = buildRequestURL(request);
 
@@ -117,6 +119,11 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         finally{
             response.getWriter().flush();
         }
+    }
+
+
+    protected String getReturnFormat(){
+        return format;
     }
 
 
