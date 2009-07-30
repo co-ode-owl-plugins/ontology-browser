@@ -116,9 +116,7 @@ public class OWLServerImpl implements OWLServer {
 
         this.properties = new ServerPropertiesImpl();
 
-        properties.set(ServerConstants.OPTION_REN, ServerConstants.RENDERER_FRAG);
-        properties.set(ServerConstants.OPTION_RENDER_SUBS, ServerConstants.TRUE);
-        properties.set(ServerConstants.OPTION_LABEL_URI, OWLRDFVocabulary.RDFS_LABEL.getURI().toString());
+        setupProperties();
 
         properties.addPropertyChangeListener(propertyChangeListener);
 
@@ -126,6 +124,19 @@ public class OWLServerImpl implements OWLServer {
             setActiveOntology(getTopOfImportsTree(mngr.getOntologies()));
         }
     }
+
+
+    private void setupProperties() {
+        List<String> renderers = new ArrayList<String>();
+        renderers.add(ServerConstants.RENDERER_FRAG);
+        renderers.add(ServerConstants.RENDERER_LABEL);
+        properties.setAllowedValues(ServerConstants.OPTION_REN, renderers);
+
+        properties.set(ServerConstants.OPTION_REN, ServerConstants.RENDERER_FRAG);
+        properties.set(ServerConstants.OPTION_RENDER_SUBS, ServerConstants.TRUE);
+        properties.set(ServerConstants.OPTION_LABEL_URI, OWLRDFVocabulary.RDFS_LABEL.getURI().toString());
+    }
+
 
     private OWLOntology getTopOfImportsTree(Set<OWLOntology> ontologies) {
         // @@TODO implement
