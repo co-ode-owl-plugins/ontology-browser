@@ -58,7 +58,7 @@ public class OptionsTableDoclet extends AbstractHTMLDoclet {
             else{
                 renderSelector(option, value, allowedValues, out);
             }
-            out.println("<input style='display: none;' type='submit' /></form></td>");
+            out.println("<input type='submit' value='ok' /></form></td>");
             out.println("<td style='width: 150px;'></td>");
             out.println("</tr>");
         }
@@ -68,12 +68,12 @@ public class OptionsTableDoclet extends AbstractHTMLDoclet {
 
 
     private void renderEditor(String option, String value, PrintWriter out) {
-        out.println("<input style='width:100%;' name='" + option + "' type='text' value='" + value + "' />");
+        out.println("<input style='width:80%;' name='" + option + "' type='text' value='" + value + "' />");
     }
 
 
     private void renderSelector(String option, String value, List<String> allowedValues, PrintWriter out) {
-        out.println("<select style='width:100%;' name='" + option + "'>");
+        out.println("<select style='width:80%;' name='" + option + "'>");
         for (String allowedValue : allowedValues){
             out.print("<option value='" + allowedValue + "'");
             if (allowedValue.equals(value)){
