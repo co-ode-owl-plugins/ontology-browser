@@ -1,1 +1,0 @@
-java -jar owlhtml.jar -t $*
