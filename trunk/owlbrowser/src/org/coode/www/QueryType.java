@@ -4,12 +4,13 @@
 package org.coode.www;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.owl.util.ModelUtil;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owlapi.inference.OWLReasoner;
+import org.semanticweb.owlapi.inference.OWLReasonerException;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,20 +24,26 @@ import java.util.Set;
  * Date: Feb 6, 2008<br><br>
  */
 public enum QueryType {
-    equivalents, subclasses, descendants, superclasses, ancestors, instances;
+    equivalents,
+    subclasses,
+    descendants,
+    superclasses,
+    ancestors,
+    instances;
 
     private Logger logger = Logger.getLogger(QueryType.class);
 
-    public Set<OWLEntity> getResults(OWLDescription descr, OWLHTMLServer server) {
+    public Set<OWLEntity> getResults(OWLClassExpression descr, OWLHTMLKit kit) {
         Set<OWLEntity> results = new HashSet<OWLEntity>();
         try{
-            final OWLReasoner r = server.getOWLReasoner();
+            final OWLReasoner r = kit.getOWLServer().getOWLReasoner();
+            final OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
             switch(this){
                 case equivalents: results.addAll(r.getEquivalentClasses(descr)); break;
-                case subclasses: results.addAll(ModelUtil.filterClasses(r.getSubClasses(descr), server)); break;
-                case descendants: results.addAll(ModelUtil.filterClasses(r.getDescendantClasses(descr), server)); break;
-                case superclasses: results.addAll(ModelUtil.filterClasses(r.getSuperClasses(descr), server)); break;
-                case ancestors: results.addAll(ModelUtil.filterClasses(r.getAncestorClasses(descr), server)); break;
+                case subclasses: results.addAll(ModelUtil.filterClasses(r.getSubClasses(descr), df)); break;
+                case descendants: results.addAll(ModelUtil.filterClasses(r.getDescendantClasses(descr), df)); break;
+                case superclasses: results.addAll(ModelUtil.filterClasses(r.getSuperClasses(descr), df)); break;
+                case ancestors: results.addAll(ModelUtil.filterClasses(r.getAncestorClasses(descr), df)); break;
                 case instances: results.addAll(r.getIndividuals(descr, false)); break;
             }
         }

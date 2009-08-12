@@ -3,9 +3,9 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.OWLAxiomVisitorAdapter;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,8 +23,8 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
 
     private UsageVisibilityVisitor usageVisibilityVisitor = new UsageVisibilityVisitor();
 
-    public UsageDoclet(OWLHTMLServer server) {
-        super("Usage", ElementsDoclet.Format.list, server);
+    public UsageDoclet(OWLHTMLKit kit) {
+        super("Usage", ElementsDoclet.Format.list, kit);
     }
 
     protected Collection<OWLAxiom> getElements(Set<OWLOntology> onts) {
@@ -47,11 +47,13 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
         private boolean showUsage;
         private OWLEntity currentEntity;
 
-        public void visit(OWLEntityAnnotationAxiom axiom) {
-            showUsage = false;
+        public void visit(OWLAnnotationAssertionAxiom axiom) {
+            if (axiom.getSubject() instanceof IRI && axiom.getSubject().equals(currentEntity.getIRI())){
+                showUsage = false;
+            }
         }
 
-        public void visit(OWLSubClassAxiom ax) {
+        public void visit(OWLSubClassOfAxiom ax) {
             if (ax.getSubClass() instanceof OWLClass){
                 if (ax.getSubClass().equals(currentEntity)){
                     showUsage = false; // we'll already be showing it as superclasses
@@ -63,7 +65,7 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
         }
 
         public void visit(OWLDisjointClassesAxiom ax) {
-            for (OWLDescription d : ax.getDescriptions()){
+            for (OWLClassExpression d : ax.getClassExpressions()){
                 if (!(d instanceof OWLClass)){
                     return;
                 }
@@ -73,7 +75,7 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
 
 
         public void visit(OWLEquivalentClassesAxiom ax) {
-            for (OWLDescription d : ax.getDescriptions()){
+            for (OWLClassExpression d : ax.getClassExpressions()){
                 if (d.equals(currentEntity)){
                     showUsage = false;
                     return;
@@ -94,7 +96,7 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
         }
 
 
-        public void visit(OWLSameIndividualsAxiom ax) {
+        public void visit(OWLSameIndividualAxiom ax) {
             visitNaryIndAxiom(ax);
         }
 

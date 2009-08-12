@@ -1,9 +1,9 @@
 package org.coode.html.cloud;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.url.URLScheme;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -43,33 +43,33 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class IndividualsByUsageCloud extends AbstractOWLCloudModel<OWLIndividual>{
+public class IndividualsByUsageCloud extends AbstractOWLCloudModel<OWLNamedIndividual>{
 
     private URLScheme urlScheme;
 
-    public IndividualsByUsageCloud(OWLHTMLServer server) {
-        super(server.getNameRenderer());
-        this.urlScheme = server.getURLScheme();
-        setOntologies(server.getVisibleOntologies());
+    public IndividualsByUsageCloud(OWLHTMLKit kit) {
+        super(kit.getOWLServer().getShortFormProvider());
+        this.urlScheme = kit.getURLScheme();
+        setOntologies(kit.getVisibleOntologies());
     }
 
-    public Set<OWLIndividual> getEntities() {
-        Set<OWLIndividual> owlClasses = new HashSet<OWLIndividual>();
+    public Set<OWLNamedIndividual> getEntities() {
+        Set<OWLNamedIndividual> entities = new HashSet<OWLNamedIndividual>();
         for (OWLOntology ont : getOntologies()) {
-            owlClasses.addAll(ont.getReferencedIndividuals());
+            entities.addAll(ont.getReferencedIndividuals());
         }
-        return owlClasses;
+        return entities;
     }
 
-    public URL getURL(OWLIndividual entity) {
-        return urlScheme.getURLForNamedObject(entity);
+    public URL getURL(OWLNamedIndividual entity) {
+        return urlScheme.getURLForOWLObject(entity);
     }
 
     public String getTitle() {
         return CloudType.indusage.getRendering();
     }
 
-    protected int calculateValue(OWLIndividual entity) {
+    protected int calculateValue(OWLNamedIndividual entity) {
         int count = 0;
         for (OWLOntology ont : getOntologies()){
             count += ont.getReferencingAxioms(entity).size();

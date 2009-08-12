@@ -1,8 +1,7 @@
 package org.coode.html.url;
 
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.net.URL;
 
@@ -21,7 +20,7 @@ import java.net.URL;
  * Interface describing the set of methods required to create unique URL references for ontology entities.
  * Can be used for static or dynamic sites depending on the implementation
  */
-public interface URLScheme extends NamedObjectURLRenderer {
+public interface URLScheme extends OWLObjectURLRenderer {
 
     NamedObjectType getType(URL url);
 
@@ -29,8 +28,6 @@ public interface URLScheme extends NamedObjectURLRenderer {
 
     URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type);
     
-    String getFilenameForOntologyIndex(OWLOntology ont, NamedObjectType type);
-
     void setAdditionalLinkArguments(String s);
 
     void clearAdditionalLinkArguments();
@@ -39,5 +36,5 @@ public interface URLScheme extends NamedObjectURLRenderer {
 
     URL getURLForRelativePage(String pageRelativeToBase);
 
-    URL getURLForAbsolutePage(URL pageURL);    
+    URL getURLForAbsolutePage(URL pageURL);
 }

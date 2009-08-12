@@ -1,6 +1,7 @@
 package org.coode.owl.mngr.impl;
 
-import org.semanticweb.owl.model.OWLOntologyURIMapper;
+import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,18 +41,21 @@ import java.net.URI;
  * URI Mapper for OWL file loading that takes the top level folder of a URI
  * and uses this as a base to find imported ontologies - so that a set of ontologies
  * can be published together in a single location on the web
+ *
  */
-public class URIBaseURIMapper implements OWLOntologyURIMapper {
+public class BaseURIMapper implements OWLOntologyIRIMapper {
 
     private URI baseURI;
 
-    public URIBaseURIMapper(URI baseURI) {
+
+    public BaseURIMapper(URI baseURI) {
         this.baseURI = baseURI;
     }
 
-    public URI getPhysicalURI(URI ontologyURI) {
-        String base = getBase(ontologyURI).toString();
-        String ontologyName = ontologyURI.toString().substring(base.length());
+
+    public URI getPhysicalURI(IRI ontologyIRI) {
+        String base = getBase(ontologyIRI).toString();
+        String ontologyName = ontologyIRI.toString().substring(base.length());
         URI loc = URI.create(baseURI + ontologyName);
 
         try {
@@ -78,9 +82,9 @@ public class URIBaseURIMapper implements OWLOntologyURIMapper {
         return null;
     }
 
-    private URI getBase(URI uri){
+    private URI getBase(IRI iri){
         String baseURIStr = "";
-        String uriParts[] = uri.toString().split("/");
+        String uriParts[] = iri.toString().split("/");
         for (int i=0; i<uriParts.length-1; i++){
             baseURIStr += uriParts[i] + "/";
         }

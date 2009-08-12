@@ -1,13 +1,5 @@
 package org.coode.www.mngr;
 
-import org.coode.owl.mngr.OWLServer;
-import org.coode.suggestor.api.DLReasoner;
-import org.coode.suggestor.impl.OWLDLReasoner;
-import org.coode.suggestor.impl.SuggestorManagerImpl;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.model.OWLOntologyChange;
-
-import java.util.List;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -39,33 +31,33 @@ import java.util.List;
  * Bio Health Informatics Group<br>
  * Date: Aug 15, 2007<br><br>
  */
-public class SuggestorManagerAdapter extends SuggestorManagerImpl {
-
-    private OWLServer server;
-
-    private DLReasoner reasoner;
-
-    public SuggestorManagerAdapter(OWLServer server) {
-        super(server.getOWLOntologyManager());
-        this.server = server;
-    }
-
-    public DLReasoner getReasoner() {
-        if (reasoner == null){
-            reasoner = new OWLDLReasoner(server.getOWLOntologyManager()){
-                protected OWLReasoner getOWLReasoner() {
-                    return server.getOWLReasoner();
-                }
-
-                public String getId() {
-                    return "FaCT++";
-                }
-
-                public void ontologiesChanged(List<? extends OWLOntologyChange> changes) {
-                    //do nothing
-                }
-            };
-        }
-        return reasoner;
-    }
+public class SuggestorManagerAdapter {// extends SuggestorManagerImpl {
+//
+//    private OWLServer kit;
+//
+//    private DLReasoner reasoner;
+//
+//    public SuggestorManagerAdapter(OWLServer kit) {
+//        super(kit.getOWLOntologyManager());
+//        this.kit = kit;
+//    }
+//
+//    public DLReasoner getReasoner() {
+//        if (reasoner == null){
+//            reasoner = new OWLDLReasoner(kit.getOWLOntologyManager()){
+//                protected OWLReasoner getOWLReasoner() {
+//                    return kit.getOWLReasoner();
+//                }
+//
+//                public String getId() {
+//                    return "FaCT++";
+//                }
+//
+//                public void ontologiesChanged(List<? extends OWLOntologyChange> changes) {
+//                    //do nothing
+//                }
+//            };
+//        }
+//        return reasoner;
+//    }
 }

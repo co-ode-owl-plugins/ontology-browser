@@ -1,6 +1,8 @@
 package org.coode.html.util;
 
 import org.apache.log4j.Logger;
+import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.impl.OWLHTMLConstants;
 
 import java.net.URL;
 import java.util.*;
@@ -54,10 +56,10 @@ public class URLUtils {
         List<String> targetPath = new ArrayList<String>(Arrays.asList(target.getPath().split("/")));
 
         // strip off empty path elements at the start of each path
-        if (!currentPath.isEmpty() && currentPath.get(0).equals("")){
+        if (!currentPath.isEmpty() && currentPath.get(0).length() == 0){
             currentPath.remove(0);
         }
-        if (!targetPath.isEmpty() && targetPath.get(0).equals("")){
+        if (!targetPath.isEmpty() && targetPath.get(0).length() == 0){
             targetPath.remove(0);
         }
 
@@ -76,17 +78,18 @@ public class URLUtils {
         StringBuffer relativeURL = new StringBuffer();
 
         int currentSubCount = currentPath.size();
-        if (!current.getPath().endsWith("/")){ // then there must be a file at the end
+        if (!current.getPath().endsWith(OWLHTMLConstants.SLASH)){ // then there must be a file at the end
             currentSubCount--;
         }
 
         for (int i=0; i<currentSubCount; i++){
-            relativeURL.append("../");
+            relativeURL.append("..");
+            relativeURL.append(OWLHTMLConstants.SLASH);
         }
 
         for (String s: targetPath){
             relativeURL.append(s);
-            relativeURL.append("/");
+            relativeURL.append(OWLHTMLConstants.SLASH);
         }
 
 //        if (relativeURL.equals("")){
@@ -97,15 +100,16 @@ public class URLUtils {
         int len = relativeURL.length();
         if (len > 0 &&
             relativeURL.charAt(len -1)=='/' &&
-            !target.getPath().endsWith("/")){
+            !target.getPath().endsWith(OWLHTMLConstants.SLASH)){
             relativeURL.deleteCharAt(len -1);
         }
 
         if (target.getQuery() != null){
             if (len == 0){
-                relativeURL.append("./"); // otherwise it won't work
+                relativeURL.append("."); // otherwise it won't work
+                relativeURL.append(OWLHTMLConstants.SLASH);
             }
-            relativeURL.append("?");
+            relativeURL.append(OWLHTMLConstants.START_QUERY);
             relativeURL.append(target.getQuery());
         }
 
@@ -117,17 +121,34 @@ public class URLUtils {
         }
     }
 
-    public static Map<String, String> getParams(URL url) {
-        Map<String, String> paramMap = new HashMap<String, String>();
+    public static Map<OWLHTMLParam, String> getParams(URL url) {  
+        Map<OWLHTMLParam, String> paramMap = new HashMap<OWLHTMLParam, String>();
         String query = url.getQuery();
         if (query != null){
-            String[] params = query.split("&");
+            String[] params = query.split(OWLHTMLConstants.PARAM_SEP);
             for (String param : params) {
-                String[] pair = param.split("=");
-                paramMap.put(pair[0], pair[1]);
+                String[] pair = param.split(OWLHTMLConstants.EQUALS);
+                paramMap.put(OWLHTMLParam.valueOf(pair[0]), pair[1]);
             }
         }
         return paramMap;
 
+    }
+
+
+    public static String renderParams(Map<OWLHTMLParam, String> map) {
+        StringBuilder sb = new StringBuilder();
+        for (OWLHTMLParam param : map.keySet()){
+            if (sb.length() == 0){
+                sb.append(OWLHTMLConstants.START_QUERY);
+            }
+            else{
+                sb.append(OWLHTMLConstants.PARAM_SEP);
+            }
+            sb.append(param.toString());
+            sb.append(OWLHTMLConstants.EQUALS);
+            sb.append(map.get(param));
+        }
+        return sb.toString();
     }
 }

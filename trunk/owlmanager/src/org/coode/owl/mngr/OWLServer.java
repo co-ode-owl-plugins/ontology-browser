@@ -1,13 +1,10 @@
 package org.coode.owl.mngr;
 
-import org.coode.owl.mngr.impl.ToldPropertyHierarchyReasoner;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLPropertyReasoner;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.util.ToldClassHierarchyReasoner;
+import org.semanticweb.owlapi.inference.OWLReasoner;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
+import org.semanticweb.owlapi.expression.OWLEntityChecker;
 
 import java.net.URI;
 import java.util.Comparator;
@@ -27,25 +24,20 @@ import java.util.Set;
  */
 public interface OWLServer {
 
-    String getID();
-
     OWLOntology getActiveOntology();
-
-    OWLOntology getOntology(URI uri);
-
-    Set<OWLOntology> getOntologies();
-
     /**
      * Get the ontologies used for reasoning
      * @return imports closure of the current active ontology (plus meta ontology if it exists)
      */
     Set<OWLOntology> getActiveOntologies();
 
+    Set<OWLOntology> getOntologies();
+
     void setActiveOntology(OWLOntology ont);
 
     void loadOntology(URI ontPhysicalURI) throws OWLOntologyCreationException;
 
-    void removeOntology(URI ontURI);
+    void removeOntology(OWLOntology ont);
 
     void clearOntologies();
 
@@ -57,15 +49,20 @@ public interface OWLServer {
 
     OWLReasoner getOWLReasoner();
 
-    ToldClassHierarchyReasoner getClassHierarchyProvider();
-
-    ToldPropertyHierarchyReasoner getPropertyHierarchyProvider();
+    HierarchyProvider<OWLClass> getClassHierarchyProvider();
+    HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider();
+    HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider();
+//    HierarchyProvider<OWLAnnotationProperty> getAnnotationPropertyHierarchyProvider();
 
     Comparator<OWLObject> getComparator();
 
-    OWLNamedObjectFinder getFinder();
+    OWLEntityFinder getFinder();
 
-    NamedObjectShortFormProvider getNameRenderer();
+    OWLEntityChecker getOWLEntityChecker();
+
+    ShortFormProvider getShortFormProvider();
+
+    OntologyIRIShortFormProvider getOntologyShortFormProvider();
 
 
     /**
@@ -73,13 +70,13 @@ public interface OWLServer {
      * @param type one of
      * @return
      */
-    OWLDescriptionParser getDescriptionParser(String type);
+    OWLClassExpressionParser getClassExpressionParser(String type);
 
-    void registerDescriptionParser(String syntax, OWLDescriptionParser parser);
+    void registerDescriptionParser(String syntax, OWLClassExpressionParser parser);
 
     Set<String> getSupportedSyntaxes();
 
-    ServerProperties getProperties();
+    ServerPropertiesAdapter<ServerProperty> getProperties();
 
 
     /**
@@ -89,4 +86,6 @@ public interface OWLServer {
     void clear();
 
     void dispose();
+
+    boolean isDead();
 }

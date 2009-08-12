@@ -3,10 +3,10 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLPropertyExpression;
-import org.semanticweb.owl.model.OWLPropertyRange;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
+import org.semanticweb.owlapi.model.OWLPropertyRange;
 
 import java.util.Collection;
 import java.util.Set;
@@ -21,8 +21,8 @@ import java.util.Set;
  */
 public class RangesDoclet<O extends OWLPropertyExpression> extends AbstractOWLElementsDoclet<O, OWLPropertyRange> {
 
-    public RangesDoclet(OWLHTMLServer server) {
-        super("Ranges", Format.list, server);
+    public RangesDoclet(OWLHTMLKit kit) {
+        super("Ranges", Format.list, kit);
     }
 
     protected Collection<OWLPropertyRange> getElements(Set<OWLOntology> onts) {

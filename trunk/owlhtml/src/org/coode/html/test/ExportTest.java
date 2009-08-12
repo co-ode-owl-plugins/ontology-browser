@@ -2,11 +2,9 @@ package org.coode.html.test;
 
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.OntologyExporter;
-import org.coode.html.impl.OWLHTMLServerImpl;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.coode.html.impl.OWLHTMLKitImpl;
 
 import java.io.File;
 import java.net.URI;
@@ -49,11 +47,10 @@ public class ExportTest extends TestCase {
     public void testPerformExport(){
         try {
             URL base = new URL("http://purl.uniprot.org/core/");
-            OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-            OWLHTMLServer server = new OWLHTMLServerImpl("core", manager, base);
+            OWLHTMLKit kit = new OWLHTMLKitImpl("core", base);
             URI source = URI.create("file:////Users/drummond/Work/CO-ODE/Ontologies/uniprot/core.owl");
-            server.loadOntology(source);
-            OntologyExporter exporter = new OntologyExporter(server);
+            kit.getOWLServer().loadOntology(source);
+            OntologyExporter exporter = new OntologyExporter(kit);
             File target = new File(URI.create("file:////Users/drummond/temp/testowldoc"));
             File index = exporter.export(target);
             logger.info("index created at: " + index);

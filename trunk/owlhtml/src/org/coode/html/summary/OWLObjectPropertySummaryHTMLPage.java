@@ -1,8 +1,8 @@
 package org.coode.html.summary;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.*;
-import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * Author: Nick Drummond<br>
@@ -16,19 +16,19 @@ import org.semanticweb.owl.model.OWLObjectProperty;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLObjectPropertySummaryHTMLPage extends AbstractSummaryHTMLPage<OWLObjectProperty> {
+public class OWLObjectPropertySummaryHTMLPage extends AbstractOWLEntitySummaryHTMLPage<OWLObjectProperty> {
 
-    public OWLObjectPropertySummaryHTMLPage(OWLHTMLServer server) {
-        super(server);
+    public OWLObjectPropertySummaryHTMLPage(OWLHTMLKit kit) {
+        super(kit);
 
-        addDoclet(new AnnotationsDoclet<OWLObjectProperty>(server));
-        addDoclet(new PropertyCharacteristicsDoclet<OWLObjectProperty>(server));
-        addDoclet(new DomainsDoclet<OWLObjectProperty>(server));
-        addDoclet(new RangesDoclet<OWLObjectProperty>(server));
-        addDoclet(new InversesDoclet(server));
-        addDoclet(new AssertedSuperpropertiesDoclet<OWLObjectProperty>(server));
-        addDoclet(new AssertedEquivpropertiesDoclet<OWLObjectProperty>(server));
-        addDoclet(new DisjointPropertiesDoclet<OWLObjectProperty>(server));
-        addDoclet(new UsageDoclet<OWLObjectProperty>(server));
+        addDoclet(new AnnotationsDoclet<OWLObjectProperty>(kit));
+        addDoclet(new PropertyCharacteristicsDoclet<OWLObjectProperty>(kit));
+        addDoclet(new DomainsDoclet<OWLObjectProperty>(kit));
+        addDoclet(new RangesDoclet<OWLObjectProperty>(kit));
+        addDoclet(new InversesDoclet(kit));
+        addDoclet(new AssertedSuperpropertiesDoclet<OWLObjectProperty>(kit));
+        addDoclet(new AssertedEquivpropertiesDoclet<OWLObjectProperty>(kit));
+        addDoclet(new DisjointPropertiesDoclet<OWLObjectProperty>(kit));
+        addDoclet(new UsageDoclet<OWLObjectProperty>(kit));
     }
 }

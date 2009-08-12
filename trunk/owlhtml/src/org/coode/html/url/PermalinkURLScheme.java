@@ -3,17 +3,16 @@
 */
 package org.coode.html.url;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import edu.unika.aifb.rdf.api.syntax.RDFParser;
 
 /**
  * Author: Nick Drummond<br>
@@ -30,24 +29,24 @@ public class PermalinkURLScheme implements URLScheme {
     private static final Logger logger = Logger.getLogger(PermalinkURLScheme.class);
 
     private URLScheme baseScheme;
-    private OWLHTMLServer server;
+    private OWLHTMLKit kit;
 
 
-    public PermalinkURLScheme(URLScheme baseScheme, OWLHTMLServer server) {
+    public PermalinkURLScheme(URLScheme baseScheme, OWLHTMLKit kit) {
         this.baseScheme = baseScheme;
-        this.server = server;
+        this.kit = kit;
     }
 
     private URL append(URL url) {
-        if (server.getCurrentLabel() != null){
+        if (kit.getCurrentLabel() != null){
             String link = url.toString();
-            if (!link.contains("?")){
-                link += "?";
+            if (!link.contains(OWLHTMLConstants.START_QUERY)){
+                link += OWLHTMLConstants.START_QUERY;
             }
             else{
-                link += "&";
+                link += OWLHTMLConstants.PARAM_SEP;
             }
-            link += OWLHTMLConstants.PARAM_SESSION_LABEL + "=" + server.getCurrentLabel();
+            link += OWLHTMLParam.session + OWLHTMLConstants.EQUALS + kit.getCurrentLabel();
 
             try {
                 return new URL(link);
@@ -59,12 +58,12 @@ public class PermalinkURLScheme implements URLScheme {
         return url;
     }
 
-    public URL getURLForNamedObject(OWLNamedObject object) {
-        return append(baseScheme.getURLForNamedObject(object));
+    public URL getURLForOWLObject(OWLObject entity) {
+        return append(baseScheme.getURLForOWLObject(entity));
     }
 
-    public OWLNamedObject getNamedObjectForURL(URL url) {
-        return baseScheme.getNamedObjectForURL(url);
+    public OWLObject getOWLObjectForURL(URL url) {
+        return baseScheme.getOWLObjectForURL(url);
     }
 
     public NamedObjectType getType(URL url) {
@@ -77,10 +76,6 @@ public class PermalinkURLScheme implements URLScheme {
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         return append(baseScheme.getURLForOntologyIndex(ont, type));
-    }
-
-    public String getFilenameForOntologyIndex(OWLOntology ont, NamedObjectType type) {
-        return baseScheme.getFilenameForOntologyIndex(ont, type);
     }
 
     public void setAdditionalLinkArguments(String s) {

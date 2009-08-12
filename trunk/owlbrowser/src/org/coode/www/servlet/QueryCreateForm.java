@@ -1,21 +1,5 @@
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
-import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.page.EmptyOWLDocPage;
-import org.coode.owl.mngr.OWLDescriptionParser;
-import org.coode.owl.mngr.OWLServer;
-import org.coode.www.doclet.SimpleQueryFormDoclet;
-import org.coode.www.exception.OntServerException;
-import org.semanticweb.owl.model.OWLDescription;
-
-import java.io.PrintWriter;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -50,50 +34,50 @@ import java.util.Set;
  * PARAMS:
  * syntax - eg "qd", "man" - from ServerConstants
  */
-public class QueryCreateForm extends AbstractOntologyServerServlet{
-
-    private static final String PARAM_EXPRESSION = "expression";
-    private static final String PARAM_SYNTAX = "syntax";
-
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
-        // no implementation
-    }
-
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        final String syntax = params.get(PARAM_SYNTAX);
-        final String expression = params.get(PARAM_EXPRESSION);
-
-        OWLDescription descr = server.getOWLOntologyManager().getOWLDataFactory().getOWLThing();
-
-        if (expression != null){
-
-            OWLDescriptionParser dParser = server.getDescriptionParser(syntax);
-            try {
-                descr = dParser.parse(expression);
-            }
-            catch (ParseException e) {
-                throw new OntServerException(e);
-            }
-        }
-
-        final SimpleQueryFormDoclet formDoclet = new SimpleQueryFormDoclet(server);
-
-        EmptyOWLDocPage<OWLDescription> formRenderer = new EmptyOWLDocPage<OWLDescription>(server);
-        formRenderer.setTitle("Query Form");
-        formRenderer.addOnLoad("setAddVisible(true); sendQuery(getCurrentQuery());");
-
-        formRenderer.addDoclet(formDoclet);
-        formRenderer.setUserObject(descr);
-//                    if (!QUICK_DESCRIPTION_SYNTAX.equals(syntax)){
-//                                formDoclet.setSuggestorManager(session.getSuggestorManager());
-//                    }
-        return formRenderer;
-    }
-
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
-        Map<String, Set<String>> params = new HashMap<String,  Set<String>>();
-        params.put(PARAM_EXPRESSION, Collections.singleton("<owl description>"));
-        params.put(PARAM_SYNTAX, server.getSupportedSyntaxes());
-        return params;
-    }
+public class QueryCreateForm{// extends AbstractOntologyServerServlet{
+//
+//    private static final String PARAM_EXPRESSION = "expression";
+//    private static final String PARAM_SYNTAX = "syntax";
+//
+//    protected void handleXMLRequest(Map<String, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
+//        // no implementation
+//    }
+//
+//    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+//        final String syntax = params.get(PARAM_SYNTAX);
+//        final String expression = params.get(PARAM_EXPRESSION);
+//
+//        OWLClassExpression descr = kit.getOWLOntologyManager().getOWLDataFactory().getOWLThing();
+//
+//        if (expression != null){
+//
+//            OWLClassExpressionParser dParser = kit.getClassExpressionParser(syntax);
+//            try {
+//                descr = dParser.parse(expression);
+//            }
+//            catch (ParseException e) {
+//                throw new OntServerException(e);
+//            }
+//        }
+//
+//        final SimpleQueryFormDoclet formDoclet = new SimpleQueryFormDoclet(kit);
+//
+//        EmptyOWLDocPage<OWLClassExpression> formRenderer = new EmptyOWLDocPage<OWLClassExpression>(kit);
+//        formRenderer.setTitle("Query Form");
+//        formRenderer.addOnLoad("setAddVisible(true); sendQuery(getCurrentQuery());");
+//
+//        formRenderer.addDoclet(formDoclet);
+//        formRenderer.setUserObject(descr);
+////                    if (!QUICK_DESCRIPTION_SYNTAX.equals(syntax)){
+////                                formDoclet.setSuggestorManager(session.getSuggestorManager());
+////                    }
+//        return formRenderer;
+//    }
+//
+//    protected Map<String, Set<String>> getRequiredParams(OWLServer kit) {
+//        Map<String, Set<String>> params = new HashMap<String,  Set<String>>();
+//        params.put(PARAM_EXPRESSION, Collections.singleton("<owl description>"));
+//        params.put(PARAM_SYNTAX, kit.getSupportedSyntaxes());
+//        return params;
+//    }
 }

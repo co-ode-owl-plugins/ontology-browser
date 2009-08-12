@@ -3,15 +3,18 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.URLScheme;
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.owl.util.ModelUtil;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Author: Nick Drummond<br>
@@ -29,56 +32,45 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
 
     private String title = "Contents";
 
-    public OverallContentsDoclet(OWLHTMLServer server, String title) {
-        super(server);
+    public OverallContentsDoclet(OWLHTMLKit kit, String title) {
+        super(kit);
         this.title = title;
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
 
-        OWLHTMLServer server = getServer();
+        OWLHTMLKit kit = getHTMLGenerator();
 
-        int classTotal = 0;
-        int objPropTotal = 0;
-        int dataPropTotal = 0;
-        int indTotal = 0;
+        final Set<OWLOntology> visibleOntologies = kit.getVisibleOntologies();
+        final URLScheme urlScheme = kit.getURLScheme();
 
-        final Set<OWLOntology> visibleOntologies = server.getVisibleOntologies();
-        final URLScheme urlScheme = server.getURLScheme();
-
-        for (OWLOntology ont : visibleOntologies){
-            classTotal += ont.getReferencedClasses().size();
-            objPropTotal += ont.getReferencedObjectProperties().size();
-            dataPropTotal += ont.getReferencedDataProperties().size();
-            indTotal += ont.getReferencedIndividuals().size();
-        }
 
         renderBoxStart(title, out);
         out.println("<ul>");
         if (visibleOntologies.size() > 1){
             out.println("<li>");
             renderLink("All " + NamedObjectType.ontologies.getPluralRendering(),
-                       server.getURLScheme().getURLForIndex(NamedObjectType.ontologies),
+                       kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies),
                        OWLHTMLConstants.LinkTarget.subnav, null,
-                    isSingleFrameNavigation(), pageURL, out);
+                       isSingleFrameNavigation(), pageURL, out);
         }
         else{
-            final OWLOntology activeOnt = server.getActiveOntology();
-            String ontID = server.getNameRenderer().getShortForm(activeOnt);
-            final URL ontURL = urlScheme.getURLForNamedObject(activeOnt);
+            final OWLOntology activeOnt = kit.getOWLServer().getActiveOntology();
+            String ontID = kit.getOWLServer().getOntologyShortFormProvider().getShortForm(activeOnt);
+            final URL ontURL = urlScheme.getURLForOWLObject(activeOnt);
             out.println("<li>");
             renderLink(ontID, ontURL, OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
         }
-        out.println("<li>");
-        String indexAllURL = server.getProperties().get(OWLHTMLConstants.OPTION_INDEX_ALL_URL);
-        renderLink(OWLHTMLConstants.ALL_ENTITIES_TITLE,
-                   server.getURLScheme().getURLForRelativePage(indexAllURL),
-                   OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);
+        out.println("</li>");
 
-        renderIndexLink(classTotal, NamedObjectType.classes, pageURL, out);
-        renderIndexLink(objPropTotal, NamedObjectType.objectproperties, pageURL, out);
-        renderIndexLink(dataPropTotal, NamedObjectType.dataproperties, pageURL, out);
-        renderIndexLink(indTotal, NamedObjectType.individuals, pageURL, out);
+        for (NamedObjectType type : NamedObjectType.entitySubtypes()){
+            Set<OWLEntity> allEntities = new HashSet<OWLEntity>();
+            for (OWLOntology ont : visibleOntologies){
+                allEntities.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ont));
+            }
+
+            renderIndexLink(allEntities.size(), type, pageURL, out);
+        }
 
         out.println("</ul>");
         renderBoxEnd(title, out);
@@ -90,9 +82,9 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
 
     private void renderIndexLink(int count, NamedObjectType type, URL pageURL, PrintWriter out) {
         if (count > 0){
-            URL indexURL = getServer().getURLScheme().getURLForIndex(type);
+            URL indexURL = getHTMLGenerator().getURLScheme().getURLForIndex(type);
             out.println("<li>");
-            String label = "All " + type.getPluralRendering();
+            String label = type.getPluralRendering();
             renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);
             out.println(" (" + count + ")");
             out.println("</li>");

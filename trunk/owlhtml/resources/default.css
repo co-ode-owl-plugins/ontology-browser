@@ -11,7 +11,7 @@ img.button {position: relative; top: 8px;}
 
 /* keywords - default cyan */
 .keyword {color: #007777;}
-.comment {color: #777777;}
+.comment {color: green;}
 .some {color: #770077;}
 .only {color: #770077;}
 .value {color: #770077;}

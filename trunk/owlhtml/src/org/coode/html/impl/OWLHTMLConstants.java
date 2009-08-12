@@ -55,8 +55,6 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static final String INDEX_HTML = "index" + DEFAULT_EXTENSION;
 
-    public static final String ALL_ENTITIES_TITLE = "All Resources";
-
     public static final String ONTOLOGY_HTML = "ontology" + DEFAULT_EXTENSION;
     public static final String CONTENTS_HTML = "contents" + DEFAULT_EXTENSION;
     public static final String DL_QUERY_HTML = "dlquery/";
@@ -75,14 +73,17 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final int MAX_SESSIONS = 4;
     public static final int SESSION_TIMEOUT = 5;
 
-    public static final String PARAM_SESSION_LABEL = "session";
-
     public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
 
     public static final URL HOME_PAGE;
 
     public static final String EQUIV_CHAR = "\u2261";
     public static final String SUBCLASS_CHAR = "\u2286";
+
+    public static final String START_QUERY = "?";
+    public static final String EQUALS = "=";
+    public static final String PARAM_SEP = "&";
+    public static final String SLASH = "/";
 
 
     static {
@@ -103,16 +104,7 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String SHOW_FRAMES = "frames";
 
 
-    // keys for options on the server
-    public static final String OPTION_CONTENT_WINDOW = "content-window";
-    public static final String OPTION_INDEX_ALL_URL = "index-all-url";
-    public static final String OPTION_DEFAULT_CSS = "css";
-    public static final String OPTION_FRAMES = "frames";
-    public static final String OPTION_REASONER_ENABLED = "reasoner.enabled";
-    public static final String OPTION_SHOW_MINI_HIERARCHIES = "option_show_mini_hierarchies";    
-    public static final String OPTION_SHOW_INFERRED_HIERARCHIES = "option_show_inferred_hierarchies";    
-    public static final String OPTION_RENDER_PERMALINK = "option_render_permalink";
-    public static final String OPTION_RENDER_ONTOLOGY_SUMMARY_CLOUD = "option_render_ontology_summary_cloud";
+    // keys for options on the kit
 
     // non-external values
     public static final String DEFAULT_INDEX_ALL_URL = "index-all" + DEFAULT_EXTENSION;

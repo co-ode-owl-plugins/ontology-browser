@@ -39,64 +39,15 @@ import java.util.List;
  */
 public class ServerConstants {
 
-    public static final String OPTION_CREATE_TOP_ONTOLOGY = "option_create_top_ontology";
-    public static final String OPTION_REASONER = "option_reasoner";
-    public static final String OPTION_DIG_REASONER_URL = "option_reasoner_url"; // for DIG reasoners
-    public static final String OPTION_RENDER_SUB_EXPAND_LINKS = "option_render_sub_expand_links";
-    public static final String OPTION_RENDER_SUBS = "option_render_subs";
-    public static final String OPTION_REN = "ren";
-    public static final String OPTION_LABEL_URI = "option_label_uri";
-    public static final String OPTION_LABEL_LANG = "option_label_lang";
-    public static final String OPTION_ACTIVE_ONT = "option_active_ont";
-
-
-    public static final String TRUE = "true";
-    public static final String FALSE = "false";
-
     // supported reasoners
     public static final String PELLET = "pellet";
     public static final String FACTPLUSPLUS = "factPlusPlus";
     public static final String DIG = "DIG";
 
-    // supported syntaxes
-//    public static final String QUICK_DESCRIPTION_SYNTAX = "qd";
-//    public static final String MANCHESTER_SYNTAX = "man";
-//    public static final String SIMPLE_MANCHESTER_SYNTAX = "simple";
-
     public static enum Syntax {man, simple, qd}
-
-    // simple restriction vocabulary - allowed for simple descriptions
-    public static final String INTERSECTION = "and";
-    public static final String SOME = "some";
-    public static final String ONLY = "only";
-    public static final String HAS_VALUE = "hasValue";
-    public static final String OPEN_PAREN = "(";
-    public static final String CLOSE_PAREN = ")";
 
     // supported renderers
     public static final String RENDERER_FRAG = "frag";
     public static final String RENDERER_LABEL = "label";
 
-
-
-    public static final List<String> RESTRICTION_TYPES = new ArrayList<String>();
-
-
-    public static final String TOP_ONTOLOGY_URI_STR = "http://www.co-ode.org/ontologies/meta.owl";
-    public static URI TOP_ONTOLOGY_URI;
-    public static URI RELATED_TO;
-
-    static {
-        RESTRICTION_TYPES.add(SOME);
-        RESTRICTION_TYPES.add(ONLY);
-        RESTRICTION_TYPES.add(HAS_VALUE);
-        
-        try {
-            TOP_ONTOLOGY_URI = new URI(TOP_ONTOLOGY_URI_STR);
-            RELATED_TO = new URI(TOP_ONTOLOGY_URI_STR + "#relatedTo");
-        }
-        catch (URISyntaxException e) {
-            Logger.getLogger(ServerConstants.class.getName()).error(e);
-        }
-    }
 }

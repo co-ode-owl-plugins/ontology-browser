@@ -21,7 +21,7 @@ function option(opt, value, successpage, optionsURL){
 
         xmlHttpOption.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-        var attrs = opt + "=" + value;
+        var attrs =  "property=" + opt + "&value=" + value;
 
         onSuccess = successpage;
 

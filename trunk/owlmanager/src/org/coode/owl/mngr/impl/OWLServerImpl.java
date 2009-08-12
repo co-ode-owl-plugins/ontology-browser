@@ -3,12 +3,13 @@ package org.coode.owl.mngr.impl;
 import org.apache.log4j.Logger;
 import org.coode.owl.mngr.*;
 import org.coode.owl.util.OWLObjectComparator;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.NonMappingOntologyURIMapper;
-import org.semanticweb.owl.util.ToldClassHierarchyReasoner;
-import org.semanticweb.owl.vocab.OWLRDFVocabulary;
+import org.semanticweb.owlapi.inference.OWLReasoner;
+import org.semanticweb.owlapi.inference.OWLReasonerException;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.*;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+import org.semanticweb.owlapi.expression.OWLEntityChecker;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
 import uk.ac.manchester.cs.owl.inference.dig11.DIGReasoner;
 import uk.ac.manchester.cs.owl.inference.dig11.DIGReasonerPreferences;
 
@@ -36,106 +37,63 @@ public class OWLServerImpl implements OWLServer {
 
     private OWLOntologyManager mngr;
 
+    private OWLOntology activeOntology;
+
     private OWLReasoner reasoner;
 
-    private NamedObjectShortFormProvider renderer;
+    private ShortFormProvider shortFormProvider;
+
+    private OntologyIRIShortFormProvider uriShortFormProvider;
+
+    private OWLEntityChecker owlEntityChecker;
+
+    private CachingBidirectionalShortFormProvider nameCache;
+
+    private OWLEntityFinder finder;
 
     private OWLObjectComparator<OWLObject> comparator;
 
-    private OWLNamedObjectFinder finder;
+    private Map<String, OWLClassExpressionParser> parsers = new HashMap<String, OWLClassExpressionParser>();
 
-    private Map<String, OWLDescriptionParser> parsers = new HashMap<String, OWLDescriptionParser>();
+    private HierarchyProvider<OWLClass> classHierarchyProvider;
+    private HierarchyProvider<OWLObjectProperty> objectPropertyHierarchyProvider;
+    private HierarchyProvider<OWLDataProperty> dataPropertyHierarchyProvider;
 
-    private ToldClassHierarchyReasoner toldClassHierarchyReasoner;
+    private Map<URI, OWLOntologyIRIMapper> baseMapper = new HashMap<URI, OWLOntologyIRIMapper>();
 
-    private ToldPropertyHierarchyReasoner toldPropertyHierarchyReasoner;
-
-    private Map<URI, OWLOntologyURIMapper> baseMapper = new HashMap<URI, OWLOntologyURIMapper>();
-
-    private final ServerProperties properties;
+    private ServerPropertiesAdapter<ServerProperty> properties;
 
     private final Set<OWLServerListener> listeners = new HashSet<OWLServerListener>();
 
     private boolean serverIsDead = false;
 
-    private String id;
-
-    private OWLOntology activeOntology;
-
-    private OWLOntology topOntology;
 
     private PropertyChangeListener propertyChangeListener = new PropertyChangeListener(){
 
         public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-            String property = propertyChangeEvent.getPropertyName();
+            try{
+                ServerProperty p = ServerProperty.valueOf(propertyChangeEvent.getPropertyName());
 
-            if (ServerConstants.OPTION_REASONER.equals(property) && reasoner != null){
-                try {
-                    reasoner.dispose();
-                }
-                catch (OWLReasonerException e) {
-                    logger.error("Failed to dispose of current reasoner: " + reasoner.getClass(), e);
-                }
-                reasoner = null;
+                handlePropertyChange(p, propertyChangeEvent.getNewValue());
             }
-            else if (ServerConstants.OPTION_REN.equals(property) ||
-                     ServerConstants.OPTION_LABEL_LANG.equals(property)){
-                resetRendererCache();
-            }
-            else if (ServerConstants.OPTION_LABEL_URI.equals(property)){
-                try {
-                    new URI((String)propertyChangeEvent.getNewValue());
-                    resetRendererCache();
-                }
-                catch (URISyntaxException e) {
-                    // invalid URI - do not change the renderer
-                }
+            catch(IllegalArgumentException e){
+                // do nothing - a user property
             }
         }
     };
 
 
-    private void resetRendererCache() {
-        if (renderer != null){
-            renderer.dispose();
-            renderer = null;
-        }
-        if (finder != null){
-            finder.dispose();
-            finder = null;
-        }
-    }
-
-
-    public OWLServerImpl(String id, OWLOntologyManager mngr) {
-        this.id = id;
+    public OWLServerImpl(OWLOntologyManager mngr) {
         this.mngr = mngr;
 
         // always default to trying the URI of the ontology
-        mngr.addURIMapper(new NonMappingOntologyURIMapper());
-
-        this.properties = new ServerPropertiesImpl();
-
-        setupProperties();
-
-        properties.addPropertyChangeListener(propertyChangeListener);
+        mngr.addIRIMapper(new NonMappingOntologyIRIMapper());
 
         if (!mngr.getOntologies().isEmpty()){
             setActiveOntology(getTopOfImportsTree(mngr.getOntologies()));
         }
     }
 
-
-    private void setupProperties() {
-        List<String> renderers = new ArrayList<String>();
-        renderers.add(ServerConstants.RENDERER_FRAG);
-        renderers.add(ServerConstants.RENDERER_LABEL);
-        properties.setAllowedValues(ServerConstants.OPTION_REN, renderers);
-
-        properties.set(ServerConstants.OPTION_REN, ServerConstants.RENDERER_FRAG);
-        properties.set(ServerConstants.OPTION_RENDER_SUBS, ServerConstants.TRUE);
-        properties.set(ServerConstants.OPTION_LABEL_URI, OWLRDFVocabulary.RDFS_LABEL.getURI().toString());
-    }
 
 
     private OWLOntology getTopOfImportsTree(Set<OWLOntology> ontologies) {
@@ -145,15 +103,9 @@ public class OWLServerImpl implements OWLServer {
 
     public void loadOntology(URI physicalURI) throws OWLOntologyCreationException {
 
-        Set<OWLOntology> existingLoadedOntologies = mngr.getOntologies();
-
         handleCommonBaseMappers(physicalURI);
 
         OWLOntology ont = mngr.loadOntologyFromPhysicalURI(physicalURI);
-
-        if (properties.isSet(ServerConstants.OPTION_CREATE_TOP_ONTOLOGY)){
-            handleTopOntology(existingLoadedOntologies);
-        }
 
         if (getActiveOntology() == null){
             setActiveOntology(ont); // the active ontology is always the first that was loaded
@@ -162,19 +114,18 @@ public class OWLServerImpl implements OWLServer {
 
     /**
      * Required because there are currently no listeners on the manager to tell this has happened
-     * @param ontURI
      */
-    public void removeOntology(URI ontURI) {
-        if (getActiveOntology().getURI().equals(ontURI)){
+    public void removeOntology(OWLOntology ont) {
+        if (getActiveOntology().equals(ont)){
             setActiveOntology(null);
         }
 
-        mngr.removeOntology(ontURI);
+        mngr.removeOntology(ont);
 
         if (getActiveOntology() == null){
-            final Set<OWLOntology> visibleOntologies = getActiveOntologies();
-            if (!visibleOntologies.isEmpty()){
-                setActiveOntology(visibleOntologies.iterator().next());
+            final Set<OWLOntology> activeOntologies = getActiveOntologies();
+            if (!activeOntologies.isEmpty()){
+                setActiveOntology(activeOntologies.iterator().next());
             }
         }
 
@@ -183,11 +134,10 @@ public class OWLServerImpl implements OWLServer {
 
     public void clearOntologies() {
         activeOntology = null;
-        topOntology = null;
 
         if (mngr != null){
             for (OWLOntology ont : mngr.getOntologies()){
-                mngr.removeOntology(ont.getURI());
+                mngr.removeOntology(ont);
             }
         }
 
@@ -202,21 +152,39 @@ public class OWLServerImpl implements OWLServer {
         listeners.remove(l);
     }
 
-    public ServerProperties getProperties() {
+    public ServerPropertiesAdapter<ServerProperty> getProperties() {
+        if (properties == null){
+
+            properties = new ServerPropertiesAdapterImpl<ServerProperty>(new ServerPropertiesImpl());
+
+            // make sure the deprecated names are updated on a load
+            properties.addDeprecatedNames(ServerProperty.generateDeprecatedNamesMap());
+
+            List<String> renderers = new ArrayList<String>();
+            renderers.add(ServerConstants.RENDERER_FRAG);
+            renderers.add(ServerConstants.RENDERER_LABEL);
+            properties.setAllowedValues(ServerProperty.optionRenderer, renderers);
+
+            properties.set(ServerProperty.optionRenderer, ServerConstants.RENDERER_FRAG);
+            properties.set(ServerProperty.optionLabelUri, OWLRDFVocabulary.RDFS_LABEL.getURI().toString());
+            properties.set(ServerProperty.optionReasoner, ServerConstants.PELLET);
+            properties.set(ServerProperty.optionLabelLang, "");
+
+
+            properties.addPropertyChangeListener(propertyChangeListener);
+        }
         return properties;
     }
 
-    public String getID() {
-        return id;
-    }
 
     public OWLOntology getActiveOntology() {
         if (activeOntology == null){
-            String ont = getProperties().get(ServerConstants.OPTION_ACTIVE_ONT);
+            String ont = getProperties().get(ServerProperty.optionActiveOnt);
             if (ont != null){
-                URI activeOntURI = URI.create(ont);
-                if (activeOntURI != null){
-                    activeOntology = getOntology(activeOntURI);
+                // @@TODO handle anonymous ontologies
+                IRI activeOntIRI = IRI.create(ont);
+                if (activeOntIRI != null){
+                    activeOntology = mngr.getOntology(activeOntIRI);
                 }
             }
         }
@@ -228,15 +196,16 @@ public class OWLServerImpl implements OWLServer {
             activeOntology = ont;
 
             if (ont != null){
-                getProperties().set(ServerConstants.OPTION_ACTIVE_ONT, ont.getURI().toString());
+                // @@TODO handle anonymous ontologies
+                getProperties().set(ServerProperty.optionActiveOnt, ont.getOntologyID().getOntologyIRI().toString());
             }
             else{
-                getProperties().remove(ServerConstants.OPTION_ACTIVE_ONT);
+                getProperties().remove(ServerProperty.optionActiveOnt);
             }
 
-
-
             clear();
+
+            resetAllowedLabels();
 
             for (OWLServerListener l : listeners){
                 l.activeOntologyChanged(ont);
@@ -244,20 +213,13 @@ public class OWLServerImpl implements OWLServer {
         }
     }
 
+
     public Set<OWLOntology> getOntologies() {
-        Set<OWLOntology> allOnts = new HashSet<OWLOntology>(mngr.getOntologies());
-        if (topOntology != null){
-            allOnts.remove(topOntology);
-        }
-        return allOnts;
+        return mngr.getOntologies();
     }
 
     public Set<OWLOntology> getActiveOntologies() {
-        Set<OWLOntology> closure = new HashSet<OWLOntology>(mngr.getImportsClosure(getActiveOntology()));
-        if (topOntology != null){
-            closure.add(topOntology);
-        }
-        return closure;
+        return mngr.getImportsClosure(getActiveOntology());
     }
 
     public OWLOntologyManager getOWLOntologyManager() {
@@ -265,12 +227,12 @@ public class OWLServerImpl implements OWLServer {
     }
 
     public synchronized OWLReasoner getOWLReasoner() {
-        if (reasoner == null && !serverIsDead()){
+        if (reasoner == null && !this.isDead()){
             try {
                 logger.debug("Creating reasoner");
                 OWLReasoner reasoner = null;
 
-                final String selectedReasoner = properties.get(ServerConstants.OPTION_REASONER);
+                final String selectedReasoner = properties.get(ServerProperty.optionReasoner);
 
                 if (ServerConstants.PELLET.equals(selectedReasoner)){
                     logger.debug("  pellet");
@@ -286,7 +248,7 @@ public class OWLServerImpl implements OWLServer {
                 }
                 else if (ServerConstants.DIG.equals(selectedReasoner)){
                     logger.debug("  DIG");
-                    DIGReasonerPreferences.getInstance().setReasonerURL(new URL(properties.get(ServerConstants.OPTION_DIG_REASONER_URL)));
+                    DIGReasonerPreferences.getInstance().setReasonerURL(new URL(properties.get(ServerProperty.optionReasonerUrl)));
                     reasoner = new DIGReasoner(mngr);
                 }
 
@@ -303,71 +265,106 @@ public class OWLServerImpl implements OWLServer {
         return reasoner;
     }
 
-    public ToldClassHierarchyReasoner getClassHierarchyProvider() {
-        if (toldClassHierarchyReasoner == null && !serverIsDead()){
-            toldClassHierarchyReasoner = new ToldClassHierarchyReasoner(mngr);
-            toldClassHierarchyReasoner.loadOntologies(getActiveOntologies());
-            toldClassHierarchyReasoner.classify();
+    public HierarchyProvider<OWLClass> getClassHierarchyProvider() {
+        if (classHierarchyProvider == null && !this.isDead()){
+            classHierarchyProvider = new ClassHierarchyProvider(this);
         }
-        return toldClassHierarchyReasoner;
+        return classHierarchyProvider;
     }
 
-    public ToldPropertyHierarchyReasoner getPropertyHierarchyProvider() {
-        if (toldPropertyHierarchyReasoner == null && !serverIsDead()){
-            toldPropertyHierarchyReasoner = new ToldPropertyHierarchyReasoner(mngr);
-            try {
-                toldPropertyHierarchyReasoner.loadOntologies(getActiveOntologies());
-                toldPropertyHierarchyReasoner.classify();
-            }
-            catch (OWLReasonerException e) {
-                logger.error("Could not get property hierarchy provider", e);
-            }
+    public HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider() {
+        if (objectPropertyHierarchyProvider == null && !this.isDead()){
+            objectPropertyHierarchyProvider = new OWLObjectPropertyHierarchyProvider(this);
         }
-        return toldPropertyHierarchyReasoner;
+        return objectPropertyHierarchyProvider;
+    }
+
+    public HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider() {
+        if (dataPropertyHierarchyProvider == null && !this.isDead()){
+            dataPropertyHierarchyProvider = new OWLDataPropertyHierarchyProvider(this);
+        }
+        return dataPropertyHierarchyProvider;
     }
 
     public Comparator<OWLObject> getComparator() {
-        if (comparator == null && !serverIsDead()){
+        if (comparator == null && !this.isDead()){
             comparator = new OWLObjectComparator<OWLObject>(this);
         }
         return comparator;
     }
 
-    public OWLNamedObjectFinder getFinder() {
-        if (finder == null && !serverIsDead()){
-            finder = new OWLNamedObjectFinderImpl(new OWLNameMapperImpl(this), this);
+    public OWLEntityFinder getFinder() {
+        if (finder == null && !this.isDead()){
+            finder = new OWLEntityFinderImpl(getNameCache(), this);
         }
         return finder;
     }
 
-    public NamedObjectShortFormProvider getNameRenderer() {
-        if (renderer == null && !serverIsDead()){
-            String ren = properties.get(ServerConstants.OPTION_REN);
-            if (ren.equals(ServerConstants.RENDERER_FRAG)){
-                renderer = new FragmentShortFormProvider();
-            }
-            else if (ren.equals(ServerConstants.RENDERER_LABEL)){
-                String lang = properties.get(ServerConstants.OPTION_LABEL_LANG);
-                if ("".equals(lang)){
-                    lang = null;
-                }
-                renderer = new LanguageLabelShortFormProvider(this,
-                                                              URI.create(properties.get(ServerConstants.OPTION_LABEL_URI)),
-                                                              lang);
-            }
+
+    public OWLEntityChecker getOWLEntityChecker() {
+        if (owlEntityChecker == null && !this.isDead()){
+            owlEntityChecker = new ShortFormEntityChecker(getNameCache());
         }
-        return renderer;
+        return owlEntityChecker;
     }
 
 
-    public final OWLDescriptionParser getDescriptionParser(String type){
-        if (!serverIsDead()){
+    private CachingBidirectionalShortFormProvider getNameCache(){
+        if (nameCache == null){
+            nameCache = new CachingBidirectionalShortFormProvider(){
+                protected String generateShortForm(OWLEntity owlEntity) {
+                    return getShortFormProvider().getShortForm(owlEntity);
+                }
+            };
+            nameCache.rebuild(new ReferencedEntitySetProvider(getActiveOntologies()));
+        }
+        return nameCache;
+    }
+
+
+    public ShortFormProvider getShortFormProvider() {
+        if (shortFormProvider == null && !this.isDead()){
+            String ren = properties.get(ServerProperty.optionRenderer);
+            if (ren.equals(ServerConstants.RENDERER_FRAG)){
+                shortFormProvider = new SimpleShortFormProvider();
+            }
+            else if (ren.equals(ServerConstants.RENDERER_LABEL)){
+                String lang = properties.get(ServerProperty.optionLabelLang);
+                if ("".equals(lang)){
+                    lang = null;
+                }
+                OWLAnnotationProperty prop = mngr.getOWLDataFactory().getOWLAnnotationProperty(IRI.create(properties.get(ServerProperty.optionLabelUri)));
+                Map<OWLAnnotationProperty, List<String>> annot2LangMap = new HashMap<OWLAnnotationProperty, List<String>>();
+                annot2LangMap.put(prop, Collections.singletonList(lang));
+                shortFormProvider = new AnnotationValueShortFormProvider(Collections.singletonList(prop),
+                                                                         annot2LangMap,
+                                                                         new OWLOntologySetProvider(){
+                                                                             public Set<OWLOntology> getOntologies() {
+                                                                                 return getActiveOntologies();
+                                                                             }
+                                                                         });
+            }
+        }
+        return shortFormProvider;
+    }
+
+
+    public OntologyIRIShortFormProvider getOntologyShortFormProvider() {
+        if (uriShortFormProvider == null){
+            uriShortFormProvider = new OntologyIRIShortFormProvider();
+        }
+        return uriShortFormProvider;
+    }
+
+
+    public final OWLClassExpressionParser getClassExpressionParser(String type){
+        if (!this.isDead()){
             return parsers.get(type);
         }
         return null;
     }
 
-    public final void registerDescriptionParser(String syntax, OWLDescriptionParser parser) {
+    public final void registerDescriptionParser(String syntax, OWLClassExpressionParser parser) {
         parsers.put(syntax, parser);
     }
 
@@ -375,27 +372,6 @@ public class OWLServerImpl implements OWLServer {
         return parsers.keySet();
     }
 
-    public void clear() {
-        if (finder != null){
-            finder.dispose();
-            finder = null;
-        }
-
-        if (reasoner != null){
-            try {
-                reasoner.dispose();
-            }
-            catch (OWLReasonerException e) {
-                logger.error(e);
-            }
-            reasoner = null;
-        }
-
-        renderer = null;
-        comparator = null;
-        toldClassHierarchyReasoner = null;
-        toldPropertyHierarchyReasoner = null;
-    }
 
     public void dispose() {
 
@@ -410,13 +386,45 @@ public class OWLServerImpl implements OWLServer {
         serverIsDead = true;
     }
 
-    public OWLOntology getOntology(URI uri) {
-        for (OWLOntology ont : getOntologies()){
-            if (ont.getURI().equals(uri)){
-                return ont;
+
+    public boolean isDead() {
+        return serverIsDead;
+    }
+
+
+    public void clear() {
+        resetReasoner();
+        resetRendererCache();
+        comparator = null;
+    }
+
+
+    private void resetReasoner() {
+        if (reasoner != null){
+            try {
+                reasoner.dispose();
             }
+            catch (OWLReasonerException e) {
+                logger.error(e);
+            }
+            reasoner = null;
         }
-        return null;
+    }
+
+
+    private void resetRendererCache() {
+        if (shortFormProvider != null){
+            shortFormProvider.dispose();
+            shortFormProvider = null;
+        }
+        if (finder != null){
+            finder.dispose();
+            finder = null;
+        }
+        if (nameCache != null){
+            nameCache.dispose();
+            nameCache = null;
+        }
     }
 
 
@@ -432,90 +440,44 @@ public class OWLServerImpl implements OWLServer {
 
         if (baseURI != null){
             if (baseMapper.get(baseURI) == null){
-                final URIBaseURIMapper mapper = new URIBaseURIMapper(baseURI);
+                final BaseURIMapper mapper = new BaseURIMapper(baseURI);
                 baseMapper.put(baseURI, mapper);
-                mngr.addURIMapper(mapper);
+                mngr.addIRIMapper(mapper);
             }
         }
     }
 
 
-//    private void updateReasoner() {
-//        if (reasoner != null){
-//            try {
-//                reasoner.clearOntologies();
-//                reasoner.loadOntologies(getActiveOntologies());
-//                reasoner.classify();
-//            }
-//            catch (OWLReasonerException e) {
-//                logger.error(e);
-//            }
-//        }
-//    }
+    private void handlePropertyChange(ServerProperty p, Object newValue) {
 
-    protected boolean serverIsDead() {
-        return serverIsDead;
+        switch(p){
+            case optionReasoner:
+                resetReasoner();
+                break;
+            case optionRenderer:     // DROPTHROUGH
+            case optionLabelLang:
+                resetRendererCache();
+                break;
+            case optionLabelUri:
+                try {
+                    new URI((String)newValue);
+                    resetRendererCache();
+                }
+                catch (URISyntaxException e) {
+                    // invalid URI - do not change the renderer
+                }
+        }
     }
 
-
-    // called when new ontologies are loaded to add
-    private void handleTopOntology(Set<OWLOntology> existingLoadedOntologies) throws OWLOntologyCreationException {
-        try {
-            if (topOntology == null){
-                topOntology = createTopOntology();
-            }
-            Set<OWLOntology> newlyLoadedOntologies = new HashSet<OWLOntology>(mngr.getOntologies());
-            newlyLoadedOntologies.removeAll(existingLoadedOntologies);
-            List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-            for (OWLOntology newOnt : newlyLoadedOntologies){
-                changes.addAll(updateTopOntology(newOnt));
-            }
-            mngr.applyChanges(changes);
+    private void resetAllowedLabels() {
+        List<String> uriStrings = new ArrayList<String>();
+        Set<OWLAnnotationProperty> annotationProps = new HashSet<OWLAnnotationProperty>();
+        for (OWLOntology ont : getActiveOntologies()){
+            annotationProps.addAll(ont.getReferencedAnnotationProperties());
         }
-        catch (OWLOntologyChangeException e) {
-            throw new OWLOntologyCreationException(e);
+        for (OWLAnnotationProperty prop : annotationProps){
+            uriStrings.add(prop.getIRI().toString());
         }
-
-    }
-
-    /**
-     * Build the top level ontology we will send to the reasoner that will contain additional axioms to
-     * assist the application - eg a top level property etc
-     * @return
-     * @throws OWLOntologyCreationException
-     */
-    private OWLOntology createTopOntology() throws OWLOntologyCreationException {
-        OWLOntology top = mngr.createOntology(ServerConstants.TOP_ONTOLOGY_URI);
-        OWLDataFactory df = mngr.getOWLDataFactory();
-        OWLObjectProperty isRelatedTo = df.getOWLObjectProperty(ServerConstants.RELATED_TO);
-        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-
-        OWLConstant label = df.getOWLUntypedConstant("related to");
-        OWLAnnotation labelAnnot = df.getOWLConstantAnnotation(OWLRDFVocabulary.RDFS_LABEL.getURI(), label);
-        changes.add(new AddAxiom(top, df.getOWLEntityAnnotationAxiom(isRelatedTo, labelAnnot)));
-
-        try {
-            mngr.applyChanges(changes);
-        }
-        catch (OWLOntologyChangeException e) {
-            throw new OWLOntologyCreationException(e);
-        }
-        return top;
-    }
-
-
-    private List<OWLOntologyChange> updateTopOntology(OWLOntology newOnt) {
-        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-        OWLDataFactory df = mngr.getOWLDataFactory();
-
-        // make all root object properties subs of the top property
-        OWLObjectProperty isRelatedTo = df.getOWLObjectProperty(ServerConstants.RELATED_TO);
-        for (OWLObjectProperty p : newOnt.getReferencedObjectProperties()){
-            if (p.getSuperProperties(mngr.getOntologies()).isEmpty()){
-                changes.add(new AddAxiom(topOntology, df.getOWLSubObjectPropertyAxiom(p, isRelatedTo)));
-            }
-        }
-
-        return changes;
+        getProperties().setAllowedValues(ServerProperty.optionLabelUri, uriStrings);
     }
 }

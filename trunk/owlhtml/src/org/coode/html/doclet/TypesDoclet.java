@@ -3,10 +3,10 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import java.util.Collection;
 import java.util.Set;
@@ -19,13 +19,13 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Feb 5, 2008<br><br>
  */
-public class TypesDoclet extends AbstractOWLElementsDoclet<OWLIndividual, OWLDescription> {
+public class TypesDoclet extends AbstractOWLElementsDoclet<OWLNamedIndividual, OWLClassExpression> {
 
-    public TypesDoclet(OWLHTMLServer server) {
-        super("Types", Format.list, server);
+    public TypesDoclet(OWLHTMLKit kit) {
+        super("Types", Format.list, kit);
     }
 
-    protected Collection<OWLDescription> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLClassExpression> getElements(Set<OWLOntology> onts) {
         return getUserObject().getTypes(onts);
     }
 }

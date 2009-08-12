@@ -1,8 +1,8 @@
 package org.coode.html.renderer;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,18 +22,20 @@ import java.net.URL;
  */
 public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
 
-    private OWLHTMLServer server;
+    private OWLHTMLKit kit;
 
     private OWLHTMLConstants.LinkTarget linkTarget;
 
-    public OWLHTMLRenderer(OWLHTMLServer server) {
-        this.server = server;
+
+    public OWLHTMLRenderer(OWLHTMLKit kit) {
+        this.kit = kit;
     }
 
     public void render(OWLObject obj, URL pageURL, PrintWriter out){
-        OWLHTMLVisitor rendererVisitor = new OWLHTMLVisitor(server.getURLScheme(), server.getNameRenderer(), out);
-        rendererVisitor.setOntologies(server.getVisibleOntologies());
-        rendererVisitor.setActiveOntology(server.getActiveOntology());
+        OWLHTMLVisitor rendererVisitor = new OWLHTMLVisitor(kit.getURLScheme(),
+                                                            kit.getOWLServer().getShortFormProvider(), out);
+        rendererVisitor.setOntologies(kit.getVisibleOntologies());
+        rendererVisitor.setActiveOntology(kit.getOWLServer().getActiveOntology());
         rendererVisitor.setPageURL(pageURL);
         rendererVisitor.setContentTargetWindow(linkTarget);
         obj.accept(rendererVisitor);

@@ -1,7 +1,7 @@
 package org.coode.html.cloud;
 
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
 /*

@@ -1,14 +1,17 @@
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.mngr.OWLNamedObjectFinder;
+import org.coode.owl.mngr.OWLEntityFinder;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.io.PrintWriter;
 import java.net.URI;
@@ -43,57 +46,51 @@ public class Find extends AbstractOntologyServerServlet {
     private static final String WILDCARD = "*";
 
 
-    private static final String PARAM_TYPE = "type";
-    private static final String PARAM_INPUT = "input";
-    private static final String PARAM_URI = "uri";
-    private static final String PARAM_ONTOLOGY = "ontology";
-
-
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
-        Set<OWLNamedObject> results = getResults(params, server);
-        renderXMLResults(results, server, out);
+    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
+        Set<OWLEntity> results = getResults(params, kit.getOWLServer());
+        renderXMLResults(results, kit.getOWLServer(), out);
     }
 
 
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        Set<OWLNamedObject> results = getResults(params, server);
+    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        Set<OWLEntity> results = getResults(params, kit.getOWLServer());
         if (results.size() == 1){
             // just go directly to that page
             OWLNamedObject result = results.iterator().next();
-            throw new RedirectException(server.getURLScheme().getURLForNamedObject(result));
+            throw new RedirectException(kit.getURLScheme().getURLForOWLObject(result));
         }
         else{
             // show a list of matches
-            return createIndexRenderer("Find Results", results, server);
+            return createIndexRenderer("Find Results", results, kit);
         }
     }
 
 
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
-        Map<String, Set<String>> required = new HashMap<String, Set<String>>();
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
+        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
 //        required.put(PARAM_TYPE, NamedObjectType.getRenderings()); // should this be optional and default to entities
 //        required.put(PARAM_INPUT, Collections.singleton("<partial name>"));
         return required;
     }
 
 
-    private Set<OWLNamedObject> getResults(Map<String, String> params, OWLHTMLServer server) throws OntServerException {
+    private Set<OWLEntity> getResults(Map<OWLHTMLParam, String> params, OWLServer server) throws OntServerException {
 
-        String input = params.get(PARAM_INPUT);
-        String uri = params.get(PARAM_URI);
-        String paramOntology = params.get(PARAM_ONTOLOGY);
-        NamedObjectType type = NamedObjectType.valueOf(params.get(PARAM_TYPE));
+        String input = params.get(OWLHTMLParam.input);
+        String uri = params.get(OWLHTMLParam.uri);
+        String paramOntology = params.get(OWLHTMLParam.ontology);
+        NamedObjectType type = NamedObjectType.valueOf(params.get(OWLHTMLParam.type));
 
-        Set<OWLNamedObject> results = new HashSet<OWLNamedObject>();
+        Set<OWLEntity> results = new HashSet<OWLEntity>();
 
-        OWLNamedObjectFinder finder = server.getFinder();
+        OWLEntityFinder finder = server.getFinder();
         OWLOntology ont = getOntology(paramOntology, server);
 
         if (uri != null){
             try{
                 final URI entityURI = new URI(uri);
                 if (entityURI.isAbsolute()){
-                    results = new HashSet<OWLNamedObject>(finder.getOWLNamedObjects(entityURI, type, ont));
+                    results = new HashSet<OWLEntity>(finder.getOWLEntities(entityURI, type, ont));
                 }
             }
             catch(URISyntaxException e){
@@ -105,20 +102,21 @@ public class Find extends AbstractOntologyServerServlet {
                 input = input + WILDCARD;
             }
             if (input.length() > 0){
-                results.addAll(finder.getOWLNamedObjects("^" + input.replace(WILDCARD, ".*"), type, ont));
+                results.addAll(finder.getOWLEntities("^" + input.replace(WILDCARD, ".*"), type, ont));
             }
 
             if (results.isEmpty()){
-                results.addAll(finder.getOWLNamedObjects(".*" + input.replace(WILDCARD, ".*"), type, ont));
+                results.addAll(finder.getOWLEntities(".*" + input.replace(WILDCARD, ".*"), type, ont));
             }
         }
         return results;
     }
 
-    private OWLOntology getOntology(String ontStr, OWLHTMLServer server) throws OntServerException {
+    private OWLOntology getOntology(String ontStr, OWLServer server) throws OntServerException {
         if (ontStr != null){
             try {
-                return server.getOWLOntologyManager().getOntology(new URI(ontStr));
+                // @@TODO handle anonymous ontologies?
+                return server.getOWLOntologyManager().getOntology(IRI.create(new URI(ontStr)));
             }
             catch (URISyntaxException e) {
                 logger.error("Cannot find ontology for: " + ontStr, e);

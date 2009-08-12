@@ -3,7 +3,7 @@
 */
 package org.coode.www.page;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
@@ -25,21 +25,19 @@ import java.util.Set;
  */
 public class DLQueryHTMLPage extends EmptyOWLDocPage {
 
-    public static final String PARAM_EXPRESSION = "expression";
-
     private static final String DL_QUERY_AC_ID = "dlQuery";
 
     private String query;
 
     private AutocompleteDoclet acDoclet;
 
-    public DLQueryHTMLPage(OWLHTMLServer server) {
-        super(server);
+    public DLQueryHTMLPage(OWLHTMLKit kit) {
+        super(kit);
 
         setTitle(OntologyBrowserConstants.DL_QUERY_LABEL);
         
-        acDoclet = new AutocompleteDoclet(server, DL_QUERY_AC_ID, false);
-        acDoclet.setSubmitURL(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
+        acDoclet = new AutocompleteDoclet(kit, DL_QUERY_AC_ID, false);
+        acDoclet.setSubmitURL(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
         acDoclet.setSubmitName("query");
         acDoclet.setMultiword(true);
         acDoclet.setWidth("400px");
@@ -70,7 +68,7 @@ public class DLQueryHTMLPage extends EmptyOWLDocPage {
         this.query = query;
 
         // below is nasty because we have to know ID dlQuerySyntax (which is hardcoded in ACRenderer
-        final URL servletURL = getServer().getURLScheme().getBaseURL();
+        final URL servletURL = getHTMLGenerator().getURLScheme().getBaseURL();
 
         String jsAction = "sendQuery(getValueOfElementByID(\"" + DL_QUERY_AC_ID +
                 "\"), getValueOfElementByID(\"dlQuerySyntax\"), \"" + servletURL + "\")";
@@ -83,7 +81,7 @@ public class DLQueryHTMLPage extends EmptyOWLDocPage {
 
     public Set<URL> getRequiredJS() {
         Set<URL> js = super.getRequiredJS();
-        js.add(getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DL_QUERY));
+        js.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DL_QUERY));
         return js;
     }
 }

@@ -3,10 +3,10 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.hierarchy.TreeFragment;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.semanticweb.owl.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -20,17 +20,17 @@ import java.net.URL;
  * Bio Health Informatics Group<br>
  * Date: Feb 7, 2008<br><br>
  */
-public class HierarchyNodeDoclet<O extends OWLNamedObject> extends AbstractHierarchyNodeDoclet<O>{
+public class HierarchyNodeDoclet<O extends OWLEntity> extends AbstractHierarchyNodeDoclet<O>{
 
     private static final Logger logger = Logger.getLogger(HierarchyNodeDoclet.class);
 
 
-    public HierarchyNodeDoclet(OWLHTMLServer server, TreeFragment<O> model) {
-        super(server, model);
+    public HierarchyNodeDoclet(OWLHTMLKit kit, TreeFragment<O> model) {
+        super(kit, model);
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        renderNode(getUserObject(), new OWLHTMLRenderer(getServer()), pageURL, out);
+        renderNode(getUserObject(), new OWLHTMLRenderer(getHTMLGenerator()), pageURL, out);
         if (getSubDocletCount() > 0){
             out.println("<ul class='minihierarchy'>");
         }
@@ -47,7 +47,7 @@ public class HierarchyNodeDoclet<O extends OWLNamedObject> extends AbstractHiera
         super.setUserObject(object);
         if (getUserObject() != null){
             if (getUserObject().equals(getModel().getFocus())){
-                final HierarchyNodeSubsDoclet<O> nodeSubsDoclet = new HierarchyNodeSubsDoclet<O>(getServer(), getModel());
+                final HierarchyNodeSubsDoclet<O> nodeSubsDoclet = new HierarchyNodeSubsDoclet<O>(getHTMLGenerator(), getModel());
                 nodeSubsDoclet.setShowSubs(isShowSubsEnabled());
                 nodeSubsDoclet.setPinned(true);
                 nodeSubsDoclet.setAutoExpandEnabled(isAutoExpandSubs());
@@ -57,7 +57,7 @@ public class HierarchyNodeDoclet<O extends OWLNamedObject> extends AbstractHiera
             else{
                 HierarchyNodeDoclet<O> lastPathContainingFocusedNode = null;
                 for (O child : getModel().getChildren(object)){
-                    HierarchyNodeDoclet<O> subDoclet = new HierarchyNodeDoclet<O>(getServer(), getModel());
+                    HierarchyNodeDoclet<O> subDoclet = new HierarchyNodeDoclet<O>(getHTMLGenerator(), getModel());
                     subDoclet.setPinned(true); // you will never change the subs as they will be regenerated each time this changed
                     subDoclet.setAutoExpandEnabled(isAutoExpandSubs());
                     subDoclet.setUserObject(child);

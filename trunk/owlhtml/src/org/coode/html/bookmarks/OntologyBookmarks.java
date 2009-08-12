@@ -4,7 +4,7 @@
 package org.coode.html.bookmarks;
 
 import org.apache.log4j.Logger;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,7 +22,7 @@ public class OntologyBookmarks {
 
     private static final String BOOKMARK_PROP = "http://www.co-ode.org/ontologies/meta.owl#bookmark";
 
-    private URI annotURI;
+    private OWLAnnotationProperty property;
 
     private Set<OWLEntity> bookmarks = new HashSet<OWLEntity>();
 
@@ -30,17 +30,13 @@ public class OntologyBookmarks {
 
     private OWLOntology ont;
 
+
     public OntologyBookmarks(OWLOntologyManager mngr, OWLOntology ont) {
         this.mngr = mngr;
         this.ont = ont;
 
-        try {
-            annotURI = new URI(BOOKMARK_PROP);
-            loadAnnotations();
-        }
-        catch (URISyntaxException e) {
-            Logger.getLogger(OntologyBookmarks.class).error(e);
-        }
+        property = mngr.getOWLDataFactory().getOWLAnnotationProperty(IRI.create(BOOKMARK_PROP));
+        loadAnnotations();
     }
 
     public OWLOntology getOntology(){
@@ -67,10 +63,9 @@ public class OntologyBookmarks {
 
     public List<OWLOntologyChange> clear() throws OWLException {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-        for (OWLOntologyAnnotationAxiom axiom : ont.getAnnotations(ont)){
-            final OWLAnnotation annotation = axiom.getAnnotation();
-            if (annotation.getAnnotationURI().equals(annotURI)){
-                changes.add(new RemoveAxiom(ont, axiom));
+        for (OWLAnnotation annot : ont.getAnnotations()){
+            if (annot.getProperty().equals(property)){
+                changes.add(new RemoveOntologyAnnotation(ont, annot));
             }
         }
         return changes;
@@ -87,9 +82,9 @@ public class OntologyBookmarks {
         changes.addAll(clear());
 
         if (annotationValue.length() > 0){
-            OWLConstant value = mngr.getOWLDataFactory().getOWLUntypedConstant(annotationValue);
-            OWLAnnotation annot = mngr.getOWLDataFactory().getOWLConstantAnnotation(annotURI, value);
-            changes.add(new AddAxiom(ont, mngr.getOWLDataFactory().getOWLOntologyAnnotationAxiom(ont, annot)));
+            OWLLiteral value = mngr.getOWLDataFactory().getOWLStringLiteral(annotationValue);
+            OWLAnnotation annot = mngr.getOWLDataFactory().getOWLAnnotation(property, value);
+            changes.add(new AddOntologyAnnotation(ont, annot));
         }
 
         return changes;
@@ -97,12 +92,11 @@ public class OntologyBookmarks {
 
     private void loadAnnotations() {
         // load the bookmark from the ontology annotations
-        for (OWLOntologyAnnotationAxiom axiom : ont.getAnnotations(ont)){
-            final OWLAnnotation annotation = axiom.getAnnotation();
-            if (annotation.getAnnotationURI().equals(annotURI)){
-                OWLObject content = annotation.getAnnotationValue();
-                if (content instanceof OWLUntypedConstant){
-                    parseAnnotation(((OWLUntypedConstant)content).getLiteral());
+        for (OWLAnnotation annot : ont.getAnnotations()){
+            if (annot.getProperty().equals(property)){
+                OWLAnnotationValue content = annot.getValue();
+                if (content instanceof OWLLiteral){
+                    parseAnnotation(((OWLLiteral)content).getLiteral());
                 }
             }
         }
@@ -137,8 +131,16 @@ public class OntologyBookmarks {
                 return mngr.getOWLDataFactory().getOWLDataProperty(uri);
             }
 
+            if (ont.containsAnnotationPropertyReference(uri)){
+                return mngr.getOWLDataFactory().getOWLAnnotationProperty(uri);
+            }
+
             if (ont.containsIndividualReference(uri)){
-                return mngr.getOWLDataFactory().getOWLIndividual(uri);
+                return mngr.getOWLDataFactory().getOWLNamedIndividual(uri);
+            }
+
+            if (ont.containsDatatypeReference(uri)){
+                return mngr.getOWLDataFactory().getOWLDatatype(uri);
             }
         }
 

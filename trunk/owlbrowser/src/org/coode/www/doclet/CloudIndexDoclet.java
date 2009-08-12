@@ -3,7 +3,7 @@
 */
 package org.coode.www.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.cloud.CloudType;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
@@ -23,15 +23,15 @@ public class CloudIndexDoclet extends AbstractOWLDocDoclet {
 
     public static final String ID = "doclet.index.cloud";
 
-    public CloudIndexDoclet(OWLHTMLServer server) {
-        super(server);
+    public CloudIndexDoclet(OWLHTMLKit kit) {
+        super(kit);
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
         renderBoxStart("Clouds", out);
         for (CloudType cloud : CloudType.values()){
             out.print("<li>");
-            renderLink(cloud.getRendering(), getServer().getURLScheme().getURLForRelativePage("cloud/?type=" + cloud), OWLHTMLConstants.LinkTarget.subnav, "", isSingleFrameNavigation(), pageURL, out);
+            renderLink(cloud.getRendering(), getHTMLGenerator().getURLScheme().getURLForRelativePage("cloud/?type=" + cloud), OWLHTMLConstants.LinkTarget.subnav, "", isSingleFrameNavigation(), pageURL, out);
             out.print("</li>");
         }
     }

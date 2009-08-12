@@ -2,14 +2,14 @@ package org.coode.www.test;
 
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
-import org.coode.html.impl.OWLHTMLServerImpl;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.util.NamespaceUtil;
+import org.semanticweb.owlapi.inference.OWLReasoner;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.NamespaceUtil;
 
 import java.net.URI;
 import java.net.URL;
@@ -35,7 +35,7 @@ public class OfflineTestCase extends TestCase {
     }
 
     public void testImports(){
-        OWLOntologyManager mngr = org.semanticweb.owl.apibinding.OWLManager.createOWLOntologyManager();
+        OWLOntologyManager mngr = org.semanticweb.owlapi.apibinding.OWLManager.createOWLOntologyManager();
         try {
             // B imports A
             URI a = getClass().getResource("A.owl").toURI();
@@ -69,15 +69,14 @@ public class OfflineTestCase extends TestCase {
         try {
             URI b = getClass().getResource("B.owl").toURI();
 
-            OWLOntologyManager mngr = org.semanticweb.owl.apibinding.OWLManager.createOWLOntologyManager();
-            OWLHTMLServer server = new OWLHTMLServerImpl("dsdsdsd", mngr, new URL("http://www.co-ode.org/ontologies/")){
+            OWLHTMLKit kit = new OWLHTMLKitImpl("dsdsdsd", new URL("http://www.co-ode.org/ontologies/")){
                 public OWLReasoner getOWLReasoner() {
                     return null;  //@@TODO implement
                 }
             };
-            OWLHTMLRenderer ren = new OWLHTMLRenderer(server);
-            OWLDataFactory df = mngr.getOWLDataFactory();
-            server.loadOntology(b);
+            OWLHTMLRenderer ren = new OWLHTMLRenderer(kit);
+            OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
+            kit.getOWLServer().loadOntology(b);
 
             String str = ren.render(df.getOWLClass(new URI("http://www.co-ode.org/ontologies/b.owl#class1")), null);
             logger.debug("str = " + str);

@@ -15,7 +15,8 @@ img.button {position: relative; top: 8px;}
 
 /* keywords - default cyan */
 .keyword {color: #00B2B2; font-weight: bolder;}
-.comment, .some, .only, .value, .min, .max, .exactly {color: #B200B2; font-weight:bolder;}
+.comment {color: green;}
+.some, .only, .value, .min, .max, .exactly {color: #B200B2; font-weight:bolder;}
 
 div {margin-top: 0;}
 
@@ -59,7 +60,7 @@ li.expandable {list-style-type: none; margin-left: -1.5em;}
 p.footer {font-size: 7pt; text-align: right; width: 95%;}
 
 table {border-collapse: collapse}
-td, tr {font-size: 9pt; border: solid black 1px; padding: 3px;}
+td, tr {font-size: 9pt; border: none; vertical-align: top; padding: 3px;}
 th {background-color:black; color:white;}
 
 .disabled {background-color: #bbbbdd;}

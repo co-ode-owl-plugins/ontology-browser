@@ -3,8 +3,8 @@
 */
 package org.coode.html.hierarchy;
 
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.inference.OWLReasonerException;
 import org.apache.log4j.Logger;
 
 import java.util.*;

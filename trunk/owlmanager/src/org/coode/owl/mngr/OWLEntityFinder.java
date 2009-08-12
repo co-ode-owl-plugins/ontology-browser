@@ -1,6 +1,6 @@
 package org.coode.owl.mngr;
 
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.net.URI;
 import java.util.Set;
@@ -41,7 +41,7 @@ import java.util.Set;
  * - string rendering of human readable name
  * - partial string match (for search)
  */
-public interface OWLNamedObjectFinder {
+public interface OWLEntityFinder {
 
     Set<OWLClass> getOWLClasses(String str);
 
@@ -49,18 +49,18 @@ public interface OWLNamedObjectFinder {
 
     Set<OWLDataProperty> getOWLDataProperties(String str);
 
-    Set<OWLIndividual> getOWLIndividuals(String str);
+    Set<OWLAnnotationProperty> getOWLAnnotationProperties(String str);
+
+    Set<OWLNamedIndividual> getOWLIndividuals(String str);
+
+    Set<OWLDatatype> getOWLDatatypes(String str);
 
     Set<OWLProperty> getOWLProperties(String str);
 
     Set<OWLEntity> getOWLEntities(String str);
 
-    Set<OWLDataType> getOWLDatatypes(String str);
-
-    Set<OWLOntology> getOWLOntologies(String str);
-    
-    Set<? extends OWLNamedObject> getOWLNamedObjects(String str, NamedObjectType type);
-    Set<? extends OWLNamedObject> getOWLNamedObjects(String str, NamedObjectType type, OWLOntology ont);
+    Set<? extends OWLEntity> getOWLEntities(String str, NamedObjectType type);
+    Set<? extends OWLEntity> getOWLEntities(String str, NamedObjectType type, OWLOntology ont);
 
     /**
      *
@@ -68,8 +68,8 @@ public interface OWLNamedObjectFinder {
      * @param type
      * @return can return a set if the type is entities (an individual and a class could be returned)
      */
-    Set<? extends OWLNamedObject> getOWLNamedObjects(URI uri, NamedObjectType type);
-    Set<? extends OWLNamedObject> getOWLNamedObjects(URI uri, NamedObjectType type, OWLOntology ont);
+    Set<? extends OWLEntity> getOWLEntities(URI uri, NamedObjectType type);
+    Set<? extends OWLEntity> getOWLEntities(URI uri, NamedObjectType type, OWLOntology ont);
 
     void dispose();
 }

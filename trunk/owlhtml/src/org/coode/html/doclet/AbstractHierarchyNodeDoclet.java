@@ -4,13 +4,13 @@
 package org.coode.html.doclet;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.hierarchy.TreeFragment;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.coode.html.util.URLUtils;
-import org.coode.owl.mngr.ServerConstants;
-import org.semanticweb.owl.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -23,7 +23,7 @@ import java.net.URL;
  * Bio Health Informatics Group<br>
  * Date: Feb 7, 2008<br><br>
  */
-public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> extends AbstractOWLDocDoclet<O>{
+public abstract class AbstractHierarchyNodeDoclet<O extends OWLEntity> extends AbstractOWLDocDoclet<O>{
 
     private static final Logger logger = Logger.getLogger(AbstractHierarchyNodeDoclet.class);
 
@@ -34,8 +34,8 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
     private boolean showSubs = false;
 
 
-    public AbstractHierarchyNodeDoclet(OWLHTMLServer server, TreeFragment<O> model) {
-        super(server);
+    public AbstractHierarchyNodeDoclet(OWLHTMLKit kit, TreeFragment<O> model) {
+        super(kit);
         setPinned(true); // you will never change the subs as they will be regenerated each time this changed
         this.model = model;
     }
@@ -86,7 +86,7 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
 
 
     public String getID() {
-        return getServer().getNameRenderer().getShortForm(getUserObject());
+        return getHTMLGenerator().getOWLServer().getShortFormProvider().getShortForm(getUserObject());
     }
 
 
@@ -111,12 +111,12 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
 
     protected void renderExpandLink(O node, URL pageURL, PrintWriter out) {
         if (isRenderSubExpandLinksEnabled()){
-            String link = URLUtils.createRelativeURL(pageURL, getServer().getURLScheme().getURLForNamedObject(node));
-            if (!link.contains("?")){
-                link += "?";
+            String link = URLUtils.createRelativeURL(pageURL, getHTMLGenerator().getURLScheme().getURLForOWLObject(node));
+            if (!link.contains(OWLHTMLConstants.START_QUERY)){
+                link += OWLHTMLConstants.START_QUERY;
             }
             else{
-                link += "&";
+                link += OWLHTMLConstants.PARAM_SEP;
             }
 
             out.println(" <a href='" + link + "expanded=true'>[+]</a>");
@@ -127,7 +127,12 @@ public abstract class AbstractHierarchyNodeDoclet<O extends OWLNamedObject> exte
     }
 
 
+    protected boolean isRenderSubsEnabled(){
+        return getHTMLGenerator().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderSubs);
+    }
+
+
     protected boolean isRenderSubExpandLinksEnabled() {
-        return getServer().getProperties().isSet(ServerConstants.OPTION_RENDER_SUB_EXPAND_LINKS);
+        return getHTMLGenerator().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderSubExpandLinks);
     }
 }

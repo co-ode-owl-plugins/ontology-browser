@@ -3,18 +3,19 @@
 */
 package org.coode.owl.mngr.impl;
 
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
-import org.coode.owl.mngr.OWLDescriptionParser;
+import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
+import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owl.expression.ParserException;
-import org.semanticweb.owl.expression.ShortFormEntityChecker;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.util.BidirectionalShortFormProvider;
-import org.semanticweb.owl.util.BidirectionalShortFormProviderAdapter;
-import org.semanticweb.owl.util.NamespaceUtil;
-import org.semanticweb.owl.util.ShortFormProvider;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
+import org.semanticweb.owlapi.expression.OWLEntityChecker;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
+import org.semanticweb.owlapi.util.NamespaceUtil;
+import org.semanticweb.owlapi.util.ShortFormProvider;
 
 import java.text.ParseException;
 
@@ -26,7 +27,7 @@ import java.text.ParseException;
  * Bio Health Informatics Group<br>
  * Date: Jan 11, 2008<br><br>
  */
-public class ManchesterOWLSyntaxParser implements OWLDescriptionParser {
+public class ManchesterOWLSyntaxParser implements OWLClassExpressionParser {
 
     private OWLServer server;
 
@@ -40,9 +41,9 @@ public class ManchesterOWLSyntaxParser implements OWLDescriptionParser {
     }
 
 
-    public OWLDescription parse(String str) throws ParseException {
+    public OWLClassExpression parse(String str) throws ParseException {
         try {
-            return getParser(str).parseDescription();
+            return getParser(str).parseClassExpression();
         }
         catch (ParserException e) {
             throw new ParseException(e.getMessage(), e.getStartPos());
@@ -53,12 +54,7 @@ public class ManchesterOWLSyntaxParser implements OWLDescriptionParser {
     private ManchesterOWLSyntaxEditorParser getParser(String expression){
         final OWLOntologyManager ontMngr = server.getOWLOntologyManager();
 
-        ShortFormProvider sfProvider = server.getNameRenderer();
-
-        final BidirectionalShortFormProvider providerAdapter =
-                new BidirectionalShortFormProviderAdapter(ontMngr, server.getActiveOntologies(), sfProvider);
-
-        ShortFormEntityChecker checker = new ShortFormEntityChecker(providerAdapter);
+        OWLEntityChecker checker = server.getOWLEntityChecker();
 
         final OWLDataFactory df = ontMngr.getOWLDataFactory();
 

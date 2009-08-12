@@ -3,10 +3,10 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLProperty;
-import org.semanticweb.owl.model.OWLPropertyExpression;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
 
 import java.util.Collection;
 import java.util.Set;
@@ -21,8 +21,8 @@ import java.util.Set;
  */
 public class DisjointPropertiesDoclet<O extends OWLProperty> extends AbstractOWLElementsDoclet<O, OWLPropertyExpression> {
 
-    public DisjointPropertiesDoclet(OWLHTMLServer server) {
-        super("Disjoint Properties", Format.csv, server);
+    public DisjointPropertiesDoclet(OWLHTMLKit kit) {
+        super("Disjoint Properties", Format.csv, kit);
     }
 
     protected Collection<OWLPropertyExpression> getElements(Set<OWLOntology> onts) {

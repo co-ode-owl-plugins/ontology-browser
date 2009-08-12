@@ -4,10 +4,12 @@
 package org.coode.html.doclet;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.util.URLUtils;
-import org.coode.owl.mngr.impl.FragmentShortFormProvider;
+import org.coode.owl.mngr.ServerProperty;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -33,8 +35,8 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
     private static final String RENDERER_FORM = "rendererForm";
 
 
-    public MenuBarDoclet(OWLHTMLServer server) {
-        super(server);
+    public MenuBarDoclet(OWLHTMLKit kit) {
+        super(kit);
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
@@ -44,11 +46,11 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
         out.println("<a style='display: none;' href='#content'>skip to content</a> ");
 
-        renderLink(OWLHTMLConstants.CONTENTS_LABEL, getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML), OWLHTMLConstants.LinkTarget.content, "", isSingleFrameNavigation(), pageURL, out);
+        renderLink(OWLHTMLConstants.CONTENTS_LABEL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML), OWLHTMLConstants.LinkTarget.content, "", isSingleFrameNavigation(), pageURL, out);
         out.print(" | ");
-        renderLink(OWLHTMLConstants.MANAGE_LABEL, getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.MANAGE_HTML), OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
+        renderLink(OWLHTMLConstants.MANAGE_LABEL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.MANAGE_HTML), OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
         out.print(" | ");
-        renderLink(OWLHTMLConstants.RESTART_LABEL, getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.SIGNOUT_HTML), OWLHTMLConstants.LinkTarget._top, "", isSingleFrameNavigation(), pageURL, out);
+        renderLink(OWLHTMLConstants.RESTART_LABEL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.SIGNOUT_HTML), OWLHTMLConstants.LinkTarget._top, "", isSingleFrameNavigation(), pageURL, out);
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
@@ -60,26 +62,26 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
     }
 
     private void renderOptions(URL pageURL, PrintWriter out) {
-        String pageRelToBase = URLUtils.createRelativeURL(getServer().getBaseURL(), pageURL);
-        String optionsURL = URLUtils.createRelativeURL(pageURL, getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
+        String pageRelToBase = URLUtils.createRelativeURL(getHTMLGenerator().getBaseURL(), pageURL);
+        String optionsURL = URLUtils.createRelativeURL(pageURL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
 
         out.println("<div id='options'>");
 
         if (isSingleFrameNavigation()){
             try {
                 String encodedURI = URLEncoder.encode(pageRelToBase, OWLHTMLConstants.DEFAULT_ENCODING);
-                String relOptionURL = URLUtils.createRelativeURL(pageURL, getServer().getURLScheme().getURLForRelativePage("?content=" + encodedURI));
-                out.println("<a onclick=\"option('frames', 'true', '" + relOptionURL + "', '" + optionsURL + "');\">frames</a> | ");
+                String relOptionURL = URLUtils.createRelativeURL(pageURL, getHTMLGenerator().getURLScheme().getURLForRelativePage("?content=" + encodedURI));
+                out.println("<a onclick=\"option('" + OWLHTMLProperty.optionUseFrames + "', 'true', '" + relOptionURL + "', '" + optionsURL + "');\">frames</a> | ");
             }
             catch (UnsupportedEncodingException e) {
                 logger.error("Could not encode URL: " + pageRelToBase, e);
             }
         }
         else{
-            out.println("<a onclick=\"option('frames', 'false', getContentURL(), '" + optionsURL + "');\">hide frames</a> | ");
+            out.println("<a onclick=\"option('" + OWLHTMLProperty.optionUseFrames + "', 'false', getContentURL(), '" + optionsURL + "');\">hide frames</a> | ");
         }
 
-        final boolean renderLabels = !getServer().getNameRenderer().getClass().equals(FragmentShortFormProvider.class);
+        final boolean renderLabels = !getHTMLGenerator().getOWLServer().getShortFormProvider().getClass().equals(SimpleShortFormProvider.class);
         out.println("<form id='" + RENDERER_FORM + "' style='display: inline;'>");
         out.println("<label for='" + RENDERER_NAME + "' />Render labels</label>");
         out.println("<input type='checkbox' name='"+ RENDERER_NAME +"' onclick='" + renderCheckAction(optionsURL) + "'");
@@ -90,7 +92,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
         out.println("</form>");
 
         out.print(" | ");
-        renderLink("more options", getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML), OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
+        renderLink("more options", getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML), OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
 
         out.println("</div> <!-- options -->");
     }
@@ -101,7 +103,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
                "if (document.getElementById(\"" + RENDERER_FORM + "\")." + RENDERER_NAME + ".checked == true){" +
                "rendererName = \"" + OWLHTMLConstants.RENDERER_LABEL + "\";" +
                "}" +
-               "option(\"ren\", rendererName, null, \"" + optionsURL + "\");";
+               "option(\"" + ServerProperty.optionRenderer.name() + "\", rendererName, null, \"" + optionsURL + "\");";
     }
 
 

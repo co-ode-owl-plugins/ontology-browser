@@ -4,7 +4,7 @@
 package org.coode.www.doclet;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.URLUtils;
@@ -42,8 +42,8 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
     private static final String ID = "doclet.autocomplete";
 
 
-    public AutocompleteDoclet(OWLHTMLServer server, String id, boolean autoSubmitOnAccept) {
-        super(server);
+    public AutocompleteDoclet(OWLHTMLKit kit, String id, boolean autoSubmitOnAccept) {
+        super(kit);
         this.id = id;
         this.autoSubmitOnAccept = autoSubmitOnAccept;
     }
@@ -116,7 +116,7 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
 
-        String findURL = URLUtils.createRelativeURL(pageURL, getServer().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities&"));
+        String findURL = URLUtils.createRelativeURL(pageURL, getHTMLGenerator().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities&"));
 
         out.print("<script type=\"text/javascript\">\n" +
                 "    var options = {\n" +
@@ -140,13 +140,13 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
     public Set<URL> getRequiredCSS() {
         Set<URL> css = super.getRequiredCSS();
-        css.add(getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_CSS));
+        css.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_CSS));
         return css;
     }
 
     public Set<URL> getRequiredJS() {
         Set<URL> js = super.getRequiredJS();
-        js.add(getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_JS));
+        js.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_JS));
         return js;
     }
 }

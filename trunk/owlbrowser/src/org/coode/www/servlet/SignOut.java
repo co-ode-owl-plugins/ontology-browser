@@ -1,6 +1,6 @@
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.mngr.SessionManager;
@@ -49,14 +49,14 @@ public class SignOut extends HttpServlet {
                     "</body></html>");
         }
         else{
-            if (confirm.equals(ServerConstants.TRUE)){
+            if (Boolean.getBoolean(confirm)){
                 HttpSession session = request.getSession(false);
                 SessionManager.closeSession(session);
             }
 
             try {
-                OWLHTMLServer server = SessionManager.getServer(request);
-                response.sendRedirect(server.getBaseURL().toString());
+                OWLHTMLKit kit = SessionManager.getServer(request);
+                response.sendRedirect(kit.getBaseURL().toString());
             }
             catch (OntServerException e) {
                 throw new ServletException(e);

@@ -1,12 +1,12 @@
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.EmptyOWLDocPage;
-import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.ServerConstants;
-import org.coode.owl.mngr.ServerProperties;
+import org.coode.owl.mngr.*;
 import org.coode.www.doclet.OptionsTableDoclet;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
@@ -50,62 +50,75 @@ import java.util.Set;
  */
 public class ServerOptions extends AbstractOntologyServerServlet {
 
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
-        boolean success = handleOptionsSet(params, server);
+    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
+        boolean success = handleOptionsSet(params, kit);
 
 //        if (success){
 //            out.println("<options><" + option + " value='" + value + "'/></options>");
 //        }
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        boolean success = handleOptionsSet(params, server);
+    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        boolean success = handleOptionsSet(params, kit);
 
         if (success){
-            throw new RedirectException(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
+            throw new RedirectException(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
         }
         else{
-            EmptyOWLDocPage page = new EmptyOWLDocPage(server);
-            page.addDoclet(new OptionsTableDoclet(params, server));
+            EmptyOWLDocPage page = new EmptyOWLDocPage(kit);
+            page.addDoclet(new OptionsTableDoclet(params, kit));
             return page;
         }
     }
 
-    private boolean handleOptionsSet(Map<String, String> params, OWLHTMLServer server) throws OntServerException {
+    private boolean handleOptionsSet(Map<OWLHTMLParam, String> params, OWLHTMLKit kit) throws OntServerException {
         boolean success = false;
 
-        for (String option : params.keySet()){
+        String propertyName = params.get(OWLHTMLParam.property);
+        if (propertyName != null){
+            String value = params.get(OWLHTMLParam.value);
 
-            String value = params.get(option);
-
-            final ServerProperties serverProperties = server.getProperties();
-
-            if (option.equals(OWLHTMLConstants.OPTION_FRAMES)){
-                if (value.equals(OWLHTMLConstants.NO_FRAMES) || value.equals(ServerConstants.FALSE)){
-                    if (serverProperties.get(OWLHTMLConstants.OPTION_CONTENT_WINDOW) != null){
-                        serverProperties.set(OWLHTMLConstants.OPTION_CONTENT_WINDOW, null);
-                        success = true;
-                    }
-                }
-                else if (value.equals(OWLHTMLConstants.SHOW_FRAMES) || value.equals(ServerConstants.TRUE)){
-                    if (serverProperties.get(OWLHTMLConstants.OPTION_CONTENT_WINDOW) == null){
-                        serverProperties.set(OWLHTMLConstants.OPTION_CONTENT_WINDOW, OWLHTMLConstants.LinkTarget.content.toString());
-                        success = true;
-                    }
+            try{
+                OWLHTMLProperty property = OWLHTMLProperty.valueOf(propertyName);
+                ServerPropertiesAdapter<OWLHTMLProperty> serverProperties = kit.getHTMLProperties();
+                switch(property){
+                    case optionUseFrames:
+                        if (value.equals(OWLHTMLConstants.NO_FRAMES) || value.equals(Boolean.FALSE.toString())){
+                            if (serverProperties.get(OWLHTMLProperty.optionContentWindow) != null){
+                                serverProperties.set(OWLHTMLProperty.optionContentWindow, null);
+                                success = true;
+                            }
+                        }
+                        else if (value.equals(OWLHTMLConstants.SHOW_FRAMES) || value.equals(Boolean.TRUE.toString())){
+                            if (serverProperties.get(OWLHTMLProperty.optionContentWindow) == null){
+                                serverProperties.set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
+                                success = true;
+                            }
+                        }
+                        break;
+                    default:
+                        success = serverProperties.set(property, value);
                 }
             }
-            else{
-                success = serverProperties.set(option, value);
+            catch(IllegalArgumentException e){
+                // this will be an OWL server preference
+                try{
+                    ServerProperty property = ServerProperty.valueOf(propertyName);
+                    success = kit.getOWLServer().getProperties().set(property, value);
+                }
+                catch(IllegalArgumentException e2){
+                    throw new OntServerException("Cannot set unknown property: " + propertyName);
+                }
             }
-        }
 
-        if (success){
-            SessionManager.labelServerState(server);
+            if (success){
+                SessionManager.labelServerState(kit);
+            }
         }
         return success;
     }
 
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
         return Collections.emptyMap();
     }
 }

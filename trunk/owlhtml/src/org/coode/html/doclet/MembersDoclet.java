@@ -3,8 +3,8 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.*;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,8 +21,8 @@ import java.util.Set;
 public class MembersDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLIndividual> {
 
 
-    public MembersDoclet(OWLHTMLServer server) {
-        super("Disjoints", Format.csv, server);
+    public MembersDoclet(OWLHTMLKit kit) {
+        super("Disjoints", Format.csv, kit);
     }
 
     protected Collection<OWLIndividual> getElements(Set<OWLOntology> onts) {
@@ -31,7 +31,7 @@ public class MembersDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLIndivi
         for (OWLOntology ont : onts){
             for (OWLAxiom ax : ont.getReferencingAxioms(cls)){
                 if (ax instanceof OWLClassAssertionAxiom &&
-                    ((OWLClassAssertionAxiom)ax).getDescription().equals(cls)){
+                    ((OWLClassAssertionAxiom)ax).getClassExpression().equals(cls)){
                     members.add(((OWLClassAssertionAxiom)ax).getIndividual());
                 }
             }

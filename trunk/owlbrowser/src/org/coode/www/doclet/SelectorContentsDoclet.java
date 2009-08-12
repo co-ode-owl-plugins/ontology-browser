@@ -3,13 +3,13 @@
 */
 package org.coode.www.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.coode.owl.mngr.NamedObjectShortFormProvider;
-import org.coode.owl.util.OWLObjectComparator;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.util.ShortFormProvider;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -32,23 +32,24 @@ public class SelectorContentsDoclet implements HTMLDoclet {
 
     private List<OWLObject> contents;
     private OWLObject defaultValue;
-    private NamedObjectShortFormProvider ren;
-    private OWLHTMLServer server;
+    private ShortFormProvider ren;
+    private OWLHTMLKit kit;
 
-    public SelectorContentsDoclet(NamedObjectShortFormProvider renderer, OWLHTMLServer server){
+
+    public SelectorContentsDoclet(ShortFormProvider renderer, OWLHTMLKit kit){
         this.ren = renderer;
-        this.server = server;
+        this.kit = kit;
     }
 
     public SelectorContentsDoclet(Set<? extends OWLObject> contents,
                                         OWLObject defaultValue,
-                                        NamedObjectShortFormProvider renderer,
-                                        OWLHTMLServer server) {
+                                        ShortFormProvider renderer,
+                                        OWLHTMLKit kit) {
         this.ren = renderer;
         this.contents = new LinkedList<OWLObject>(contents);
         this.defaultValue = defaultValue;
-        this.server = server;
-        Collections.sort(this.contents, new OWLObjectComparator<OWLObject>(server));
+        this.kit = kit;
+        Collections.sort(this.contents, kit.getOWLServer().getComparator());
     }
 
     public String getID() {
@@ -59,7 +60,7 @@ public class SelectorContentsDoclet implements HTMLDoclet {
         String defaultStr = (defaultValue == null) ? "selected='selected'" : "";
         out.println("<option value='' " + defaultStr + "> </option>");
 
-        OWLHTMLRenderer htmlRen = new OWLHTMLRenderer(server);
+        OWLHTMLRenderer htmlRen = new OWLHTMLRenderer(kit);
 
         for (OWLObject entity : contents){
             defaultStr = (defaultValue != null && entity.equals(defaultValue))? " selected='selected'" : "";
@@ -72,8 +73,8 @@ public class SelectorContentsDoclet implements HTMLDoclet {
             }
 
             String name;
-            if (entity instanceof OWLNamedObject){
-                name = ren.getShortForm((OWLNamedObject)entity);
+            if (entity instanceof OWLEntity){
+                name = ren.getShortForm((OWLEntity)entity);
             }
             else{
                 name = value;

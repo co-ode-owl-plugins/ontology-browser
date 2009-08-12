@@ -3,10 +3,10 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLAnnotation;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,8 +22,8 @@ import java.util.Set;
  */
 public class AnnotationsDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<O, OWLAnnotation> {
 
-    public AnnotationsDoclet(OWLHTMLServer server) {
-        super("Annotations", ElementsDoclet.Format.list, server);
+    public AnnotationsDoclet(OWLHTMLKit kit) {
+        super("Annotations", ElementsDoclet.Format.list, kit);
     }
 
     protected Collection<OWLAnnotation> getElements(Set<OWLOntology> onts) {

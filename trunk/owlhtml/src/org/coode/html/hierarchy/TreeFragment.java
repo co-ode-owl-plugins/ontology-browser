@@ -3,7 +3,7 @@
 */
 package org.coode.html.hierarchy;
 
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 import java.util.List;
 import java.util.Set;

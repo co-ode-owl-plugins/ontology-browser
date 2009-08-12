@@ -26,12 +26,7 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
     public static final boolean SHOW_MEMORY = false;
     public static final boolean LOGGING = true;
 
-    public static final String PARAM_URI = "uri";
     public static final String LOAD_ONTOLOGIES_INPUT_ID = "uri-spec";
-
-    public static final String PARAM_ACTION = "action";
-    public static final String PARAM_CLEAR = "clear";
-    public static final String PARAM_FORMAT = "format";
 
     public static final String DOCS_HTML = "docs/index.html";
 

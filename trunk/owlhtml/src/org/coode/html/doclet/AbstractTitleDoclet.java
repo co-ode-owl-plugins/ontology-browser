@@ -3,9 +3,8 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owl.model.OWLNamedObject;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -18,24 +17,28 @@ import java.net.URL;
  * Bio Health Informatics Group<br>
  * Date: Feb 7, 2008<br><br>
  */
-public class NamedObjectTitleDoclet<O extends OWLNamedObject> extends AbstractOWLDocDoclet<O> {
+public abstract class AbstractTitleDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O> {
 
     public static final String ID = "doclet.summary.title";
 
-    public NamedObjectTitleDoclet(OWLHTMLServer server) {
-        super(server);
+    public AbstractTitleDoclet(OWLHTMLKit kit) {
+        super(kit);
     }
+
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        final O object = getUserObject();
         out.println("<h1>" + getTitle() + "</h1>");
-        out.println("<h2 class='summaryURI'>" + object.getURI() + "</h2>");
+        String subtitle = getSubtitle();
+        if (subtitle != null){
+            out.println("<h2 class='summaryURI'>" + subtitle + "</h2>");
+        }
     }
 
-    public String getTitle() {
-        final O object = getUserObject();
-        return NamedObjectType.getType(object).getSingularRendering() + ": " + getServer().getNameRenderer().getShortForm(object);
-    }
+    public abstract String getTitle();
+
+
+    public abstract String getSubtitle();
+
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
         // do nothing

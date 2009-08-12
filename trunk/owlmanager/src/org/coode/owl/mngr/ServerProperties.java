@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Nick Drummond<br>
@@ -35,6 +36,8 @@ public interface ServerProperties {
     void save(OutputStream out) throws IOException;
 
     void load(InputStream in) throws IOException;
+
+    void addDeprecatedNames(Map<String, String> names);
 
     boolean isSet(String booleanOption);
 

@@ -1,11 +1,14 @@
-package org.coode.owl.mngr.impl;
+package org.coode.html.doclet;
 
-import org.coode.owl.mngr.NamedObjectShortFormProvider;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.util.NamespaceUtil;
-import org.semanticweb.owl.util.SimpleShortFormProvider;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLDatatypeDefinitionAxiom;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -30,27 +33,27 @@ import org.semanticweb.owl.util.SimpleShortFormProvider;
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Aug 8, 2007<br><br>
- *
- * For OWL Ontologies, gets the prefix created by NamespaceUtil
- * For OWL Entities, delegates to OWLAPI.
- *
+ * Date: Aug 5, 2009<br><br>
  */
-public class FragmentShortFormProvider extends SimpleShortFormProvider implements NamedObjectShortFormProvider {
+public class DatatypeDefinitionDoclet extends AbstractOWLElementsDoclet<OWLDatatype, OWLDataRange> {
 
-    public String getShortForm(OWLNamedObject obj) {
-        String name = "";
-        if (obj instanceof OWLOntology){
-            name = new NamespaceUtil().generatePrefix(obj.getURI().toString());
+    public DatatypeDefinitionDoclet(OWLHTMLKit kit) {
+        super("Datatype Definitions", Format.list, kit);
+    }
+
+
+    protected Collection<OWLDataRange> getElements(Set<OWLOntology> ontologies) {
+        Set<OWLDataRange> ranges = new HashSet<OWLDataRange>();
+        for (OWLOntology ont : ontologies){
+            for (OWLDatatypeDefinitionAxiom ax : ont.getDatatypeDefinitions(getUserObject())){
+                ranges.add(ax.getDataRange());
+            }
         }
-        else{
-            name = super.getShortForm((OWLEntity)obj);
-        }
-        return name;
+        return ranges;
     }
 }

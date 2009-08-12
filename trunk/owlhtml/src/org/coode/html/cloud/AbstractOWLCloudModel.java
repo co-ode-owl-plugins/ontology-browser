@@ -1,9 +1,9 @@
 package org.coode.html.cloud;
 
-import org.coode.owl.mngr.NamedObjectShortFormProvider;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.util.ShortFormProvider;
 
 import java.util.Set;
 /*
@@ -40,9 +40,9 @@ import java.util.Set;
 public abstract class AbstractOWLCloudModel<O extends OWLObject> extends AbstractCloudModel<O> implements OWLCloudModel<O> {
 
     private Set<OWLOntology> ontologies;
-    private NamedObjectShortFormProvider renderer;
+    private ShortFormProvider renderer;
 
-    protected AbstractOWLCloudModel(NamedObjectShortFormProvider renderer) {
+    protected AbstractOWLCloudModel(ShortFormProvider renderer) {
         this.renderer = renderer;
     }
 

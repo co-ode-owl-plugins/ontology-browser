@@ -3,13 +3,11 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLAnnotation;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyAnnotationAxiom;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -22,17 +20,11 @@ import java.util.Set;
  */
 public class OntologyAnnotationsDoclet extends AbstractOWLElementsDoclet<OWLOntology, OWLAnnotation> {
 
-    public OntologyAnnotationsDoclet(OWLHTMLServer server) {
-        super("Annotations", ElementsDoclet.Format.list, server);
+    public OntologyAnnotationsDoclet(OWLHTMLKit kit) {
+        super("Annotations", ElementsDoclet.Format.list, kit);
     }
 
     protected Collection<OWLAnnotation> getElements(Set<OWLOntology> onts) {
-        Set<OWLAnnotation> annots = new HashSet<OWLAnnotation>();
-        for (OWLOntology ont : onts){
-            for (OWLOntologyAnnotationAxiom annotAxiom : getUserObject().getAnnotations(ont)){
-                annots.add(annotAxiom.getAnnotation());
-            }
-        }
-        return annots;
+        return getUserObject().getAnnotations();
     }
 }

@@ -3,9 +3,9 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLProperty;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 import java.util.Collection;
 import java.util.Set;
@@ -20,8 +20,8 @@ import java.util.Set;
  */
 public class AssertedEquivpropertiesDoclet<O extends OWLProperty> extends AbstractOWLElementsDoclet<O, O> {
 
-    public AssertedEquivpropertiesDoclet(OWLHTMLServer server) {
-        super("Equivalent Properties", Format.list, server);
+    public AssertedEquivpropertiesDoclet(OWLHTMLKit kit) {
+        super("Equivalent Properties", Format.list, kit);
     }
 
     protected Collection<O> getElements(Set<OWLOntology> onts) {
