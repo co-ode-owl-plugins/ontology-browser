@@ -3,10 +3,10 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLObjectPropertyExpression;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collection;
 import java.util.Set;
@@ -21,8 +21,8 @@ import java.util.Set;
  */
 public class InversesDoclet extends AbstractOWLElementsDoclet<OWLObjectProperty, OWLObjectPropertyExpression> {
 
-    public InversesDoclet(OWLHTMLServer server) {
-        super("Inverses", Format.list, server);
+    public InversesDoclet(OWLHTMLKit kit) {
+        super("Inverses", Format.list, kit);
     }
 
     protected Collection<OWLObjectPropertyExpression> getElements(Set<OWLOntology> onts) {

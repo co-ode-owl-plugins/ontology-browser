@@ -4,12 +4,15 @@
 package org.coode.html.url;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.owl.util.ModelUtil;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,56 +47,73 @@ public class RestURLScheme extends AbstractURLScheme {
 
     private static final Logger logger = Logger.getLogger(RestURLScheme.class.getName());
 
-    private static final String PARAM_ONTOLOGY = "ontology";
-
     private String additionalLinkArguments;
 
-    public RestURLScheme(OWLHTMLServer server) {
-        super(server);
+    public RestURLScheme(OWLHTMLKit kit) {
+        super(kit);
     }
 
 
-    public URL getURLForNamedObject(OWLNamedObject object) {
+    public URL getURLForOWLObject(OWLObject owlObject) {
         try {
-            String partialURL = NamedObjectType.getType(object) + "/" + object.getURI().hashCode() + "/";
 
-            if (additionalLinkArguments != null){
-                partialURL += additionalLinkArguments;
+            String type;
+            int code;
+
+            if (owlObject instanceof OWLEntity){
+                type = NamedObjectType.getType(owlObject).toString();
+                code = ((OWLEntity)owlObject).getURI().hashCode();
+            }
+            else if (owlObject instanceof OWLOntology){
+                type = NamedObjectType.getType(owlObject).toString();
+                code = ((OWLOntology)owlObject).getOntologyID().hashCode();
+            }
+            else{
+                type = owlObject.getClass().getSimpleName();
+                code = owlObject.hashCode();
             }
 
-            return new URL(getBaseURL(), partialURL);
+            StringBuilder sb = new StringBuilder(type);
+            sb.append(OWLHTMLConstants.SLASH);
+            sb.append(code);
+            sb.append(OWLHTMLConstants.SLASH);
+
+            if (additionalLinkArguments != null){
+                sb.append(additionalLinkArguments);
+            }
+
+            return new URL(getBaseURL(), sb.toString());
         }
         catch (Exception e) {
-            logger.error(e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
 
-    public OWLNamedObject getNamedObjectForURL(URL url) {
-        NamedObjectType type = getType(url);
+    public OWLObject getOWLObjectForURL(URL url) {
         try {
+            NamedObjectType type = getType(url);
             int hashCode = getID(url);
             if (type.equals(NamedObjectType.ontologies)){
-                for (OWLOntology ont : server.getOWLOntologyManager().getOntologies()){
-                    if (ont.getURI().hashCode() == hashCode){
+                for (OWLOntology ont : kit.getOWLServer().getActiveOntologies()){
+                    if (ont.getOntologyID().hashCode() == hashCode){
                         return ont;
                     }
                 }
             }
             else{
-                Set<OWLNamedObject> objs = new HashSet<OWLNamedObject>();
-                for (OWLOntology ont : server.getOWLOntologyManager().getOntologies()){
-                    objs.addAll(type.getNamedObjectsFromOntology(ont));
+                Set<OWLEntity> objs = new HashSet<OWLEntity>();
+                for (OWLOntology ont : kit.getOWLServer().getActiveOntologies()){
+                    objs.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ont));
                 }
-                for (OWLNamedObject obj : objs){
+                for (OWLEntity obj : objs){
                     if (obj.getURI().hashCode() == hashCode){
                         return obj;
                     }
                 }
             }
         }
-        catch (MalformedURLException e) {
+        catch (Exception e) {
             // do nothing - there is no object specified
         }
         return null;
@@ -102,18 +122,21 @@ public class RestURLScheme extends AbstractURLScheme {
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            String encodedURI = URLEncoder.encode(ont.getURI().toString(), OWLHTMLConstants.DEFAULT_ENCODING);
+            String encodedURI = URLEncoder.encode(ont.getOntologyID().getOntologyIRI().toString(), OWLHTMLConstants.DEFAULT_ENCODING);
 
-            return new URL(getBaseURL(), type + "/?" + PARAM_ONTOLOGY + "=" + encodedURI);
+            StringBuilder sb = new StringBuilder(type.toString());
+            sb.append(OWLHTMLConstants.SLASH);
+            sb.append(OWLHTMLConstants.START_QUERY);
+            sb.append(OWLHTMLParam.ontology);
+            sb.append(OWLHTMLConstants.EQUALS);
+            sb.append(encodedURI);
+
+            return new URL(getBaseURL(), sb.toString());
         }
         catch (Exception e) {
             logger.error(e);
         }
         return null;
-    }
-
-    public String getFilenameForOntologyIndex(OWLOntology ont, NamedObjectType type) {
-        return null; //not used for exporter so not implemented so far
     }
 
     public void setAdditionalLinkArguments(String s) {
@@ -125,8 +148,8 @@ public class RestURLScheme extends AbstractURLScheme {
     }
 
     private int getID(URL url) throws MalformedURLException {
-        String relativeURL = URLUtils.createRelativeURL(server.getBaseURL(), url);
-        String[] path = relativeURL.split("/");
+        String relativeURL = URLUtils.createRelativeURL(kit.getBaseURL(), url);
+        String[] path = relativeURL.split(OWLHTMLConstants.SLASH);
         if (path.length >= 2){
             try{
                 return Integer.parseInt(path[1]); // always the second element

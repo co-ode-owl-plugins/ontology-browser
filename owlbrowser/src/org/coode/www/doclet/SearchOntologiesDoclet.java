@@ -3,7 +3,7 @@
 */
 package org.coode.www.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.owl.mngr.NamedObjectType;
@@ -29,16 +29,16 @@ public class SearchOntologiesDoclet extends AbstractHTMLDoclet {
     private AutocompleteDoclet searchboxDoclet;
     private AutocompleteDoclet dlQueryDoclet;
 
-    public SearchOntologiesDoclet(OWLHTMLServer server, String searchBoxId) {
-        searchboxDoclet = new AutocompleteDoclet(server, searchBoxId, true);
-        searchboxDoclet.setSubmitURL(server.getURLScheme().getURLForIndex(NamedObjectType.entities));
+    public SearchOntologiesDoclet(OWLHTMLKit kit, String searchBoxId) {
+        searchboxDoclet = new AutocompleteDoclet(kit, searchBoxId, true);
+        searchboxDoclet.setSubmitURL(kit.getURLScheme().getURLForIndex(NamedObjectType.entities));
         searchboxDoclet.setParamName("name");
         searchboxDoclet.setTarget(OWLHTMLConstants.LinkTarget.content);
         addDoclet(searchboxDoclet);
 
-        dlQueryDoclet = new AutocompleteDoclet(server, DL_QUERY_AUTOCOMPLETE, false);
+        dlQueryDoclet = new AutocompleteDoclet(kit, DL_QUERY_AUTOCOMPLETE, false);
         dlQueryDoclet.setSubmitName("dl query");
-        dlQueryDoclet.setSubmitURL(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
+        dlQueryDoclet.setSubmitURL(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
         dlQueryDoclet.setTarget(OWLHTMLConstants.LinkTarget.subnav);
         dlQueryDoclet.setMultiword(true);
         addDoclet(dlQueryDoclet);

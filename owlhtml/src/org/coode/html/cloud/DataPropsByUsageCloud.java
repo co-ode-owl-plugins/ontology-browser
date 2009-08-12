@@ -1,9 +1,9 @@
 package org.coode.html.cloud;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.url.URLScheme;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -47,10 +47,10 @@ public class DataPropsByUsageCloud extends AbstractOWLCloudModel<OWLDataProperty
 
     private URLScheme urlScheme;
 
-    public DataPropsByUsageCloud(OWLHTMLServer server) {
-        super(server.getNameRenderer());
-        this.urlScheme = server.getURLScheme();
-        setOntologies(server.getVisibleOntologies());
+    public DataPropsByUsageCloud(OWLHTMLKit kit) {
+        super(kit.getOWLServer().getShortFormProvider());
+        this.urlScheme = kit.getURLScheme();
+        setOntologies(kit.getVisibleOntologies());
     }
 
     public Set<OWLDataProperty> getEntities() {
@@ -62,7 +62,7 @@ public class DataPropsByUsageCloud extends AbstractOWLCloudModel<OWLDataProperty
     }
 
     public URL getURL(OWLDataProperty entity) {
-        return urlScheme.getURLForNamedObject(entity);
+        return urlScheme.getURLForOWLObject(entity);
     }
 
     public String getTitle() {

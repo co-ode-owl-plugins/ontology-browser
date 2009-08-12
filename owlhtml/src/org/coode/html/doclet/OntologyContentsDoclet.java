@@ -3,10 +3,11 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.owl.util.ModelUtil;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -26,8 +27,8 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
 
     private String title;
 
-    public OntologyContentsDoclet(OWLHTMLServer server) {
-        super(server);
+    public OntologyContentsDoclet(OWLHTMLKit kit) {
+        super(kit);
     }
 
     public void setTitle(String title){
@@ -37,19 +38,14 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
     protected void renderHeader(URL pageURL, PrintWriter out) {
         OWLOntology ont = getUserObject();
 
-        int classCount = ont.getReferencedClasses().size();
-        int objPropCount = ont.getReferencedObjectProperties().size();
-        int dataPropCount = ont.getReferencedDataProperties().size();
-        int indCount = ont.getReferencedIndividuals().size();
-
         renderBoxStart(getTitle(pageURL), getOntologyName(), out);
 
         out.println("<ul>");
 
-        renderIndexLink(classCount, NamedObjectType.classes, pageURL, out);
-        renderIndexLink(objPropCount, NamedObjectType.objectproperties, pageURL, out);
-        renderIndexLink(dataPropCount, NamedObjectType.dataproperties, pageURL, out);
-        renderIndexLink(indCount, NamedObjectType.individuals, pageURL, out);
+        for (NamedObjectType type : NamedObjectType.entitySubtypes()){
+            int count = ModelUtil.getOWLEntitiesFromOntology(type, ont).size();
+            renderIndexLink(count, type, pageURL, out);
+        }
 
         out.println("</ul>");
     }
@@ -64,7 +60,7 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
         }
         else{
             // create link text
-            URL ontURL = getServer().getURLScheme().getURLForNamedObject(getUserObject());
+            URL ontURL = getHTMLGenerator().getURLScheme().getURLForOWLObject(getUserObject());
             StringWriter writer = new StringWriter();
             PrintWriter out = new PrintWriter(writer);
             renderLink(getOntologyName(), ontURL,
@@ -76,12 +72,12 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
     }
 
     private String getOntologyName() {
-        return getServer().getNameRenderer().getShortForm(getUserObject());
+        return getHTMLGenerator().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
     }
 
     private void renderIndexLink(int count, NamedObjectType type, URL pageURL, PrintWriter out) {
         if (count > 0){
-            URL indexURL = getServer().getURLScheme().getURLForOntologyIndex(getUserObject(), type);
+            URL indexURL = getHTMLGenerator().getURLScheme().getURLForOntologyIndex(getUserObject(), type);
             out.println("<li>");
             String label = type.getPluralRendering();
             renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);

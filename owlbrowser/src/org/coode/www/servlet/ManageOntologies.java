@@ -1,10 +1,11 @@
 package org.coode.www.servlet;
 
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.NestedHTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.EmptyOWLDocPage;
 import org.coode.html.util.FileUtils;
 import org.coode.html.util.URLUtils;
@@ -18,8 +19,10 @@ import org.coode.www.doclet.OntologyMappingsTableDoclet;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.mngr.SessionManager;
-import org.semanticweb.owl.model.OWLImportsDeclaration;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLImportsDeclaration;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyID;
+import org.semanticweb.owlapi.model.IRI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -45,52 +48,60 @@ import java.util.*;
  */
 public class ManageOntologies extends AbstractOntologyServerServlet {
 
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
+    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
         // no implementation
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
+    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        try {
 
-        final String actionValue = params.get(OntologyBrowserConstants.PARAM_ACTION);
+            final String actionValue = params.get(OWLHTMLParam.action);
 
-        NestedHTMLDoclet ren = null;
+            NestedHTMLDoclet ren = null;
 
-        if (actionValue != null){
-            ManageAction action = ManageAction.valueOf(actionValue);
+            OWLServer server = kit.getOWLServer();
 
-            switch(action){
-                case load:
-                    boolean clear = (ServerConstants.TRUE.equals(params.get(OntologyBrowserConstants.PARAM_CLEAR)));
-                    ren = handleLoad(getURIsFromParams(params), clear, server, pageURL);
-                    break;
-                case remove:
-                    ren = handleRemove(getURIsFromParams(params), server, pageURL);
-                    break;
-                case reload:
-                    ren = handleReload(getURIsFromParams(params), server, pageURL);
-                    break;
-                case browse:
-                    ren = handleBrowse(getURIFromParam(params.get(OntologyBrowserConstants.PARAM_URI)), server, pageURL);
-                    break;
-                case hide:
-                    handleSetVisibility(getURIFromParam(params.get(OntologyBrowserConstants.PARAM_URI)), false, server);
-                    break;
-                case unhide:
-                    handleSetVisibility(getURIFromParam(params.get(OntologyBrowserConstants.PARAM_URI)), true, server);
-                    break;
+            if (actionValue != null){
+                ManageAction action = ManageAction.valueOf(actionValue);
+
+                switch(action){
+                    case load:
+                        boolean clear = Boolean.getBoolean(params.get(OWLHTMLParam.clear));
+                        ren = handleLoad(getURIFromParam(params.get(OWLHTMLParam.uri)), clear, kit, pageURL);
+                        break;
+                    case remove:
+                        ren = handleRemove(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), kit, pageURL);
+                        break;
+                    case reload:
+                        ren = handleReload(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), kit, pageURL);
+                        break;
+                    case browse:
+                        ren = handleBrowse(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), kit, pageURL);
+                        break;
+                    case hide:
+                        handleSetVisibility(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), false, kit);
+                        break;
+                    case unhide:
+                        handleSetVisibility(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), true, kit);
+                        break;
+                }
             }
-        }
 
-        if (ren == null){
-            final Map<URI, URI> map = ManageOntologies.getMap(server);
-            ren = createManagePageRenderer(server, map, null, pageURL);
-        }
+            if (ren == null){
+                final Map<OWLOntologyID, URI> map = ManageOntologies.getMap(server);
+                ren = createManagePageRenderer(kit, map, null, pageURL);
+            }
 
-        return ren;
+            return ren;
+        }
+        catch (URISyntaxException e) {
+            throw new OntServerException(e);
+        }
     }
 
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
-        Map<String, Set<String>> required = new HashMap<String, Set<String>>();
+
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
+        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
 //        required.put(PARAM_URI, Collections.singleton("<ontology uri>")); optional
 //        required.put(PARAM_ACTION, getActionRenderings());
         return required;
@@ -104,147 +115,142 @@ public class ManageOntologies extends AbstractOntologyServerServlet {
         return actions;
     }
 
-    private NestedHTMLDoclet handleLoad(Set<URI> uris, boolean clear, OWLHTMLServer server, URL pageURL) throws OntServerException {
+    private NestedHTMLDoclet handleLoad(URI uri, boolean clear, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         Set<URI> success = new HashSet<URI>();
         Map<URI, Throwable> fail = new HashMap<URI, Throwable>();
 
         String message = "";
 
+        OWLServer server = kit.getOWLServer();
+
         if (clear){
             server.clearOntologies();
         }
 
-        for (URI uri : uris){
-            try{
-                if (uri.isAbsolute()){
-                    server.loadOntology(uri);
-                    success.add(uri);
-                }
-                else{
-                    throw new IllegalArgumentException("Ontology URIs must be absolute");
-                }
-            }
-            catch(Exception e){
-                fail.put(uri, e);
-            }
-            catch (OutOfMemoryError e){
-                fail.put(uri, e);
-                // clear all ontologies as we are in an unpredictable state
-                server.clearOntologies();
-                throw new OntServerException("Out of memory trying to load ontologies");
-            }
-        }
-
-
-        if (!fail.isEmpty()){
-            for (URI uri : fail.keySet()){
-                message += "failed to load: " + uri +
-                        " ("  + fail.get(uri).getClass().getSimpleName() +
-                        ": " + fail.get(uri).getMessage() + ")<br />";
-            }
-        }
-        if (!success.isEmpty()){
-            SessionManager.labelServerState(server);
-            message += "<p>loaded " + success.size() + " ontologies</p>";
-            message += "<p>saved session: [" + server.getCurrentLabel() + "]</p>";
-        }
-
-        Map<URI, URI> map = ManageOntologies.getMap(server);
-
-        if (map.isEmpty() || map.containsValue(null)){ // empty or missing value in map
-            return createManagePageRenderer(server, map, message, pageURL);
-        }
-        else{
-            throw new RedirectException(server.getBaseURL());
-        }
-    }
-
-
-    private NestedHTMLDoclet handleRemove(Set<URI> uris, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        Set<URI> success = new HashSet<URI>();
-        Set<URI> fail = new HashSet<URI>();
-        for (URI uri : uris){
-            if (server.getOntology(uri) != null){
-                server.removeOntology(uri);
+        try{
+            if (uri.isAbsolute()){
+                server.loadOntology(uri);
                 success.add(uri);
             }
             else{
-                fail.add(uri);
+                throw new IllegalArgumentException("Ontology URIs must be absolute");
             }
         }
-
-        String message = "";
-        if (!success.isEmpty()){
-            SessionManager.labelServerState(server);
-            message += "<p>removed " + success.size() + " ontologies</p>";
-            message += "<p>saved session: [" + server.getCurrentLabel() + "]</p>";
+        catch(Exception e){
+            fail.put(uri, e);
+        }
+        catch (OutOfMemoryError e){
+            fail.put(uri, e);
+            // clear all ontologies as we are in an unpredictable state
+            server.clearOntologies();
+            throw new OntServerException("Out of memory trying to load ontologies");
         }
 
-        return createManagePageRenderer(server, getMap(server), message, pageURL);
-    }
-
-
-    private NestedHTMLDoclet handleReload(Set<URI> uris, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        Set<URI> fail = new HashSet<URI>();
-        Set<URI> success = new HashSet<URI>();
-        for (URI uri : uris){
-            try {
-                server.getOWLOntologyManager().reloadOntology(uri);
-                success.add(uri);
-            }
-            catch (Exception e) {
-                fail.add(uri);
-            }
-        }
-
-
-        String message = "";
-        if (!success.isEmpty()){
-            SessionManager.labelServerState(server);
-            message += "<p>reloaded " + success.size() + " ontologies</p>";
-            message += "<p>saved session: [" + server.getCurrentLabel() + "]</p>";
-        }
 
         if (!fail.isEmpty()){
-            for (URI uri : fail){
-                message += "failed to load: " + uri + "<br />";
+            for (URI f : fail.keySet()){
+                message += "failed to load: " + uri +
+                           " ("  + fail.get(f).getClass().getSimpleName() +
+                           ": " + fail.get(f).getMessage() + ")<br />";
             }
         }
-        return createManagePageRenderer(server, getMap(server), message, pageURL);
+        if (!success.isEmpty()){
+            SessionManager.labelServerState(kit);
+            message += "<p>loaded " + success.size() + " ontologies</p>";
+            message += "<p>saved session: [" + kit.getCurrentLabel() + "]</p>";
+        }
+
+        Map<OWLOntologyID, URI> map = ManageOntologies.getMap(server);
+
+        if (map.isEmpty() || map.containsValue(null)){ // empty or missing value in map
+            return createManagePageRenderer(kit, map, message, pageURL);
+        }
+        else{
+            throw new RedirectException(kit.getBaseURL());
+        }
     }
 
 
-    private NestedHTMLDoclet handleBrowse(URI ontologyURI, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        if (ontologyURI != null){
-            final OWLOntology ontology = server.getOntology(ontologyURI);
-            if (ontology != null){
-                server.setActiveOntology(ontology);
-                throw new RedirectException(server.getBaseURL());
-            }
+    private NestedHTMLDoclet handleRemove(OWLOntology ontology, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        StringBuilder sb = new StringBuilder();
+
+        OWLServer server = kit.getOWLServer();
+
+        if (ontology != null){
+            server.removeOntology(ontology);
+
+            SessionManager.labelServerState(kit);
+            sb.append("<p>Removed ");
+            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
+            sb.append("</p><p>saved session: [");
+            sb.append(kit.getCurrentLabel());
+            sb.append("]</p>");
         }
-        throw new OntServerException("Cannot browse to unknown ontology: " + ontologyURI);
+        else{
+            sb.append("Could not remove ontology: ");
+            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
+            sb.append("<p>Ontology not loaded</p>");
+        }
+
+        return createManagePageRenderer(kit, getMap(server), sb.toString(), pageURL);
     }
 
 
-    private boolean handleSetVisibility(URI uri, boolean visible, OWLHTMLServer server) {
-        if (uri != null){
-            final OWLOntology ontology = server.getOntology(uri);
-            if (ontology != null){
-                server.setOntologyVisible(ontology, visible);
-                return true;
-            }
+    private NestedHTMLDoclet handleReload(OWLOntology ontology, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        StringBuilder sb = new StringBuilder();
+
+        OWLServer server = kit.getOWLServer();
+
+        try {
+            URI physicalLocation = server.getOWLOntologyManager().getPhysicalURIForOntology(ontology);
+
+            server.removeOntology(ontology);
+            server.loadOntology(physicalLocation);
+
+            sb.append("<p>Removed ");
+            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
+            sb.append("</p><p>saved session: [");
+            sb.append(kit.getCurrentLabel());
+            sb.append("]</p>");
+
+        }
+        catch (Exception e) {
+            sb.append("Could not reload ontology: ");
+            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
+            sb.append("<p>");
+            sb.append(e.getMessage());
+            sb.append("</p>");
+        }
+
+        return createManagePageRenderer(kit, getMap(server), sb.toString(), pageURL);
+    }
+
+
+    private NestedHTMLDoclet handleBrowse(OWLOntology ontology, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        if (ontology != null){
+            kit.getOWLServer().setActiveOntology(ontology);
+            throw new RedirectException(kit.getBaseURL());
+        }
+        throw new OntServerException("Cannot browse to unknown ontology: " + ontology);
+    }
+
+
+    private boolean handleSetVisibility(OWLOntology ontology, boolean visible, OWLHTMLKit kit) {
+        if (ontology != null){
+            kit.setOntologyVisible(ontology, visible);
+            return true;
         }
         return false;
     }
 
 
-    private NestedHTMLDoclet createManagePageRenderer(OWLHTMLServer server, Map<URI, URI> map, String message, URL pageURL) throws OntServerException {
+    private NestedHTMLDoclet createManagePageRenderer(OWLHTMLKit kit, Map<OWLOntologyID, URI> map, String message, URL pageURL) throws OntServerException {
 
-        EmptyOWLDocPage ren = new EmptyOWLDocPage(server);
+        EmptyOWLDocPage ren = new EmptyOWLDocPage(kit);
         ren.setTitle(OntologyBrowserConstants.MANAGE_LABEL);
         ren.setAutoFocusedComponent(OntologyBrowserConstants.LOAD_ONTOLOGIES_INPUT_ID);
 
-        Map<String, URI> bookmarks = getBookmarks(server);
+        Map<String, URI> bookmarks = getBookmarks(kit.getOWLServer());
         final LoadFormDoclet loadDoclet = new LoadFormDoclet();
         loadDoclet.addBookmarkSet("or Select a bookmark from below:", bookmarks);
 
@@ -257,16 +263,16 @@ public class ManageOntologies extends AbstractOntologyServerServlet {
                 if (message == null){
                     message = "";
                 }
-                String contentsURL = URLUtils.createRelativeURL(pageURL, server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML));
+                String contentsURL = URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML));
                 message += ("<p class='warn'>There appear to be missing imports in your ontology.</p>" +
-                        "<p>You can specify a location for any that have not been loaded in the following table.<br />" +
-                        "Or, you can <a style='font-weight: bolder; color: blue;' target='_top' href='" + contentsURL +
-                        "'>continue to browse</a> your ontology without loading the imports.</p>");
+                            "<p>You can specify a location for any that have not been loaded in the following table.<br />" +
+                            "Or, you can <a style='font-weight: bolder; color: blue;' target='_top' href='" + contentsURL +
+                            "'>continue to browse</a> your ontology without loading the imports.</p>");
             }
 
             ren.addDoclet(loadDoclet);
 
-            OntologyMappingsTableDoclet table = new OntologyMappingsTableDoclet(server);
+            OntologyMappingsTableDoclet table = new OntologyMappingsTableDoclet(kit);
             table.setMap(map);
             ren.addDoclet(table);
         }
@@ -279,59 +285,38 @@ public class ManageOntologies extends AbstractOntologyServerServlet {
     }
 
 
-    public static Map<URI, URI> getMap(OWLServer server){
-        Map<URI, URI> locationMap = new HashMap<URI, URI>();
+    public static Map<OWLOntologyID, URI> getMap(OWLServer server){
+        Map<OWLOntologyID, URI> ontology2locationMap = new HashMap<OWLOntologyID, URI>();
         final Set<OWLOntology> ontologies = server.getOntologies();
         for (OWLOntology ont : ontologies){
-            locationMap.put(ont.getURI(), server.getOWLOntologyManager().getPhysicalURIForOntology(ont));
+            ontology2locationMap.put(ont.getOntologyID(), server.getOWLOntologyManager().getPhysicalURIForOntology(ont));
             for (OWLImportsDeclaration importsDecl : ont.getImportsDeclarations()){
-                if (server.getOWLOntologyManager().getOntology(importsDecl.getImportedOntologyURI()) == null){
-                    locationMap.put(importsDecl.getImportedOntologyURI(), null);
+                if (server.getOWLOntologyManager().getOntology(importsDecl.getIRI()) == null){
+                    ontology2locationMap.put(new OWLOntologyID(importsDecl.getIRI()), null);
                 }
             }
         }
-        return locationMap;
+        return ontology2locationMap;
     }
 
 
-    private Set<URI> getURIsFromParams(Map<String, String> params) {
-        final URI uri = getURIFromParam(params.get(OntologyBrowserConstants.PARAM_URI));
-        if (uri != null){
-            return Collections.singleton(uri);
-        }
-        else{
-            Set<URI> uris = new HashSet<URI>();
-            for (String param : params.keySet()){
-                try {
-                    URI ontURI = new URI(param);
-                    if (ontURI.isAbsolute()){
-                        URI physicalURI = new URI(params.get(param));
-                        if (physicalURI.isAbsolute()){
-                            uris.add(physicalURI);
-                        }
-                    }
-                }
-                catch (URISyntaxException e) {
-                    // this wasn't a mapping property - do nothing
-                }
-            }
-            return uris;
-        }
+    private URI getURIFromParam(String param) throws URISyntaxException {
+        String ontURIStr = param.trim();
+        return new URI(ontURIStr);
     }
 
-    private URI getURIFromParam(String param){
-        if (param != null && param.length() > 0){
-            String ontURIStr = param.trim();
-            if (ontURIStr != null){
-                logger.debug("uri param: " + ontURIStr);
-                return URI.create(ontURIStr);
+    private OWLOntology getOntologyFromParam(String param, OWLServer server) throws URISyntaxException {
+        IRI iri = IRI.create(getURIFromParam(param));
+        for (OWLOntology ontology : server.getActiveOntologies()){
+            if (iri.equals(ontology.getOntologyID().getDefaultDocumentIRI())){
+                return ontology;
             }
         }
         return null;
     }
 
 
-    public Map<String, URI> getBookmarks(OWLHTMLServer server) {
+    public Map<String, URI> getBookmarks(OWLServer server) {
         Map<String, URI> bookmarks = Collections.emptyMap();
         File bookmarksFile = SessionManager.getFile(OntologyBrowserConstants.BOOKMARKS_XML);
         if (!bookmarksFile.exists()){

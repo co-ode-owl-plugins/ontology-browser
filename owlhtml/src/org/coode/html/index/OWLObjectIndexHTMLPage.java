@@ -1,12 +1,13 @@
 package org.coode.html.index;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLElementsDoclet;
 import org.coode.html.doclet.ElementsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.page.EmptyOWLDocPage;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLEntityIndexHTMLPage<O extends OWLObject> extends EmptyOWLDocPage<OWLOntology> {
+public class OWLObjectIndexHTMLPage<O extends OWLObject> extends EmptyOWLDocPage<OWLOntology> {
 
     private Set<O> index = new HashSet<O>();
 
@@ -33,9 +34,9 @@ public class OWLEntityIndexHTMLPage<O extends OWLObject> extends EmptyOWLDocPage
     private String id = "Index";
 
 
-    public OWLEntityIndexHTMLPage(OWLHTMLServer server) {
-        super(server);
-        indexDoclet = new AbstractOWLElementsDoclet<OWLOntology, O>(id, ElementsDoclet.Format.list, server) {
+    public OWLObjectIndexHTMLPage(OWLHTMLKit kit) {
+        super(kit);
+        indexDoclet = new AbstractOWLElementsDoclet<OWLOntology, O>(id, ElementsDoclet.Format.list, kit) {
             protected Collection<O> getElements(Set<OWLOntology> onts) {
                 return index;
             }
@@ -43,7 +44,7 @@ public class OWLEntityIndexHTMLPage<O extends OWLObject> extends EmptyOWLDocPage
                 return id + " (" + index.size() + ")";
             }
         };
-        String contentWindow = getServer().getProperties().get(OWLHTMLConstants.OPTION_CONTENT_WINDOW);
+        String contentWindow = getHTMLGenerator().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
         if (contentWindow != null){
             indexDoclet.setTarget(OWLHTMLConstants.LinkTarget.valueOf(contentWindow));
         }

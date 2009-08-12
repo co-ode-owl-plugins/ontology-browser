@@ -1,5 +1,5 @@
 /*
- * Control of AJAX calls to build the query form dynamically and request results from the ontology server
+ * Control of AJAX calls to build the query form dynamically and request results from the ontology kit
  *
  */
 
@@ -295,7 +295,7 @@ function requestFillerConstraints(callingObject) {
     var fillerElement = getNamedSubElement(conjunctElement, "value");
     if (fillerElement != null){
 
-        // save the filler element to repopulate when our server returns
+        // save the filler element to repopulate when our kit returns
         constrainElement = fillerElement;
 
         var selectedFiller = getValueForElement(constrainElement);//constrainElement.options[constrainElement.selectedIndex].value;

@@ -1,11 +1,12 @@
 package org.coode.html.summary;
 
-import org.coode.html.OWLHTMLServer;
-import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.cloud.ClassesByUsageCloud;
 import org.coode.html.doclet.*;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collections;
 
@@ -21,29 +22,30 @@ import java.util.Collections;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLOntologySummaryHTMLPage extends AbstractSummaryHTMLPage<OWLOntology> {
+public class OWLOntologySummaryHTMLPage extends EmptyOWLDocPage<OWLOntology> {
 
     private ClassesByUsageCloud cloudModel;
     private BookmarksDoclet bookmarksDoclet;
 
-    public OWLOntologySummaryHTMLPage(OWLHTMLServer server) {
-        super(server);
+    public OWLOntologySummaryHTMLPage(final OWLHTMLKit kit) {
+        super(kit);
 
-        addDoclet(new OntologyAnnotationsDoclet(server));
+        addDoclet(new OntologyTitleDoclet(kit));
+        addDoclet(new OntologyAnnotationsDoclet(kit));
 
-        final OntologyContentsDoclet referencesDoclet = new OntologyContentsDoclet(server);
+        final OntologyContentsDoclet referencesDoclet = new OntologyContentsDoclet(kit);
         referencesDoclet.setTitle("References");
         addDoclet(referencesDoclet);
 
-        addDoclet(new OntologyImportsDoclet(server));
+        addDoclet(new OntologyImportsDoclet(kit));
 
-        bookmarksDoclet = new BookmarksDoclet("Bookmarks", ElementsDoclet.Format.list, server);
+        bookmarksDoclet = new BookmarksDoclet("Bookmarks", ElementsDoclet.Format.list, kit);
         addDoclet(bookmarksDoclet);
 
-        if (server.getProperties().isSet(OWLHTMLConstants.OPTION_RENDER_ONTOLOGY_SUMMARY_CLOUD)){
-            cloudModel = new ClassesByUsageCloud(getServer());
-            CloudDoclet<OWLClass> cloudDoclet = new CloudDoclet<OWLClass>(cloudModel, getServer());
-            cloudDoclet.setComparator(getServer().getComparator());
+        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
+            cloudModel = new ClassesByUsageCloud(getHTMLGenerator());
+            CloudDoclet<OWLClass> cloudDoclet = new CloudDoclet<OWLClass>(cloudModel, getHTMLGenerator());
+            cloudDoclet.setComparator(getHTMLGenerator().getOWLServer().getComparator());
             cloudDoclet.setThreshold(8);
             cloudDoclet.setZoom(10);
             addDoclet(cloudDoclet);
@@ -54,7 +56,7 @@ public class OWLOntologySummaryHTMLPage extends AbstractSummaryHTMLPage<OWLOntol
     public void setUserObject(OWLOntology object) {
         super.setUserObject(object);
 
-        if (getServer().getProperties().isSet(OWLHTMLConstants.OPTION_RENDER_ONTOLOGY_SUMMARY_CLOUD)){
+        if (getHTMLGenerator().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
             // only show the classes in this ontology
             cloudModel.setOntologies(Collections.singleton(getUserObject()));
         }

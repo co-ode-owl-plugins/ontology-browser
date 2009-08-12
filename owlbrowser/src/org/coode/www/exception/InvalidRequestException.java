@@ -3,6 +3,8 @@
 */
 package org.coode.www.exception;
 
+import org.coode.html.impl.OWLHTMLParam;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.Map;
@@ -18,14 +20,14 @@ import java.util.Set;
  */
 public class InvalidRequestException extends OntServerException {
 
-    public InvalidRequestException(HttpServletRequest request, Map<String, Set<String>> requiredParams) {
+    public InvalidRequestException(HttpServletRequest request, Map<OWLHTMLParam, Set<String>> requiredParams) {
         super("<h2>INCORRECT USAGE:</h2>" + renderRequest(request) + "<p>should be:<br />" + renderRequiredParams(requiredParams));
     }
 
 
-    private static String renderRequiredParams(Map<String, Set<String>> requiredParams) {
+    private static String renderRequiredParams(Map<OWLHTMLParam, Set<String>> requiredParams) {
         StringBuilder s = new StringBuilder();
-        for (String param : requiredParams.keySet()){
+        for (OWLHTMLParam param : requiredParams.keySet()){
             final Set<String> requiredValues = requiredParams.get(param);
             if (requiredValues.size() > 1){
                 s.append(param).append("=[");

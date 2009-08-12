@@ -1,15 +1,17 @@
 package org.coode.html.url;
 
-import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.owl.mngr.ServerConstants;
+import org.apache.log4j.Logger;
 
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.Map;
 
 /**
@@ -34,57 +36,71 @@ public class ServletURLScheme extends AbstractURLScheme {
 
     private static final Logger logger = Logger.getLogger(ServletURLScheme.class.getName());
 
-    private static final String PARAM_URI = "uri";
-    private static final String PARAM_ONTOLOGY = "ontology";
-
     private String additionalLinkArguments;
 
-    public ServletURLScheme(OWLHTMLServer server) {
-        super(server);
+    public ServletURLScheme(OWLHTMLKit kit) {
+        super(kit);
     }
 
 
-    public URL getURLForNamedObject(OWLNamedObject object) {
+    public URL getURLForOWLObject(OWLObject owlObject) {
         try {
-            String encodedURI = URLEncoder.encode(object.getURI().toString(), OWLHTMLConstants.DEFAULT_ENCODING);
-            String partialURL = NamedObjectType.getType(object) + "/?" + PARAM_URI + "=" + encodedURI;
-
-            if (additionalLinkArguments != null){
-                partialURL += additionalLinkArguments;
+            URL url = null;
+            URI uri = null;
+            String type = null;
+            if (owlObject instanceof OWLEntity){
+                uri = ((OWLEntity)owlObject).getURI();
+                type = NamedObjectType.getType((OWLEntity)owlObject).toString();
+            }
+            else if (owlObject instanceof OWLOntology){
+                uri = ((OWLOntology)owlObject).getOntologyID().getOntologyIRI().toURI();
+                type = NamedObjectType.ontologies.toString();
             }
 
-            return new URL(getBaseURL(), partialURL);
+            if (uri != null && type != null){
+                String encodedURI = URLEncoder.encode(uri.toString(), OWLHTMLConstants.DEFAULT_ENCODING);
+                String partialURL = type + "/" + OWLHTMLConstants.START_QUERY + OWLHTMLParam.uri + OWLHTMLConstants.EQUALS + encodedURI;
+
+                if (additionalLinkArguments != null){
+                    partialURL += additionalLinkArguments;
+                }
+
+                url = new URL(getBaseURL(), partialURL);
+            }
+            return url;
         }
         catch (Exception e) {
-            logger.error(e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
-    
-    public OWLNamedObject getNamedObjectForURL(URL url) {
-        OWLNamedObject object = null;
 
-        Map<String, String> paramMap = URLUtils.getParams(url);
-        if (!paramMap.isEmpty()){
-            String uri = paramMap.get(PARAM_URI);
+    public OWLEntity getOWLObjectForURL(URL url) {
+        try {
+            OWLEntity object = null;
 
-            NamedObjectType type = getType(url);
-
-            if (uri != null){
-                object = server.getFinder().getOWLNamedObjects(uri, type).iterator().next(); // return the first
-
+            Map<OWLHTMLParam, String> paramMap = URLUtils.getParams(url);
+            if (!paramMap.isEmpty()){
+                String uriStr = paramMap.get(OWLHTMLParam.uri);
+                if (uriStr != null){
+                    URI uri = new URI(URLDecoder.decode(uriStr, OWLHTMLConstants.DEFAULT_ENCODING));
+                    NamedObjectType type = getType(url);
+                    object = getOWLEntity(uri, type);
+                }
             }
+            return object;
         }
-        return object;
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            String encodedURI = URLEncoder.encode(ont.getURI().toString(), OWLHTMLConstants.DEFAULT_ENCODING);
+            String encodedURI = URLEncoder.encode(ont.getOntologyID().getOntologyIRI().toString(), OWLHTMLConstants.DEFAULT_ENCODING);
 
-            return new URL(getBaseURL(), type + "/?" + PARAM_ONTOLOGY + "=" + encodedURI);
+            return new URL(getBaseURL(), type + "/" + OWLHTMLConstants.START_QUERY + OWLHTMLParam.ontology + OWLHTMLConstants.EQUALS + encodedURI);
         }
         catch (Exception e) {
             logger.error(e);
@@ -102,5 +118,9 @@ public class ServletURLScheme extends AbstractURLScheme {
 
     public void clearAdditionalLinkArguments() {
         additionalLinkArguments = null;
+    }
+
+    protected OWLEntity getOWLEntity(URI uri, NamedObjectType type){
+        return kit.getOWLServer().getFinder().getOWLEntities(uri, type).iterator().next(); // return the first
     }
 }

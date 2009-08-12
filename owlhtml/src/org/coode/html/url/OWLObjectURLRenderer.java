@@ -3,7 +3,9 @@
 */
 package org.coode.html.url;
 
-import org.semanticweb.owl.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import java.net.URL;
 
@@ -15,10 +17,10 @@ import java.net.URL;
  * Bio Health Informatics Group<br>
  * Date: Feb 12, 2008<br><br>
  */
-public interface NamedObjectURLRenderer {
+public interface OWLObjectURLRenderer {
 
-    URL getURLForNamedObject(OWLNamedObject object);
+    URL getURLForOWLObject(OWLObject owlObject);
 
-    OWLNamedObject getNamedObjectForURL(URL url);
-    
+    OWLObject getOWLObjectForURL(URL url);
+
 }

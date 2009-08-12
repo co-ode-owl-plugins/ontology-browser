@@ -1,20 +1,20 @@
 package org.coode.www.mngr;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLServerImpl;
+import org.coode.html.impl.OWLHTMLKitImpl;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.url.RestURLScheme;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.ServerConstants;
-import org.coode.owl.mngr.ServerProperties;
+import org.coode.owl.mngr.ServerProperty;
+import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
 import org.coode.suggestor.api.SuggestorManager;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
-import org.coode.www.query.QuickDescriptionParser;
 import org.coode.www.servlet.ManageOntologies;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -26,9 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -55,7 +53,7 @@ public class SessionManager {
 
     private static final String ID = "ID";
 
-    private static Map<SessionID, OWLHTMLServer> activeServers = new HashMap<SessionID, OWLHTMLServer>();
+    private static Map<SessionID, OWLHTMLKit> activeServers = new HashMap<SessionID, OWLHTMLKit>();
     private static Map<String, SuggestorManager> activeSuggestorManagers = new HashMap<String, SuggestorManager>();
     private static final String URI_MAPPING_MARKER = "##";
 
@@ -66,7 +64,7 @@ public class SessionManager {
      * @return
      * @throws OntServerException
      */
-    public synchronized static OWLHTMLServer getServer(HttpServletRequest request) throws OntServerException {
+    public synchronized static OWLHTMLKit getServer(HttpServletRequest request) throws OntServerException {
         HttpSession session = request.getSession(true);
 
         if (session.isNew()){
@@ -85,38 +83,39 @@ public class SessionManager {
      * @return
      * @throws OntServerException
      */
-    public synchronized static OWLHTMLServer getServer(HttpServletRequest request, String label) throws OntServerException {
-        OWLHTMLServer server = getServer(request);
-        if (label != null && !label.equals(server.getCurrentLabel())){
-            loadServerState(server, label);
+    public synchronized static OWLHTMLKit getServer(HttpServletRequest request, String label) throws OntServerException {
+        OWLHTMLKit kit = getServer(request);
+        if (label != null && !label.equals(kit.getCurrentLabel())){
+            loadServerState(kit, label);
         }
-        return server;
+        return kit;
     }
 
 
     /**
      * Persist the current loaded ontologies with their mappings
-     * @param server note: will set the current label on the server
+     * @param kit note: will set the current label on the server
      * @throws OntServerException
      */
-    public synchronized static void labelServerState(OWLHTMLServer server) throws OntServerException {
-        String label = server.getID() + "-" + createID();
+    public synchronized static void labelServerState(OWLHTMLKit kit) throws OntServerException {
+        String label = kit.getID() + "-" + createID();
         File file = getFile(label + OntologyBrowserConstants.SERVER_STATES_EXT);
         try {
             OutputStream out = new FileOutputStream(file);
             PrintWriter writer = new PrintWriter(out);
-            Map<URI, URI> ontologyMappings = ManageOntologies.getMap(server);
-            Set<URI> onts = ontologyMappings.keySet();
+            Map<OWLOntologyID, URI> ontologyMappings = ManageOntologies.getMap(kit.getOWLServer());
+            Set<OWLOntologyID> onts = ontologyMappings.keySet();
 
-            server.getProperties().save(out);
+            // this saves the base properties (which includes the OWL server properties)
+            kit.getHTMLProperties().save(out);
 
             // always print the active ontology first
-            URI activeOnt = server.getActiveOntology().getURI();
-            writer.println(URI_MAPPING_MARKER + activeOnt + "=" + ontologyMappings.get(activeOnt));
+            OWLOntologyID activeOnt = kit.getOWLServer().getActiveOntology().getOntologyID();
+            writer.println(URI_MAPPING_MARKER + activeOnt.getOntologyIRI() + "=" + ontologyMappings.get(activeOnt));
 
             onts.remove(activeOnt);
-            for (URI ont : onts){
-                writer.println(URI_MAPPING_MARKER + ont + "=" + ontologyMappings.get(ont));
+            for (OWLOntologyID ont : onts){
+                writer.println(URI_MAPPING_MARKER + ont.getOntologyIRI() + "=" + ontologyMappings.get(ont));
             }
 
             writer.flush();
@@ -125,8 +124,8 @@ public class SessionManager {
             writer.close();
             out.close();
 
-            server.setCurrentLabel(label);
-            logger.debug("server state saved at: " + file.getAbsolutePath());
+            kit.setCurrentLabel(label);
+            logger.debug("kit state saved at: " + file.getAbsolutePath());
         }
         catch (IOException e) {
             throw new OntServerException(e);
@@ -136,13 +135,13 @@ public class SessionManager {
 
     /**
      * Clears the given server and replaces its state with that specified by the label given
-     * @param server
+     * @param kit
      * @param label
      * @throws OntServerException
      */
-    private synchronized static void loadServerState(OWLHTMLServer server, String label) throws OntServerException {
+    private synchronized static void loadServerState(OWLHTMLKit kit, String label) throws OntServerException {
 
-        server.clearOntologies(); // dump all ontologies and caches
+        kit.getOWLServer().clearOntologies(); // dump all ontologies and caches
 
         try {
             File file = getFile(label + OntologyBrowserConstants.SERVER_STATES_EXT);
@@ -151,7 +150,7 @@ public class SessionManager {
 
             // pass 1 to get the properties
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-            server.getProperties().load(in);
+            kit.getHTMLProperties().load(in);
             in.close();
 
             // pass 2 to get the ontology mappings
@@ -166,13 +165,13 @@ public class SessionManager {
                         URI ontURI = new URI(param[0].trim());
                         URI physicalURI = new URI(param[1].trim());
                         if (ontURI.isAbsolute() && physicalURI.isAbsolute()){
-                            server.loadOntology(physicalURI); // auto set active ont to the first
+                            kit.getOWLServer().loadOntology(physicalURI); // auto set active ont to the first
                         }
                     }
                     currentLine++;
                 }
 
-                server.setCurrentLabel(label);
+                kit.setCurrentLabel(label);
             }
             catch (URISyntaxException e) {
                 throw new ParseException("Invalid URI in content: " + e.getInput(), currentLine);
@@ -195,20 +194,20 @@ public class SessionManager {
         return new File(OntologyBrowserConstants.SERVER_STATES_DIR + name);
     }
 
-    /**
-     * One suggestor per server
-     * @param server
-     * @return
-     */
-    public synchronized static SuggestorManager getSuggestorManager(OWLServer server) {
-        final String id = server.getID();
-        SuggestorManager sm = activeSuggestorManagers.get(id);
-        if (sm == null){
-            sm = new SuggestorManagerAdapter(server);
-            activeSuggestorManagers.put(id, sm);
-        }
-        return sm;
-    }
+//    /**
+//     * One suggestor per kit
+//     * @param kit
+//     * @return
+//     */
+//    public synchronized static SuggestorManager getSuggestorManager(OWLServer kit) {
+//        final String id = kit.getID();
+//        SuggestorManager sm = activeSuggestorManagers.get(id);
+//        if (sm == null){
+//            sm = new SuggestorManagerAdapter(kit);
+//            activeSuggestorManagers.put(id, sm);
+//        }
+//        return sm;
+//    }
 
     public synchronized static void closeSession(HttpSession mySession) {
         if (mySession != null){
@@ -220,10 +219,10 @@ public class SessionManager {
 
     public synchronized static void cleanupSession(SessionID id) {
 
-        OWLServer server = activeServers.remove(id);
-        if (server != null){ // might already have been tidied away
-            final String serverID = server.getID();
-            server.dispose();
+        OWLHTMLKit kit = activeServers.remove(id);
+        if (kit != null){ // might already have been tidied away
+            final String serverID = kit.getID();
+            kit.dispose();
 
             SuggestorManager sm = activeSuggestorManagers.remove(serverID);
             if (sm != null){
@@ -246,9 +245,9 @@ public class SessionManager {
 
             SessionID id = new SessionID();
 
-            OWLHTMLServer server = createServer(id.id, basePath);
+            OWLHTMLKit kit = createServer(id.id, basePath);
 
-            activeServers.put(id, server);
+            activeServers.put(id, kit);
             mySession.setAttribute(ID, id);
         }
         catch (MalformedURLException e) {
@@ -258,21 +257,20 @@ public class SessionManager {
         logger.debug("active suggestor managers: " + activeSuggestorManagers.size());
     }
 
-    private static OWLHTMLServer createServer(String id, URL basePath) {
-        OWLOntologyManager mngr = org.semanticweb.owl.apibinding.OWLManager.createOWLOntologyManager();
+    private static OWLHTMLKit createServer(String id, URL basePath) {
+
+        OWLHTMLKit kit = new OWLHTMLKitImpl(id, basePath);
 
         // set silent error handling for missing imports
-        mngr.setSilentMissingImportsHandling(true);
-//        mngr.addMissingImportListener(missingImportsListener);
-
-        OWLHTMLServer server = new OWLHTMLServerImpl(id, mngr, basePath);
+        kit.getOWLServer().getOWLOntologyManager().setSilentMissingImportsHandling(true);
 
         // use a servlet URL scheme which encodes the names in params
-        server.setURLScheme(new RestURLScheme(server));
+        kit.setURLScheme(new RestURLScheme(kit));
 
         // register parsers
-        server.registerDescriptionParser(ServerConstants.Syntax.man.toString(), new ManchesterOWLSyntaxParser(server));
-        server.registerDescriptionParser(ServerConstants.Syntax.qd.toString(), new QuickDescriptionParser(server));
+        kit.getOWLServer().registerDescriptionParser(ServerConstants.Syntax.man.toString(),
+                                                           new ManchesterOWLSyntaxParser(kit.getOWLServer()));
+//        kit.registerDescriptionParser(ServerConstants.Syntax.qd.toString(), new QuickDescriptionParser(kit));
 
         boolean defaultsLoaded = false;
 
@@ -280,7 +278,7 @@ public class SessionManager {
         if (file.exists()){
             try {
                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-                server.getProperties().load(in);
+                kit.getHTMLProperties().load(in);
                 in.close();
                 defaultsLoaded = true;
             }
@@ -291,54 +289,51 @@ public class SessionManager {
 
         if (!defaultsLoaded){
 
-            setupDefaultServerProperties(server);
+            setupDefaultServerProperties(kit);
 
             try {
                 OutputStream out = new FileOutputStream(file);
-                server.getProperties().save(out);
+                kit.getHTMLProperties().save(out);
             }
             catch (IOException e) {
                 logger.error("Could not save default properties");
             }
         }
 
-        return server;
+
+        return kit;
     }
 
 
-    private static void setupDefaultServerProperties(OWLHTMLServer server) {
-        ServerProperties properties = server.getProperties();
+    private static void setupDefaultServerProperties(OWLHTMLKit kit) {
+
+        ServerPropertiesAdapter<OWLHTMLProperty> properties = kit.getHTMLProperties();
 
         // by default, do not use frames navigation
-        properties.set(OWLHTMLConstants.OPTION_CONTENT_WINDOW, null);
+        properties.set(OWLHTMLProperty.optionContentWindow, null);
 
 //        // a top ontology is created (with a top level property etc)
 //        properties.set(ServerConstants.OPTION_CREATE_TOP_ONTOLOGY, ServerConstants.TRUE);
 
         // the default entities index is at the location "entities/"
-        properties.set(OWLHTMLConstants.OPTION_INDEX_ALL_URL, "entities/");
+        properties.set(OWLHTMLProperty.optionIndexAllURL, "entities/");
 
         // make sure the reasoner is enabled to allow dl query etc
-        properties.set(OWLHTMLConstants.OPTION_REASONER_ENABLED, ServerConstants.TRUE);
-
-        // default to factplusplus
-        properties.set(ServerConstants.OPTION_REASONER, ServerConstants.PELLET);
-
+        properties.setBoolean(OWLHTMLProperty.optionReasonerEnabled, true);
+        
         // render a permalink
-        properties.set(OWLHTMLConstants.OPTION_RENDER_PERMALINK, ServerConstants.TRUE);
+        properties.setBoolean(OWLHTMLProperty.optionRenderPermalink, true);
+
+        properties.setBoolean(OWLHTMLProperty.optionShowMiniHierarchies, true);
+
+        properties.setBoolean(OWLHTMLProperty.optionShowInferredHierarchies, false);
+
+        properties.setBoolean(OWLHTMLProperty.optionRenderSubExpandLinks, false);
 
         // default location for DIG reasoner
-        if (server.getBaseURL().toString().contains("localhost")){ // just to make sure I don't accidentally publish this address
-            properties.set(ServerConstants.OPTION_DIG_REASONER_URL, "http://rpc295.cs.man.ac.uk:8080");
+        if (kit.getBaseURL().toString().contains("localhost")){ // just to make sure I don't accidentally publish this address
+            kit.getOWLServer().getProperties().set(ServerProperty.optionReasonerUrl, "http://rpc295.cs.man.ac.uk:8080");
         }
-
-        properties.set(OWLHTMLConstants.OPTION_SHOW_MINI_HIERARCHIES, ServerConstants.TRUE);
-
-        properties.set(OWLHTMLConstants.OPTION_SHOW_INFERRED_HIERARCHIES, ServerConstants.FALSE);
-
-        properties.set(ServerConstants.OPTION_RENDER_SUB_EXPAND_LINKS, ServerConstants.FALSE);
-
-        properties.set(ServerConstants.OPTION_LABEL_LANG, "");
     }
 
 

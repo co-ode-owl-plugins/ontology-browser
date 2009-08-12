@@ -3,10 +3,10 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collection;
 import java.util.Set;
@@ -19,13 +19,13 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jan 25, 2008<br><br>
  */
-public class AssertedEquivalentsDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLDescription> {
+public class AssertedEquivalentsDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLClassExpression> {
 
-    public AssertedEquivalentsDoclet(OWLHTMLServer server) {
-        super("Equivalents", Format.list, server);
+    public AssertedEquivalentsDoclet(OWLHTMLKit kit) {
+        super("Equivalents", Format.list, kit);
     }
 
-    protected Collection<OWLDescription> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLClassExpression> getElements(Set<OWLOntology> onts) {
         return getUserObject().getEquivalentClasses(onts);
     }
 }

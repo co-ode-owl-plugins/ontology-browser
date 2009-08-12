@@ -1,12 +1,16 @@
 package org.coode.owl.mngr.impl;
 
-import org.coode.owl.mngr.NamedObjectShortFormProvider;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.util.ToldClassHierarchyReasoner;
+import org.semanticweb.owlapi.inference.OWLClassReasoner;
+import org.semanticweb.owlapi.inference.OWLReasonerException;
+import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.AnnotationValueShortFormProvider;
+import org.coode.owl.mngr.OWLServerListener;
+import org.coode.owl.util.ModelUtil;
 
-import java.net.URI;
-import java.util.Collections;
+import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -36,33 +40,17 @@ import java.util.Collections;
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Feb 18, 2009<br><br>
+ * Date: Aug 6, 2009<br><br>
  */
-public class LanguageLabelShortFormProvider extends FragmentShortFormProvider {
+public class InferredClassHierarchyProvider extends ClassHierarchyProvider{
 
-    private AnnotationValueShortFormProvider sfp;
 
-    public LanguageLabelShortFormProvider(OWLServer server, URI annotationURI, String lang) {
-        sfp = new AnnotationValueShortFormProvider(Collections.singletonList(annotationURI),
-                                                   Collections.singletonMap(annotationURI, Collections.singletonList(lang)),
-                                                   server.getOWLOntologyManager());
+    public InferredClassHierarchyProvider(OWLServer server) {
+        super(server);
     }
 
 
-    public String getShortForm(OWLEntity entity) {
-        String label = sfp.getShortForm(entity);
-        if (label != null){
-            return label;
-        }
-        return super.getShortForm(entity);
-    }
-
-    public String getShortForm(OWLNamedObject obj) {
-        if (obj instanceof OWLOntology){
-            return super.getShortForm(obj);
-        }
-        else{
-            return getShortForm((OWLEntity)obj);
-        }
+    protected OWLClassReasoner getReasoner() {
+        return getServer().getOWLReasoner();
     }
 }

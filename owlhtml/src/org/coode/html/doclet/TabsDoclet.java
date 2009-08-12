@@ -3,7 +3,7 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.owl.mngr.NamedObjectType;
 
@@ -22,39 +22,35 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
 
     public static final String ID = "doclet.Tabs";
 
-    public TabsDoclet(OWLHTMLServer server) {
-        super(server);
+    public TabsDoclet(OWLHTMLKit kit) {
+        super(kit);
     }
 
     public void renderHeader(URL pageURL, PrintWriter out) {
         out.println("<div id='tabs'>");
         
-        OWLHTMLServer server = getServer();
+        OWLHTMLKit kit = getHTMLGenerator();
         final boolean singleFrame = isSingleFrameNavigation();
 
-        renderLink("All " + NamedObjectType.ontologies.getPluralRendering(),
-                   server.getURLScheme().getURLForIndex(NamedObjectType.ontologies),
-                   OWLHTMLConstants.LinkTarget.subnav, "", singleFrame, pageURL, out);
-        out.print(" | ");
+        for (NamedObjectType type : NamedObjectType.values()){
 
-        renderLink("All " + NamedObjectType.classes.getPluralRendering(),
-                   server.getURLScheme().getURLForIndex(NamedObjectType.classes),
-                   OWLHTMLConstants.LinkTarget.subnav, "", singleFrame, pageURL, out);
+        renderLink(type.getPluralRendering(),
+                   kit.getURLScheme().getURLForIndex(type),
+                   OWLHTMLConstants.LinkTarget.subnav,
+                   "",
+                   singleFrame,
+                   pageURL,
+                   out);
         out.print(" | ");
+        }
 
-        renderLink("All " + NamedObjectType.objectproperties.getPluralRendering(),
-                   server.getURLScheme().getURLForIndex(NamedObjectType.objectproperties),
-                   OWLHTMLConstants.LinkTarget.subnav, "", singleFrame, pageURL, out);
-        out.print(" | ");
-
-        renderLink("All " + NamedObjectType.dataproperties.getPluralRendering(),
-                   server.getURLScheme().getURLForIndex(NamedObjectType.dataproperties),
-                   OWLHTMLConstants.LinkTarget.subnav, "", singleFrame, pageURL, out);
-        out.print(" | ");
-
-        renderLink("All " + NamedObjectType.individuals.getPluralRendering(),
-                   server.getURLScheme().getURLForIndex(NamedObjectType.individuals),
-                   OWLHTMLConstants.LinkTarget.subnav, "", singleFrame, pageURL, out);
+        renderLink("Clouds",
+                   kit.getURLScheme().getURLForRelativePage("cloud/"),
+                   OWLHTMLConstants.LinkTarget.subnav,
+                   "",
+                   singleFrame,
+                   pageURL,
+                   out);
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {

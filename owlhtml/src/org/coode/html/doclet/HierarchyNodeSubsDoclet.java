@@ -3,11 +3,11 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.hierarchy.TreeFragment;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.semanticweb.owl.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -24,14 +24,14 @@ import java.util.Set;
  *
  * Special case, when the focused OWL Object is rendered, its subs are likely to be rendered differently from the rest of the tree
  */
-public class HierarchyNodeSubsDoclet<O extends OWLNamedObject> extends AbstractHierarchyNodeDoclet<O> {
+public class HierarchyNodeSubsDoclet<O extends OWLEntity> extends AbstractHierarchyNodeDoclet<O> {
 
     private int subThreshold = 3;
 
     private List<O> children;
 
-    public HierarchyNodeSubsDoclet(OWLHTMLServer server, TreeFragment<O> model) {
-        super(server, model);
+    public HierarchyNodeSubsDoclet(OWLHTMLKit kit, TreeFragment<O> model) {
+        super(kit, model);
     }
 
     /**
@@ -56,7 +56,7 @@ public class HierarchyNodeSubsDoclet<O extends OWLNamedObject> extends AbstractH
                 //+1 takes into account additional line used for link
                 final boolean hideSomeChildren = hideSomeChildren();
 
-                final OWLHTMLRenderer owlhtmlRenderer = new OWLHTMLRenderer(getServer());
+                final OWLHTMLRenderer owlhtmlRenderer = new OWLHTMLRenderer(getHTMLGenerator());
 
                 for (int i=0; i<children.size(); i++){
                     if (hideSomeChildren && i == subThreshold){
@@ -100,7 +100,7 @@ public class HierarchyNodeSubsDoclet<O extends OWLNamedObject> extends AbstractH
     public Set<URL> getRequiredJS() {
         Set<URL> js = super.getRequiredJS();
         if (hideSomeChildren()){
-            js.add(getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_TREE));
+            js.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_TREE));
         }
         return js;
     }

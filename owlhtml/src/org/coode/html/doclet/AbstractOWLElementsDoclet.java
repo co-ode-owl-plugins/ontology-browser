@@ -3,12 +3,12 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.renderer.ElementRenderer;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collection;
 import java.util.Set;
@@ -23,20 +23,21 @@ import java.util.Set;
  */
 public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends OWLObject> extends ElementsDoclet<O, E> {
 
-    private OWLHTMLServer server;
+    private OWLHTMLKit kit;
 
     private OWLHTMLConstants.LinkTarget linkTarget;
 
     private Set<OWLOntology> ontologies;
 
-    public AbstractOWLElementsDoclet(String name, Format format, OWLHTMLServer server) {
+
+    public AbstractOWLElementsDoclet(String name, Format format, OWLHTMLKit kit) {
         super(name, format);
-        this.server = server;
-        setComparator(server.getComparator());
+        this.kit = kit;
+        setComparator(kit.getOWLServer().getComparator());
     }
 
-    protected final OWLHTMLServer getServer(){
-        return server;
+    protected final OWLHTMLKit getHTMLGenerator(){
+        return kit;
     }
 
     public void setOntologies(Set<OWLOntology> onts){
@@ -49,7 +50,7 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
 
     protected final Collection<E> getElements(){
         if (ontologies == null){
-            return getElements(getServer().getVisibleOntologies());
+            return getElements(getHTMLGenerator().getVisibleOntologies());
         }
         else{
             return getElements(ontologies);
@@ -59,7 +60,7 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
     protected abstract Collection<E> getElements(Set<OWLOntology> ontologies);
 
     protected final ElementRenderer<? super E> getElementRenderer() {
-        OWLHTMLRenderer ren = new OWLHTMLRenderer(server);
+        OWLHTMLRenderer ren = new OWLHTMLRenderer(kit);
         if (linkTarget != null){
             ren.setContentTargetWindow(linkTarget);
         }

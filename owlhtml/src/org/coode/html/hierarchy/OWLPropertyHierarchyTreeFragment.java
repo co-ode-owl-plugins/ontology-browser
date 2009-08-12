@@ -3,16 +3,12 @@
 */
 package org.coode.html.hierarchy;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.inference.OWLPropertyReasoner;
-import org.semanticweb.owl.inference.OWLReasonerAdapter;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.*;
+import org.coode.html.OWLHTMLKit;
+import org.coode.owl.mngr.HierarchyProvider;
+import org.semanticweb.owlapi.inference.OWLReasonerException;
+import org.semanticweb.owlapi.model.*;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Iterator;
 
 /**
  * Author: Nick Drummond<br>
@@ -24,11 +20,11 @@ import java.util.Iterator;
  */
 public class OWLPropertyHierarchyTreeFragment<O extends OWLProperty> extends AbstractTreeFragment<O> {
 
-    private OWLPropertyReasoner hp;
+    private HierarchyProvider<O> hp;
 
-    public OWLPropertyHierarchyTreeFragment(OWLHTMLServer server, OWLPropertyReasoner hp) {
+    public OWLPropertyHierarchyTreeFragment(OWLHTMLKit kit, HierarchyProvider<O> hp) {
         this.hp = hp;
-        setComparator(server.getComparator());
+        setComparator(kit.getOWLServer().getComparator());
     }
 
     public String getTitle() {
@@ -38,20 +34,7 @@ public class OWLPropertyHierarchyTreeFragment<O extends OWLProperty> extends Abs
     protected void generateDescendantHierarchy(O node, int depth) throws OWLReasonerException {
         if (depth < getDescendantLevels()){
             // search for subclasses of the node
-            Set<O> namedSubs = new HashSet<O>();
-
-            if (node instanceof OWLObjectProperty){
-                Set<OWLObjectProperty> subs = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLObjectProperty)node));
-                for (OWLObjectProperty sub : subs) {
-                    namedSubs.add((O) sub);
-                }
-            }
-            else if (node instanceof OWLDataProperty){
-                Set<OWLDataProperty> subs = OWLReasonerAdapter.flattenSetOfSets(hp.getSubProperties((OWLDataProperty)node));
-                for (OWLDataProperty sub : subs) {
-                    namedSubs.add((O) sub);
-                }
-            }
+            Set<O> namedSubs = hp.getChildren(node);
 
             // and recurse
             for (O namedSub : namedSubs){
@@ -63,29 +46,9 @@ public class OWLPropertyHierarchyTreeFragment<O extends OWLProperty> extends Abs
 
     protected void generateAncestorHierarchy(O prop, int depth) throws OWLReasonerException {
         if (depth < getAncestorLevels()){
-            Set<O> namedSupers = new HashSet<O>();
-            Set<O> equivs = new HashSet<O>();
+            Set<O> namedSupers = hp.getParents(prop);
+            Set<O> equivs = hp.getEquivalents(prop);
 
-            if (prop instanceof OWLObjectProperty){
-                Set<OWLObjectProperty> subs = OWLReasonerAdapter.flattenSetOfSets(hp.getSuperProperties((OWLObjectProperty)prop));
-                for (OWLObjectProperty sub : subs) {
-                    namedSupers.add((O) sub);
-                }
-                Set<OWLObjectProperty> equivObjProps = hp.getEquivalentProperties((OWLObjectProperty)prop);
-                for (OWLObjectProperty equiv : equivObjProps) {
-                    equivs.add((O) equiv);
-                }
-            }
-            else if (prop instanceof OWLDataProperty){
-                Set<OWLDataProperty> subs = OWLReasonerAdapter.flattenSetOfSets(hp.getSuperProperties((OWLDataProperty)prop));
-                for (OWLDataProperty sub : subs) {
-                    namedSupers.add((O) sub);
-                }
-                Set<OWLDataProperty> equivObjProps = hp.getEquivalentProperties((OWLDataProperty)prop);
-                for (OWLDataProperty equiv : equivObjProps) {
-                    equivs.add((O) equiv);
-                }
-            }
 
             // check equivalent classes for a named member of an intersection
             for (O equiv : equivs){

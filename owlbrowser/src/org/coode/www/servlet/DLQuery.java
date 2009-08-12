@@ -3,13 +3,14 @@
 */
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.owl.mngr.OWLDescriptionParser;
+import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.page.DLQueryHTMLPage;
-import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -28,23 +29,23 @@ import java.util.Set;
  */
 public class DLQuery extends AbstractOntologyServerServlet {
 
-    private static final String PARAM_SYNTAX = "syntax";
 
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
+    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
         //@@TODO implement
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        String q = params.get(DLQueryHTMLPage.PARAM_EXPRESSION);
+    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
-        DLQueryHTMLPage acRenderer = new DLQueryHTMLPage(server);
+        String q = params.get(OWLHTMLParam.expression);
+
+        DLQueryHTMLPage acRenderer = new DLQueryHTMLPage(kit);
         acRenderer.setQuery(q);
 
         if (q != null){
-            String syntax = params.get(PARAM_SYNTAX);
-            OWLDescriptionParser parse = server.getDescriptionParser(syntax);
+            String syntax = params.get(OWLHTMLParam.syntax);
+            OWLClassExpressionParser parse = kit.getOWLServer().getClassExpressionParser(syntax);
             try {
-                OWLDescription descr = parse.parse(q);
+                OWLClassExpression descr = parse.parse(q);
             }
             catch (ParseException e) {
                 acRenderer.addError(e);
@@ -54,8 +55,8 @@ public class DLQuery extends AbstractOntologyServerServlet {
         return acRenderer;
     }
 
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
-        Map<String, Set<String>> required = new HashMap<String, Set<String>>();
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
+        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
 //        required.put(PARAM_EXPRESSION, Collections.singleton("<owl description>"));
         return required;
     }

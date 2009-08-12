@@ -1,8 +1,9 @@
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
@@ -30,36 +31,35 @@ import java.util.Set;
  */
 public class Index extends AbstractOntologyServerServlet {
 
-    private static final String PARAM_CONTENT = "content";
-
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
+    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
         // no implementation
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
-        String page = params.get(PARAM_CONTENT);
+    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
-        if (isSingleFrameNavigation(server)){
+        String page = params.get(OWLHTMLParam.content);
+
+        if (isSingleFrameNavigation(kit)){
             if (page == null){
-                throw new RedirectException(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML));
+                throw new RedirectException(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML));
             }
             else{
-                throw new RedirectException(server.getURLScheme().getURLForRelativePage(page));
+                throw new RedirectException(kit.getURLScheme().getURLForRelativePage(page));
             }
         }
         else{
             if (page == null){
-                return new FramesHTMLPage(server.getURLScheme().getURLForNamedObject(server.getActiveOntology()), server);
+                return new FramesHTMLPage(kit.getURLScheme().getURLForOWLObject(kit.getOWLServer().getActiveOntology()), kit);
             }
             else{
-                return new FramesHTMLPage(server.getURLScheme().getURLForRelativePage(page), server);
+                return new FramesHTMLPage(kit.getURLScheme().getURLForRelativePage(page), kit);
             }
         }
     }
 
 
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
-        Map<String, Set<String>> required = new HashMap<String, Set<String>>();
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
+        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
 //        required.put(PARAM_CONTENT, Collections.singleton("<page url>")); optional
         return required;
     }

@@ -4,6 +4,7 @@
 package org.coode.www.doclet;
 
 import org.coode.html.doclet.AbstractHTMLDoclet;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.www.OntologyBrowserConstants;
 
 import java.io.PrintWriter;
@@ -29,7 +30,7 @@ public class LoadFormDoclet extends AbstractHTMLDoclet {
         out.println("    <form style='float: left;  width: 50%;' id='specify' method='POST' action='.' target='_top' >\n" +
                     "        <label for='uri-spec'><h3 style='margin-bottom: 0;'>Specify the physical location of your ontology:</h3></label><br />\n" +
                     "        <input id='" + OntologyBrowserConstants.LOAD_ONTOLOGIES_INPUT_ID +
-                    "' name='" + OntologyBrowserConstants.PARAM_URI + "' type='text' style='width:80%; margin-top: 0;' />\n" +
+                    "' name='" + OWLHTMLParam.uri + "' type='text' style='width:80%; margin-top: 0;' />\n" +
                     "        <input name='action' type='submit' value='load' />\n" +
                     "    </form>\n" +
                     "    <!--form method='post' enctype='multipart/form-data' action='.'>\n" +

@@ -1,18 +1,17 @@
 package org.coode.html.page;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.MenuBarDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.coode.html.url.PermalinkURLScheme;
-import org.coode.owl.mngr.ServerConstants;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
-import java.io.PrintStream;
 import java.io.StringWriter;
 import java.net.URL;
 
@@ -36,19 +35,20 @@ import java.net.URL;
  */
 public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
-    private OWLHTMLServer server;
+    private OWLHTMLKit kit;
 
-    public EmptyOWLDocPage(OWLHTMLServer server) {
-        this.server = server;
-        String css = server.getProperties().get(OWLHTMLConstants.OPTION_DEFAULT_CSS);
+
+    public EmptyOWLDocPage(OWLHTMLKit kit) {
+        this.kit = kit;
+        String css = kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS);
         if (css != null){
-            addCSS(server.getURLScheme().getURLForRelativePage(css));
+            addCSS(kit.getURLScheme().getURLForRelativePage(css));
         }
         if (isSingleFrameNavigation()){
-            addJavascript(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
-            if (!server.getOntologies().isEmpty()){
-                addDoclet(new MenuBarDoclet(server));
-                addDoclet(new TabsDoclet(server));
+            addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
+            if (!kit.getOWLServer().getOntologies().isEmpty()){
+                addDoclet(new MenuBarDoclet(kit));
+                addDoclet(new TabsDoclet(kit));
             }
         }
     }
@@ -61,9 +61,9 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
         out.println("<p class='footer'>");
 
-        if (server.getProperties().isSet(OWLHTMLConstants.OPTION_RENDER_PERMALINK)){
+        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderPermalink)){
             renderLink(OWLHTMLConstants.PERMALINK_LABEL,
-                       new PermalinkURLScheme(server.getURLScheme(), server).getURLForAbsolutePage(pageURL),
+                       new PermalinkURLScheme(kit.getURLScheme(), kit).getURLForAbsolutePage(pageURL),
                        null, null, isSingleFrameNavigation(), pageURL, out);
             out.print(" | ");
         }
@@ -117,19 +117,19 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
         addError(msg);
     }
 
-    protected final OWLHTMLServer getServer() {
-        return server;
+    protected final OWLHTMLKit getHTMLGenerator() {
+        return kit;
     }
 
     protected final OWLHTMLRenderer getHTMLRenderer() {
-        return new OWLHTMLRenderer(server);
+        return new OWLHTMLRenderer(kit);
     }
 
     protected final boolean isSingleFrameNavigation() {
-        return server.getProperties().get(OWLHTMLConstants.OPTION_CONTENT_WINDOW) == null;
+        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 
     protected final boolean isReasonerEnabled() {
-        return server.getProperties().get(OWLHTMLConstants.OPTION_REASONER_ENABLED).equals(ServerConstants.TRUE);
+        return kit.getHTMLProperties().isSet(OWLHTMLProperty.optionReasonerEnabled);
     }
 }

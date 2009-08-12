@@ -1,9 +1,9 @@
 package org.coode.owl.util;
 
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import java.util.Comparator;
 
@@ -40,8 +40,8 @@ public class OWLObjectComparator<E extends OWLObject> implements Comparator<E> {
                     return 1;
                 }
 
-                String ren1 = server.getNameRenderer().getShortForm((OWLEntity)o1);
-                String ren2 = server.getNameRenderer().getShortForm((OWLEntity)o2);
+                String ren1 = server.getShortFormProvider().getShortForm((OWLEntity)o1);
+                String ren2 = server.getShortFormProvider().getShortForm((OWLEntity)o2);
 
                 return ren1.compareToIgnoreCase(ren2);
             }
@@ -54,7 +54,7 @@ public class OWLObjectComparator<E extends OWLObject> implements Comparator<E> {
                 return 1;
             }
             else{ // we don't care about the order of anonymous things - use default rendering for now
-                return o1.toString().compareToIgnoreCase(o2.toString());
+                return o1.compareTo(o2);
             }
         }
     }

@@ -3,15 +3,14 @@
 */
 package org.coode.html.url;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import edu.unika.aifb.rdf.api.syntax.RDFParser;
 
 /**
  * Author: Nick Drummond<br>
@@ -25,16 +24,16 @@ public abstract class AbstractURLScheme implements URLScheme {
 
     private static final Logger logger = Logger.getLogger(AbstractURLScheme.class);
 
-    protected final OWLHTMLServer server;
+    protected final OWLHTMLKit kit;
 
 
-    public AbstractURLScheme(OWLHTMLServer server) {
-        this.server = server;
+    public AbstractURLScheme(OWLHTMLKit kit) {
+        this.kit = kit;
     }
 
     public NamedObjectType getType(URL url) {
-        String relativeURL = URLUtils.createRelativeURL(server.getBaseURL(), url);
-        String[] path = relativeURL.split("/");
+        String relativeURL = URLUtils.createRelativeURL(kit.getBaseURL(), url);
+        String[] path = relativeURL.split(OWLHTMLConstants.SLASH);
         String typeName = path[0]; // always the first element
         try{
             return NamedObjectType.valueOf(typeName);
@@ -47,7 +46,7 @@ public abstract class AbstractURLScheme implements URLScheme {
 
     public URL getURLForIndex(NamedObjectType type) {
         try {
-            return new URL(server.getBaseURL(), type.toString() + "/");
+            return new URL(kit.getBaseURL(), type.toString() + OWLHTMLConstants.SLASH);
         }
         catch (MalformedURLException e) {
             logger.error("Could not create URL for index: " + type, e);
@@ -71,10 +70,10 @@ public abstract class AbstractURLScheme implements URLScheme {
     }
 
     public URL getBaseURL(){
-        return server.getBaseURL();
+        return kit.getBaseURL();
     }
 
-    protected OWLHTMLServer getServer(){
-        return server;
+    protected OWLHTMLKit getOWLHTMLKit(){
+        return kit;
     }
 }

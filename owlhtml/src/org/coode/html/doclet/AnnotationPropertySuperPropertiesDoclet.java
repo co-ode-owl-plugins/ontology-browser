@@ -1,12 +1,13 @@
-package org.coode.html;
+package org.coode.html.doclet;
 
-import org.coode.html.url.URLScheme;
-import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.inference.OWLPropertyReasoner;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLSubAnnotationPropertyOfAxiom;
 
-import java.net.URL;
+import java.util.Collection;
 import java.util.Set;
+import java.util.HashSet;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -31,35 +32,27 @@ import java.util.Set;
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Oct 2, 2007<br><br>
+ * Date: Jul 31, 2009<br><br>
  */
-public interface OWLHTMLServer extends OWLServer {
+public class AnnotationPropertySuperPropertiesDoclet extends AbstractOWLElementsDoclet<OWLAnnotationProperty, OWLAnnotationProperty>{
 
-    URL getBaseURL();
-    
-    URLScheme getURLScheme();
-
-    void setURLScheme(URLScheme urlScheme);
+    public AnnotationPropertySuperPropertiesDoclet(OWLHTMLKit kit) {
+        super("Superproperties", ElementsDoclet.Format.list, kit);
+    }
 
 
-    /**
-     * The ontologies that are visible in the browser (reasoner should always use getActiveOntologies)
-     * @return ontologies that are to be rendered in the interface (not including the 'system' meta ontology)
-     */
-    Set<OWLOntology> getVisibleOntologies();
-
-    void setOntologyVisible(OWLOntology ontology, boolean visible);
-
-
-    /**
-     * @param label
-     */
-    void setCurrentLabel(String label);
-
-    String getCurrentLabel();
+    protected Collection<OWLAnnotationProperty> getElements(Set< OWLOntology > ontologies) {
+        Set<OWLAnnotationProperty> superProperties = new HashSet<OWLAnnotationProperty>();
+        for (OWLOntology ont : ontologies){
+            for (OWLSubAnnotationPropertyOfAxiom ax : ont.getSubAnnotationPropertyOfAxioms(getUserObject())){
+                superProperties.add(ax.getSuperProperty());
+            }
+        }
+        return superProperties;
+    }
 }

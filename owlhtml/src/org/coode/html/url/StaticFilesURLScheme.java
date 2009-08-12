@@ -1,18 +1,16 @@
 package org.coode.html.url;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.owl.mngr.NamedObjectShortFormProvider;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.mngr.impl.FragmentShortFormProvider;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
 import java.net.*;
 import java.io.UnsupportedEncodingException;
-import java.util.Set;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -39,31 +37,48 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
     private static final Logger logger = Logger.getLogger(StaticFilesURLScheme.class.getName());
 
-    private NamedObjectShortFormProvider shortFormProvider;
+    private ShortFormProvider shortFormProvider;
+    private OntologyIRIShortFormProvider ontologyShortFormProvider;
 
     private static final String ID_SPLITTER = "___";
+    private static final String INDEX_PREFIX = "index-";
 
-    private Map<URL, OWLNamedObject> url2ObjMap = new HashMap<URL, OWLNamedObject>();
-    private Map<OWLNamedObject, URL> obj2UrlMap = new HashMap<OWLNamedObject, URL>();
+    private Map<URL, OWLObject> url2ObjMap = new HashMap<URL, OWLObject>();
+    private Map<OWLObject, URL> obj2UrlMap = new HashMap<OWLObject, URL>();
 
 
-    public StaticFilesURLScheme(OWLHTMLServer server) {
-        super(server);
-        this.shortFormProvider = new FragmentShortFormProvider(); // always use the fragment as it will be safe in URLs
+
+    public StaticFilesURLScheme(OWLHTMLKit kit) {
+        super(kit);
+        this.shortFormProvider = new SimpleShortFormProvider(); // always use the fragment as it will be safe in URLs
+        this.ontologyShortFormProvider = new OntologyIRIShortFormProvider();
     }
 
-    public URL getURLForNamedObject(OWLNamedObject object) {
+    public URL getURLForOWLObject(OWLObject owlObject) {
 
-        URL url = obj2UrlMap.get(object);
-        if (url == null){
-        // always use the fragment instead of the rendering
-        String name = shortFormProvider.getShortForm(object) + ID_SPLITTER + object.getURI().hashCode();
+        URL url = obj2UrlMap.get(owlObject);
 
         try {
-            name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
-            url = new URL(getBaseURL(), NamedObjectType.getType(object) + "/" + name + OWLHTMLConstants.DEFAULT_EXTENSION);
-            obj2UrlMap.put(object, url);
-            url2ObjMap.put(url, object);
+            if (url == null){
+                if (owlObject instanceof OWLEntity){
+                    OWLEntity owlEntity = (OWLEntity)owlObject;
+                    String name = shortFormProvider.getShortForm(owlEntity) + ID_SPLITTER + owlEntity.getURI().hashCode();
+                    name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
+                    url = new URL(getBaseURL(), NamedObjectType.getType(owlEntity) + OWLHTMLConstants.SLASH + name + OWLHTMLConstants.DEFAULT_EXTENSION);
+
+                }
+                else if (owlObject instanceof OWLOntology){
+                    URI uri = ((OWLOntology)owlObject).getOntologyID().getOntologyIRI().toURI();
+                    String name = ontologyShortFormProvider.getShortForm(uri) + ID_SPLITTER + uri.hashCode();
+                    name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
+                    url = new URL(getBaseURL(), NamedObjectType.ontologies + OWLHTMLConstants.SLASH + name + OWLHTMLConstants.DEFAULT_EXTENSION);
+                }
+
+                if (url != null){
+                    obj2UrlMap.put(owlObject, url);
+                    url2ObjMap.put(url, owlObject);
+                }
+            }
         }
         catch (MalformedURLException e) {
             logger.error(e);
@@ -71,17 +86,17 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
         catch (UnsupportedEncodingException e) {
             logger.error(e);
         }
-        }
+
         return url;
     }
 
-    public OWLNamedObject getNamedObjectForURL(URL url) {
+    public OWLObject getOWLObjectForURL(URL url) {
         return url2ObjMap.get(url);
     }
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            return new URL(getBaseURL(), type + "/" + getFilenameForOntologyIndex(ont, type));
+            return new URL(getBaseURL(), type + OWLHTMLConstants.START_QUERY + INDEX_PREFIX + ontologyShortFormProvider.getShortForm(ont) + OWLHTMLConstants.DEFAULT_EXTENSION);
         }
         catch (MalformedURLException e) {
             logger.error(e);
@@ -103,11 +118,6 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
             logger.error("Cannot create URL for index: " + type, e);
         }
         return null;
-    }
-
-
-    public String getFilenameForOntologyIndex(OWLOntology ont, NamedObjectType type) {
-        return "index-" + shortFormProvider.getShortForm(ont) + OWLHTMLConstants.DEFAULT_EXTENSION;
     }
 
     public void setAdditionalLinkArguments(String s) {

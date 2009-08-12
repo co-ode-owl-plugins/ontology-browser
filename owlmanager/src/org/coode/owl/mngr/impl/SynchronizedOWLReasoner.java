@@ -1,8 +1,8 @@
 package org.coode.owl.mngr.impl;
 
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.inference.OWLReasoner;
+import org.semanticweb.owlapi.inference.OWLReasonerException;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.Set;
 import java.util.Map;
@@ -103,77 +103,89 @@ public class SynchronizedOWLReasoner implements OWLReasoner {
         r.dispose();
     }
 
-    public synchronized boolean isSubClassOf(OWLDescription clsC, OWLDescription clsD) throws OWLReasonerException {
+    public synchronized boolean isSubClassOf(OWLClassExpression clsC, OWLClassExpression clsD) throws OWLReasonerException {
         return r.isSubClassOf(clsC, clsD);
     }
 
-    public synchronized boolean isEquivalentClass(OWLDescription clsC, OWLDescription clsD) throws OWLReasonerException {
+    public synchronized boolean isEquivalentClass(OWLClassExpression clsC, OWLClassExpression clsD) throws OWLReasonerException {
         return r.isEquivalentClass(clsC, clsD);
     }
 
-    public synchronized Set<Set<OWLClass>> getSuperClasses(OWLDescription clsC) throws OWLReasonerException {
+    public synchronized Set<Set<OWLClass>> getSuperClasses(OWLClassExpression clsC) throws OWLReasonerException {
         return r.getSuperClasses(clsC);
     }
 
-    public synchronized Set<Set<OWLClass>> getAncestorClasses(OWLDescription clsC) throws OWLReasonerException {
+    public synchronized Set<Set<OWLClass>> getAncestorClasses(OWLClassExpression clsC) throws OWLReasonerException {
         return r.getAncestorClasses(clsC);
     }
 
-    public synchronized Set<Set<OWLClass>> getSubClasses(OWLDescription clsC) throws OWLReasonerException {
+    public synchronized Set<Set<OWLClass>> getSubClasses(OWLClassExpression clsC) throws OWLReasonerException {
         return r.getSubClasses(clsC);
     }
 
-    public synchronized Set<Set<OWLClass>> getDescendantClasses(OWLDescription clsC) throws OWLReasonerException {
+    public synchronized Set<Set<OWLClass>> getDescendantClasses(OWLClassExpression clsC) throws OWLReasonerException {
         return r.getDescendantClasses(clsC);
     }
 
-    public synchronized Set<OWLClass> getEquivalentClasses(OWLDescription clsC) throws OWLReasonerException {
+    public synchronized Set<OWLClass> getEquivalentClasses(OWLClassExpression clsC) throws OWLReasonerException {
         return r.getEquivalentClasses(clsC);
     }
 
-    public synchronized Set<OWLClass> getInconsistentClasses() throws OWLReasonerException {
-        return r.getInconsistentClasses();
+
+    public synchronized Set<OWLClass> getUnsatisfiableClasses() throws OWLReasonerException {
+        return r.getUnsatisfiableClasses();
     }
 
-    public synchronized boolean isSatisfiable(OWLDescription description) throws OWLReasonerException {
+
+    public synchronized boolean isSatisfiable(OWLClassExpression description) throws OWLReasonerException {
         return r.isSatisfiable(description);
     }
 
-    public synchronized Set<Set<OWLClass>> getTypes(OWLIndividual individual, boolean direct) throws OWLReasonerException {
-        return r.getTypes(individual, direct);
+
+    public synchronized Set<Set<OWLClass>> getTypes(OWLNamedIndividual owlNamedIndividual, boolean direct) throws OWLReasonerException {
+        return r.getTypes(owlNamedIndividual, direct);
     }
 
-    public synchronized Set<OWLIndividual> getIndividuals(OWLDescription clsC, boolean direct) throws OWLReasonerException {
-        return r.getIndividuals(clsC, direct);
+
+    public synchronized Set<OWLNamedIndividual> getIndividuals(OWLClassExpression owlClassExpression, boolean direct) throws OWLReasonerException {
+        return r.getIndividuals(owlClassExpression, direct);
     }
 
-    public synchronized Map<OWLObjectProperty, Set<OWLIndividual>> getObjectPropertyRelationships(OWLIndividual individual) throws OWLReasonerException {
-        return r.getObjectPropertyRelationships(individual);
+
+    public synchronized Map<OWLObjectProperty, Set<OWLNamedIndividual>> getObjectPropertyRelationships(OWLNamedIndividual owlNamedIndividual) throws OWLReasonerException {
+        return r.getObjectPropertyRelationships(owlNamedIndividual);
     }
 
-    public synchronized Map<OWLDataProperty, Set<OWLConstant>> getDataPropertyRelationships(OWLIndividual individual) throws OWLReasonerException {
-        return r.getDataPropertyRelationships(individual);
+
+    public synchronized Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationships(OWLNamedIndividual owlNamedIndividual) throws OWLReasonerException {
+        return r.getDataPropertyRelationships(owlNamedIndividual);
     }
 
-    public synchronized boolean hasType(OWLIndividual individual, OWLDescription type, boolean direct) throws OWLReasonerException {
-        return r.hasType(individual, type, direct);
+
+    public synchronized boolean hasType(OWLNamedIndividual owlNamedIndividual, OWLClassExpression type, boolean direct) throws OWLReasonerException {
+        return r.hasType(owlNamedIndividual, type, direct);
     }
 
-    public synchronized boolean hasObjectPropertyRelationship(OWLIndividual subject, OWLObjectPropertyExpression property, OWLIndividual object) throws OWLReasonerException {
-        return r.hasObjectPropertyRelationship(subject, property, object);
+
+    public synchronized boolean hasObjectPropertyRelationship(OWLNamedIndividual subject, OWLObjectPropertyExpression property, OWLNamedIndividual object) throws OWLReasonerException {
+        return r.hasObjectPropertyRelationship(subject,  property, object);
     }
 
-    public synchronized boolean hasDataPropertyRelationship(OWLIndividual subject, OWLDataPropertyExpression property, OWLConstant object) throws OWLReasonerException {
-        return r.hasDataPropertyRelationship(subject, property, object);
+
+    public synchronized boolean hasDataPropertyRelationship(OWLNamedIndividual owlNamedIndividual, OWLDataPropertyExpression property, OWLLiteral owlLiteral) throws OWLReasonerException {
+        return r.hasDataPropertyRelationship(owlNamedIndividual, property, owlLiteral);
     }
 
-    public synchronized Set<OWLIndividual> getRelatedIndividuals(OWLIndividual subject, OWLObjectPropertyExpression property) throws OWLReasonerException {
-        return r.getRelatedIndividuals(subject, property);
+
+    public synchronized Set<OWLNamedIndividual> getRelatedIndividuals(OWLNamedIndividual owlNamedIndividual, OWLObjectPropertyExpression owlObjectPropertyExpression) throws OWLReasonerException {
+        return r.getRelatedIndividuals(owlNamedIndividual, owlObjectPropertyExpression);
     }
 
-    public synchronized Set<OWLConstant> getRelatedValues(OWLIndividual subject, OWLDataPropertyExpression property) throws OWLReasonerException {
-        return r.getRelatedValues(subject, property);
+
+    public synchronized Set<OWLLiteral> getRelatedValues(OWLNamedIndividual owlNamedIndividual, OWLDataPropertyExpression owlDataPropertyExpression) throws OWLReasonerException {
+        return r.getRelatedValues(owlNamedIndividual, owlDataPropertyExpression);
     }
+
 
     public synchronized Set<Set<OWLObjectProperty>> getSuperProperties(OWLObjectProperty property) throws OWLReasonerException {
         return r.getSuperProperties(property);
@@ -199,11 +211,11 @@ public class SynchronizedOWLReasoner implements OWLReasoner {
         return r.getEquivalentProperties(property);
     }
 
-    public synchronized Set<Set<OWLDescription>> getDomains(OWLObjectProperty property) throws OWLReasonerException {
+    public synchronized Set<Set<OWLClassExpression>> getDomains(OWLObjectProperty property) throws OWLReasonerException {
         return r.getDomains(property);
     }
 
-    public synchronized Set<OWLDescription> getRanges(OWLObjectProperty property) throws OWLReasonerException {
+    public synchronized Set<OWLClassExpression> getRanges(OWLObjectProperty property) throws OWLReasonerException {
         return r.getRanges(property);
     }
 
@@ -255,7 +267,7 @@ public class SynchronizedOWLReasoner implements OWLReasoner {
         return r.getEquivalentProperties(property);
     }
 
-    public synchronized Set<Set<OWLDescription>> getDomains(OWLDataProperty property) throws OWLReasonerException {
+    public synchronized Set<Set<OWLClassExpression>> getDomains(OWLDataProperty property) throws OWLReasonerException {
         return r.getDomains(property);
     }
 
@@ -264,6 +276,6 @@ public class SynchronizedOWLReasoner implements OWLReasoner {
     }
 
     public synchronized boolean isFunctional(OWLDataProperty property) throws OWLReasonerException {
-        return isFunctional(property);
+        return r.isFunctional(property);
     }
 }

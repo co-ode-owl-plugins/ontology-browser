@@ -5,6 +5,7 @@ package org.coode.owl.mngr.impl;
 
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerProperties;
+import org.coode.owl.mngr.ServerProperty;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -29,10 +30,13 @@ public class ServerPropertiesImpl implements ServerProperties {
 
     private Map<String, List<String>> allowedValues = new HashMap<String, List<String>>();
 
+    private Map<String, String> deprecatedNamesMap = new HashMap<String, String>();
+
 
     public String get(String key) {
         return properties.getProperty(key);
     }
+
 
     public boolean set(String key, String value) {
         String currentValue = properties.getProperty(key);
@@ -94,11 +98,31 @@ public class ServerPropertiesImpl implements ServerProperties {
     public void load(InputStream in) throws IOException {
         properties.clear();
         properties.load(in);
+
+        cleanupDeprecatedNames();
+    }
+
+
+    public void addDeprecatedNames(Map<String, String> names){
+        this.deprecatedNamesMap.putAll(names);
+        cleanupDeprecatedNames();        
+    }
+
+
+    private void cleanupDeprecatedNames() {
+        // to cope with old values
+        for (String deprecatedName : deprecatedNamesMap.keySet()){
+            if (properties.containsKey(deprecatedName)){
+                properties.setProperty(deprecatedNamesMap.get(deprecatedName),
+                                       properties.getProperty(deprecatedName));
+                properties.remove(deprecatedName);
+            }
+        }
     }
 
 
     public boolean isSet(String booleanOption) {
-        return ServerConstants.TRUE.equals(properties.get(booleanOption));
+        return Boolean.getBoolean(properties.getProperty(booleanOption));
     }
 
 
@@ -109,7 +133,7 @@ public class ServerPropertiesImpl implements ServerProperties {
 
     public List<String> getAllowedValues(String key) {
         List<String> result = allowedValues.get(key);
-        return result != null ? result : Collections.EMPTY_LIST;
+        return result != null ? result : new ArrayList<String>();
     }
 
 

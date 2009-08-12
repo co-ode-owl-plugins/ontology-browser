@@ -3,11 +3,12 @@
 */
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.MenuBarDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.EmptyOWLDocPage;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
@@ -28,13 +29,13 @@ import java.util.Set;
  */
 public class FramesHeader extends AbstractOntologyServerServlet {
 
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
+    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
         // no implementation
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
+    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
-        EmptyOWLDocPage ren = new EmptyOWLDocPage(server) {
+        EmptyOWLDocPage ren = new EmptyOWLDocPage(kit) {
             public String getTitle() {
                 return "OWLDoc Frames Header";
             }
@@ -46,18 +47,18 @@ public class FramesHeader extends AbstractOntologyServerServlet {
 
             public Set<URL> getRequiredJS() {
                 Set<URL> js = super.getRequiredJS();
-                js.add(getServer().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT)); // force the js to be available for the menus
+                js.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT)); // force the js to be available for the menus
                 return js;
             }
         };
 
         // force the menus to be painted
-        ren.addDoclet(new MenuBarDoclet(server));
-        ren.addDoclet(new TabsDoclet(server));
+        ren.addDoclet(new MenuBarDoclet(kit));
+        ren.addDoclet(new TabsDoclet(kit));
         return ren;
     }
 
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
         return Collections.emptyMap();
     }
 }

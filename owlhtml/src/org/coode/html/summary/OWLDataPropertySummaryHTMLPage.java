@@ -1,8 +1,8 @@
 package org.coode.html.summary;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.*;
-import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 
 /**
  * Author: Nick Drummond<br>
@@ -16,18 +16,18 @@ import org.semanticweb.owl.model.OWLDataProperty;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLDataPropertySummaryHTMLPage extends AbstractSummaryHTMLPage<OWLDataProperty> {
+public class OWLDataPropertySummaryHTMLPage extends AbstractOWLEntitySummaryHTMLPage<OWLDataProperty> {
 
-    public OWLDataPropertySummaryHTMLPage(OWLHTMLServer server) {
-        super(server);
+    public OWLDataPropertySummaryHTMLPage(OWLHTMLKit kit) {
+        super(kit);
         
-        addDoclet(new AnnotationsDoclet<OWLDataProperty>(server));
-        addDoclet(new PropertyCharacteristicsDoclet<OWLDataProperty>(server));
-        addDoclet(new DomainsDoclet<OWLDataProperty>(server));
-        addDoclet(new RangesDoclet<OWLDataProperty>(server));
-        addDoclet(new AssertedSuperpropertiesDoclet<OWLDataProperty>(server));
-        addDoclet(new AssertedEquivpropertiesDoclet<OWLDataProperty>(server));
-        addDoclet(new DisjointPropertiesDoclet<OWLDataProperty>(server));
-        addDoclet(new UsageDoclet<OWLDataProperty>(server));
+        addDoclet(new AnnotationsDoclet<OWLDataProperty>(kit));
+        addDoclet(new PropertyCharacteristicsDoclet<OWLDataProperty>(kit));
+        addDoclet(new DomainsDoclet<OWLDataProperty>(kit));
+        addDoclet(new RangesDoclet<OWLDataProperty>(kit));
+        addDoclet(new AssertedSuperpropertiesDoclet<OWLDataProperty>(kit));
+        addDoclet(new AssertedEquivpropertiesDoclet<OWLDataProperty>(kit));
+        addDoclet(new DisjointPropertiesDoclet<OWLDataProperty>(kit));
+        addDoclet(new UsageDoclet<OWLDataProperty>(kit));
     }
 }

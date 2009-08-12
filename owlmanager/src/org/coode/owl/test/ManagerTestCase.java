@@ -4,8 +4,8 @@ import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.impl.OWLServerImpl;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -51,14 +51,14 @@ public class ManagerTestCase extends TestCase {
 
         OWLOntologyManager mngr = OWLManager.createOWLOntologyManager();
         try {
-            OWLOntology ont = mngr.createOntology(URI.create("http://www.co-ode.org/ontologies/test/test.owl"));
+            OWLOntology ont = mngr.createOntology(IRI.create("http://www.co-ode.org/ontologies/test/test.owl"));
 
-            OWLServer server = new OWLServerImpl("unnamed", mngr);
+            OWLServer server = new OWLServerImpl(mngr);
 
             OWLDataFactory df = mngr.getOWLDataFactory();
             OWLClass a = df.getOWLClass(URI.create("http://www.co-ode.org/ontologies/test/test.owl#A"));
             OWLClass b = df.getOWLClass(URI.create("http://www.co-ode.org/ontologies/test/test.owl#B"));
-            OWLSubClassAxiom bSubA = df.getOWLSubClassAxiom(b, a);
+            OWLSubClassOfAxiom bSubA = df.getOWLSubClassOfAxiom(b, a);
             List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
             changes.add(new AddAxiom(ont, bSubA));
             mngr.applyChanges(changes);
@@ -83,7 +83,7 @@ public class ManagerTestCase extends TestCase {
 //            OWLDataFactory df = mngr.getOWLDataFactory();
 //            OWLClass a = df.getOWLClass(URI.create("http://www.co-ode.org/ontologies/test/test.owl#A"));
 //            OWLClass b = df.getOWLClass(URI.create("http://www.co-ode.org/ontologies/test/test.owl#B"));
-//            OWLSubClassAxiom bSubA = df.getOWLSubClassAxiom(b, a);
+//            OWLSubClassOfAxiom bSubA = df.getOWLSubClassOfAxiom(b, a);
 //            List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 //            changes.add(new AddAxiom(ont, bSubA));
 //            mngr.applyChanges(changes);

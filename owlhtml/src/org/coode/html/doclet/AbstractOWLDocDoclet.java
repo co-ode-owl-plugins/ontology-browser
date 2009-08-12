@@ -3,9 +3,9 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.coode.html.impl.OWLHTMLConstants;
-import org.semanticweb.owl.model.OWLObject;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLProperty;
+import org.semanticweb.owlapi.model.OWLObject;
 
 /**
  * Author: Nick Drummond<br>
@@ -19,17 +19,18 @@ import org.semanticweb.owl.model.OWLObject;
  */
 public abstract class AbstractOWLDocDoclet<O extends OWLObject> extends AbstractHTMLDoclet<O>{
 
-    private OWLHTMLServer server;
+    private OWLHTMLKit kit;
 
-    public AbstractOWLDocDoclet(OWLHTMLServer server) {
-        this.server = server;
+
+    public AbstractOWLDocDoclet(OWLHTMLKit kit) {
+        this.kit = kit;
     }
 
-    protected final OWLHTMLServer getServer(){
-        return server;
+    protected final OWLHTMLKit getHTMLGenerator(){
+        return kit;
     }
 
     protected boolean isSingleFrameNavigation() {
-        return getServer().getProperties().get(OWLHTMLConstants.OPTION_CONTENT_WINDOW) == null;
+        return getHTMLGenerator().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 }

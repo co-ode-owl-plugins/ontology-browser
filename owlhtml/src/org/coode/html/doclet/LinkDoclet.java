@@ -3,10 +3,11 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.util.URLUtils;
-import org.semanticweb.owl.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -23,19 +24,20 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jan 25, 2008<br><br>
  */
-public class LinkDoclet<O extends OWLNamedObject> implements HTMLDoclet<O>{
+public class LinkDoclet<O extends OWLEntity> implements HTMLDoclet<O>{
 
     private O object;
 
-    private OWLHTMLServer server;
+    private OWLHTMLKit kit;
 
     private OWLHTMLConstants.LinkTarget target;
 
     private Map<String, String> attributes = new HashMap<String, String>();
 
-    public LinkDoclet(O object, OWLHTMLServer server) {
+
+    public LinkDoclet(O object, OWLHTMLKit kit) {
         this.object = object;
-        this.server = server;
+        this.kit = kit;
     }
 
     public String getID() {
@@ -43,8 +45,8 @@ public class LinkDoclet<O extends OWLNamedObject> implements HTMLDoclet<O>{
     }
 
     public void renderContent(URL pageURL, PrintWriter out) {
-        String shortName = server.getNameRenderer().getShortForm(object);
-        URL href = server.getURLScheme().getURLForNamedObject(object);
+        String shortName = kit.getOWLServer().getShortFormProvider().getShortForm(object);
+        URL href = kit.getURLScheme().getURLForOWLObject(object);
 
         out.print("<a href='" + URLUtils.createRelativeURL(pageURL, href) + "'");
 
@@ -94,7 +96,7 @@ public class LinkDoclet<O extends OWLNamedObject> implements HTMLDoclet<O>{
     }
 
     private boolean isSingleFrameNavigation() {
-        return server.getProperties().get(OWLHTMLConstants.OPTION_CONTENT_WINDOW) == null;
+        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 
     public void addAttribute(String attr, String value) {

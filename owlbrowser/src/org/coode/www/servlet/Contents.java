@@ -1,6 +1,7 @@
 package org.coode.www.servlet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.index.OWLContentsHTMLPage;
@@ -31,13 +32,13 @@ public class Contents extends AbstractOntologyServerServlet {
 
     private static final String SEARCH_BOX_ID = "searchBox";
 
-    protected void handleXMLRequest(Map<String, String> params, OWLHTMLServer server, URL servletURL, PrintWriter out) throws OntServerException {
+    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
         // not implemented
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException {
+    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         try {
-            OWLContentsHTMLPage ren = new OWLContentsHTMLPage(server);
+            OWLContentsHTMLPage ren = new OWLContentsHTMLPage(kit);
 
             ren.setAutoFocusedComponent(SEARCH_BOX_ID);
 
@@ -46,9 +47,9 @@ public class Contents extends AbstractOntologyServerServlet {
             if (tabs != null){
                 insertPoint = ren.indexOf(tabs);
             }
-            ren.addDoclet(new SearchOntologiesDoclet(server, SEARCH_BOX_ID), insertPoint+1);
+            ren.addDoclet(new SearchOntologiesDoclet(kit, SEARCH_BOX_ID), insertPoint+1);
 
-            ren.addDoclet(new CloudIndexDoclet(server)); // after all contents
+            ren.addDoclet(new CloudIndexDoclet(kit)); // after all contents
 
             return ren;
         }
@@ -57,7 +58,7 @@ public class Contents extends AbstractOntologyServerServlet {
         }
     }
 
-    protected Map<String, Set<String>> getRequiredParams(OWLServer server) {
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
         return Collections.emptyMap(); // no params
     }
 }

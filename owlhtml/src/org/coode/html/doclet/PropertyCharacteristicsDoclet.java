@@ -3,8 +3,8 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.*;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,8 +20,8 @@ import java.util.Set;
  */
 public class PropertyCharacteristicsDoclet<O extends OWLProperty> extends AbstractOWLElementsDoclet<O, OWLPropertyAxiom> {
 
-    public PropertyCharacteristicsDoclet(OWLHTMLServer server) {
-        super("Property Characteristics", ElementsDoclet.Format.list, server);
+    public PropertyCharacteristicsDoclet(OWLHTMLKit kit) {
+        super("Property Characteristics", ElementsDoclet.Format.list, kit);
     }
 
     protected Collection<OWLPropertyAxiom> getElements(Set<OWLOntology> onts) {

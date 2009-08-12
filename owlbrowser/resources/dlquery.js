@@ -1,5 +1,5 @@
 /*
- * Control of AJAX calls to build the query form dynamically and request results from the ontology server
+ * Control of AJAX calls to build the query form dynamically and request results from the ontology kit
  *
  */
 var BUSY_IMAGE = "images/busy.gif";

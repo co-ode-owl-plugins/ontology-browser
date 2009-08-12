@@ -3,9 +3,10 @@
 */
 package org.coode.www.page;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.util.URLUtils;
 
 import java.io.PrintWriter;
@@ -26,11 +27,12 @@ public class FramesHTMLPage implements HTMLDoclet {
     public static final String ID = "doclet.frames";
 
     private final URL defaultcontent;
-    private final OWLHTMLServer server;
+    private final OWLHTMLKit kit;
 
-    public FramesHTMLPage(URL defaultcontent, OWLHTMLServer server) {
+
+    public FramesHTMLPage(URL defaultcontent, OWLHTMLKit kit) {
         this.defaultcontent = defaultcontent;
-        this.server = server;
+        this.kit = kit;
     }
 
     public String getID() {
@@ -49,7 +51,7 @@ public class FramesHTMLPage implements HTMLDoclet {
         out.print("<frame src='" + OWLHTMLConstants.CONTENTS_HTML +
                   "' name='" + OWLHTMLConstants.LinkTarget.nav + "' title='Contents'/>\n");
 
-        out.print("<frame src='" + server.getProperties().get(OWLHTMLConstants.OPTION_INDEX_ALL_URL) +
+        out.print("<frame src='" + kit.getHTMLProperties().get(OWLHTMLProperty.optionIndexAllURL) +
                   "' name='" + OWLHTMLConstants.LinkTarget.subnav + "' title='All Entities'/>\n");
 
         out.print("     </frameset>\n");

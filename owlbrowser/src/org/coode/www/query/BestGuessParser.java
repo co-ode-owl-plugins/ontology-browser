@@ -1,12 +1,5 @@
 package org.coode.www.query;
 
-import org.coode.owl.mngr.OWLDescriptionParser;
-import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLObjectProperty;
-
-import java.text.ParseException;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -41,37 +34,37 @@ import java.text.ParseException;
  * Tries to parse a normal Manchester Syntax expression
  * and if it fails, reverts to QuickDescription syntax
  */
-public class BestGuessParser implements OWLDescriptionParser {
-
-    private OWLObjectProperty topProp;
-    private OWLServer server;
-
-    private ManchesterOWLSyntaxParser manParser;
-    private QuickDescriptionParser qdParser;
-
-    public BestGuessParser(OWLServer server, OWLObjectProperty topProp) {
-        this.topProp = topProp;
-        this.server = server;
-    }
-
-    public OWLDescription parse(String str) throws ParseException {
-
-        if (manParser == null){
-            manParser = new ManchesterOWLSyntaxParser(server);
-        }
-
-        OWLDescription descr = null;
-
-        try{
-            descr = manParser.parse(str);
-        }
-        catch(ParseException e){
-            if (qdParser == null){
-                qdParser = new QuickDescriptionParser(server, topProp);
-            }
-            descr = qdParser.parse(str);
-        }
-
-        return descr;
-    }
+public class BestGuessParser{// implements OWLClassExpressionParser {
+//
+//    private OWLObjectProperty topProp;
+//    private OWLServer kit;
+//
+//    private ManchesterOWLSyntaxParser manParser;
+//    private QuickDescriptionParser qdParser;
+//
+//    public BestGuessParser(OWLServer kit, OWLObjectProperty topProp) {
+//        this.topProp = topProp;
+//        this.kit = kit;
+//    }
+//
+//    public OWLClassExpression parse(String str) throws ParseException {
+//
+//        if (manParser == null){
+//            manParser = new ManchesterOWLSyntaxParser(kit);
+//        }
+//
+//        OWLClassExpression descr = null;
+//
+//        try{
+//            descr = manParser.parse(str);
+//        }
+//        catch(ParseException e){
+//            if (qdParser == null){
+//                qdParser = new QuickDescriptionParser(kit, topProp);
+//            }
+//            descr = qdParser.parse(str);
+//        }
+//
+//        return descr;
+//    }
 }

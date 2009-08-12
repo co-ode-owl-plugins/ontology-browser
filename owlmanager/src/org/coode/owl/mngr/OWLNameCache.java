@@ -1,7 +1,5 @@
 package org.coode.owl.mngr;
 
-import org.semanticweb.owl.model.OWLNamedObject;
-
 import java.util.Set;
 
 /**
@@ -18,7 +16,7 @@ import java.util.Set;
  *
  * Extension of OWLNamedObjectFinder that allows querying for all known renderings
  */
-public interface OWLNameMapper {
+public interface OWLNameCache {
 
     Set<String> getClassNames();
 
@@ -26,11 +24,11 @@ public interface OWLNameMapper {
 
     Set<String> getDataPropertyNames();
 
+    Set<String> getAnnotationPropertyNames();
+
     Set<String> getIndividualNames();
 
     Set<String> getDatatypeNames();
-
-    Set<String> getOntologyNames();
 
     Set<String> getEntityNames();
 
@@ -43,7 +41,7 @@ public interface OWLNameMapper {
      * @param results an accumulator for the results - implementations should always add into the existing set
      * @param type
      */
-    <T extends OWLNamedObject> void get(String name, Set<T> results, NamedObjectType type);
+    <T extends NamedObjectType> void get(String name, Set<T> results, NamedObjectType type);
 
     void dispose();    
 }

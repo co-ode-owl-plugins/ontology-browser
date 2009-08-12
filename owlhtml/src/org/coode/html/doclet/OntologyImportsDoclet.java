@@ -3,12 +3,14 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
-import org.semanticweb.owl.model.OWLImportsDeclaration;
-import org.semanticweb.owl.model.OWLOntology;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLImportsDeclaration;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Author: Nick Drummond<br>
@@ -18,13 +20,17 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Feb 5, 2008<br><br>
  */
-public class OntologyImportsDoclet extends AbstractOWLElementsDoclet<OWLOntology, OWLImportsDeclaration> {
+public class OntologyImportsDoclet extends AbstractOWLElementsDoclet<OWLOntology, IRI> {
 
-    public OntologyImportsDoclet(OWLHTMLServer server) {
-        super("Imports", Format.list, server);
+    public OntologyImportsDoclet(OWLHTMLKit kit) {
+        super("Imports", Format.list, kit);
     }
 
-    protected Collection<OWLImportsDeclaration> getElements(Set<OWLOntology> onts) {
-        return getUserObject().getImportsDeclarations();
+    protected Collection<IRI> getElements(Set<OWLOntology> onts) {
+        Set<IRI> iris = new HashSet<IRI>();
+        for (OWLImportsDeclaration decl : getUserObject().getImportsDeclarations()){
+            iris.add(decl.getIRI());
+        }
+        return iris;
     }
 }

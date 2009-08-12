@@ -1,10 +1,10 @@
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.cloud.CloudModel;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.awt.*;
 import java.io.PrintWriter;
@@ -26,7 +26,7 @@ import java.util.Comparator;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class CloudDoclet<O extends OWLNamedObject> extends AbstractHTMLDoclet<OWLOntology> {
+public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOntology> {
 
     private static final String ID = "doclet.cloud";
 
@@ -39,7 +39,7 @@ public class CloudDoclet<O extends OWLNamedObject> extends AbstractHTMLDoclet<OW
 
     private java.util.List<O> entities;
 
-    private OWLHTMLServer server;
+    private OWLHTMLKit kit;
 
     private CloudModel<O> model;
 
@@ -54,8 +54,8 @@ public class CloudDoclet<O extends OWLNamedObject> extends AbstractHTMLDoclet<OW
     private OWLHTMLConstants.LinkTarget target;
 
 
-    public CloudDoclet(CloudModel<O> model, OWLHTMLServer server){
-        this.server = server;
+    public CloudDoclet(CloudModel<O> model, OWLHTMLKit kit){
+        this.kit = kit;
         this.model = model;
     }
 
@@ -136,7 +136,7 @@ public class CloudDoclet<O extends OWLNamedObject> extends AbstractHTMLDoclet<OW
         }
         int size = getFontSize(score);
 
-        LinkDoclet link = new LinkDoclet<O>(entity, server);
+        LinkDoclet link = new LinkDoclet<O>(entity, kit);
         link.setCSS("color: " + colour + "; font-size: " + size + ";");
         link.setTarget(target);
         link.addAttribute("title", Integer.toString(score));

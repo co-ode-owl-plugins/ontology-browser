@@ -3,7 +3,7 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 
 import java.io.PrintWriter;
@@ -24,8 +24,8 @@ public class MenuItemDoclet extends AbstractOWLDocDoclet {
     private final OWLHTMLConstants.LinkTarget target;
 
 
-    public MenuItemDoclet(String label, URL link, OWLHTMLConstants.LinkTarget target, OWLHTMLServer server) {
-        super(server);
+    public MenuItemDoclet(String label, URL link, OWLHTMLConstants.LinkTarget target, OWLHTMLKit kit) {
+        super(kit);
         this.label = label;
         this.link = link;
         this.target = target;

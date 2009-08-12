@@ -3,10 +3,9 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.hierarchy.TreeFragment;
-import org.coode.owl.mngr.ServerConstants;
-import org.semanticweb.owl.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -19,10 +18,10 @@ import java.net.URL;
  * Bio Health Informatics Group<br>
  * Date: Feb 7, 2008<br><br>
  */
-public class HierarchyRootDoclet<O extends OWLNamedObject> extends AbstractHierarchyNodeDoclet<O>{
+public class HierarchyRootDoclet<O extends OWLEntity> extends AbstractHierarchyNodeDoclet<O>{
 
-    public HierarchyRootDoclet(OWLHTMLServer server, TreeFragment<O> model) {
-        super(server, model);
+    public HierarchyRootDoclet(OWLHTMLKit kit, TreeFragment<O> model) {
+        super(kit, model);
         setPinned(false);
     }
 
@@ -47,7 +46,7 @@ public class HierarchyRootDoclet<O extends OWLNamedObject> extends AbstractHiera
             HierarchyNodeDoclet<O> lastPath = null;
             HierarchyNodeDoclet<O> lastPathContainingFocusedNode = null;
             for (O root : getModel().getRoots()){
-                lastPath = new HierarchyNodeDoclet<O>(getServer(), getModel());
+                lastPath = new HierarchyNodeDoclet<O>(getHTMLGenerator(), getModel());
                 lastPath.setAutoExpandEnabled(isAutoExpandSubs());
                 lastPath.setUserObject(root);
                 addDoclet(lastPath);
@@ -56,10 +55,10 @@ public class HierarchyRootDoclet<O extends OWLNamedObject> extends AbstractHiera
                 }
             }
             if(lastPathContainingFocusedNode != null){ // only show subs for the last branch
-                lastPathContainingFocusedNode.setShowSubs(getServer().getProperties().isSet(ServerConstants.OPTION_RENDER_SUBS));
+                lastPathContainingFocusedNode.setShowSubs(isRenderSubsEnabled());
             }
             else if (lastPath != null) { // the node only appears in the hierarchy due to an equivalence
-                lastPath.setShowSubs(getServer().getProperties().isSet(ServerConstants.OPTION_RENDER_SUBS));
+                lastPath.setShowSubs(isRenderSubsEnabled());
             }
             else{
                 throw new RuntimeException("Root: cannot find a path containing the node: " + object);

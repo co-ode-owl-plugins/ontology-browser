@@ -1,8 +1,8 @@
 package org.coode.html.summary;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.*;
-import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 /**
  * Author: Nick Drummond<br>
@@ -16,15 +16,15 @@ import org.semanticweb.owl.model.OWLIndividual;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLIndividualSummaryHTMLPage extends AbstractSummaryHTMLPage<OWLIndividual> {
+public class OWLIndividualSummaryHTMLPage extends AbstractOWLEntitySummaryHTMLPage<OWLNamedIndividual> {
 
-    public OWLIndividualSummaryHTMLPage(OWLHTMLServer server) {
-        super(server);
+    public OWLIndividualSummaryHTMLPage(OWLHTMLKit kit) {
+        super(kit);
         
-        addDoclet(new AnnotationsDoclet<OWLIndividual>(server));
-        addDoclet(new TypesDoclet(server));
-        addDoclet(new SameAsDoclet(server));
-        addDoclet(new DifferentFromDoclet(server));
-        addDoclet(new UsageDoclet<OWLIndividual>(server));
+        addDoclet(new AnnotationsDoclet<OWLNamedIndividual>(kit));
+        addDoclet(new TypesDoclet(kit));
+        addDoclet(new SameAsDoclet(kit));
+        addDoclet(new DifferentFromDoclet(kit));
+        addDoclet(new UsageDoclet<OWLNamedIndividual>(kit));
     }
 }

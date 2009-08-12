@@ -4,13 +4,14 @@
 package org.coode.www.doclet;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.coode.www.ManageAction;
-import org.coode.www.OntologyBrowserConstants;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -36,20 +37,20 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
 
     private static final String TITLE = "Ontology Locations";
 
-    private Map<URI, URI> map;
+    private Map<OWLOntologyID, URI> map;
 
 
-    public OntologyMappingsTableDoclet(OWLHTMLServer server) {
-        super(server);
+    public OntologyMappingsTableDoclet(OWLHTMLKit kit) {
+        super(kit);
     }
 
-    public void setMap(Map<URI, URI> map){
+    public void setMap(Map<OWLOntologyID, URI> map){
         this.map = map;
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        OWLHTMLServer server = getServer();
-        final Set<OWLOntology> visibleOnts = server.getVisibleOntologies();
+        OWLHTMLKit kit = getHTMLGenerator();
+        final Set<OWLOntology> visibleOnts = kit.getVisibleOntologies();
 
         renderBoxStart(TITLE, out);
 
@@ -59,17 +60,17 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
         }
         out.println("<table style='margin-bottom: 10px; width: 100%;'><tr><th>Ontology (hover for full URI)</th><th>Physical Location</th><th>Action</th></tr>");
 
-        OWLHTMLRenderer owlRen = new OWLHTMLRenderer(server);
+        OWLHTMLRenderer owlRen = new OWLHTMLRenderer(kit);
 
-        for (URI ontURI : map.keySet()){
+        for (OWLOntologyID ontURI : map.keySet()){
             URI physicalURI = map.get(ontURI);
             if (physicalURI != null){
                 String css = "";
-                final OWLOntology ont = server.getOWLOntologyManager().getOntology(ontURI);
+                final OWLOntology ont = kit.getOWLServer().getOWLOntologyManager().getOntology(ontURI);
                 if (!visibleOnts.contains(ont)){
                     css = " class='disabled'";
                 }
-                if (ont.equals(server.getActiveOntology())){
+                if (ont.equals(kit.getOWLServer().getActiveOntology())){
                     css = " class='active-ontology-uri'";
                 }
                 try {
@@ -81,10 +82,10 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
                     for (ManageAction action : ManageAction.values()){
                         if (!action.equals(ManageAction.load)){
                             String linkURL = OWLHTMLConstants.MANAGE_HTML + "?" +
-                                             OntologyBrowserConstants.PARAM_ACTION + "=" + action + "&" +
-                                             OntologyBrowserConstants.PARAM_URI + "=" + encodedURI;
+                                             OWLHTMLParam.action + "=" + action + "&" +
+                                             OWLHTMLParam.uri + "=" + encodedURI;
                             renderLink(action.toString(),
-                                       server.getURLScheme().getURLForRelativePage(linkURL),
+                                       kit.getURLScheme().getURLForRelativePage(linkURL),
                                        OWLHTMLConstants.LinkTarget._top, "", isSingleFrameNavigation(), pageURL, out);
                         }
                     }

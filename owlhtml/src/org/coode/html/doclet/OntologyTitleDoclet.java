@@ -1,8 +1,8 @@
-package org.coode.owl.mngr;
+package org.coode.html.doclet;
 
-import org.semanticweb.owl.model.OWLDescription;
-
-import java.text.ParseException;
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.IRI;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -27,14 +27,30 @@ import java.text.ParseException;
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jul 31, 2007<br><br>
+ * Date: Aug 5, 2009<br><br>
  */
-public interface OWLDescriptionParser {
+public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
 
-    OWLDescription parse(String str) throws ParseException;
+    public OntologyTitleDoclet(OWLHTMLKit kit) {
+        super(kit);
+    }
+
+
+    public String getTitle() {
+        return getHTMLGenerator().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
+    }
+
+
+    public String getSubtitle() {
+        IRI versionIRI = getUserObject().getOntologyID().getVersionIRI();
+        if (versionIRI != null){
+            return versionIRI.toString();
+        }
+        return null;
+    }
 }

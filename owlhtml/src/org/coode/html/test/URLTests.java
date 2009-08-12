@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 
 import org.coode.html.util.URLUtils;
 import org.apache.log4j.Logger;
-import edu.unika.aifb.rdf.api.syntax.RDFParser;
 /*
 * Copyright (C) 2007, University of Manchester
 *

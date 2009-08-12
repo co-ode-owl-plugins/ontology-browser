@@ -1,13 +1,13 @@
 package org.coode.html.index;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.BookmarksDoclet;
 import org.coode.html.doclet.ElementsDoclet;
 import org.coode.html.doclet.OntologyContentsDoclet;
 import org.coode.html.doclet.OverallContentsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.page.EmptyOWLDocPage;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
 
@@ -27,21 +27,22 @@ public class OWLContentsHTMLPage extends EmptyOWLDocPage<OWLOntology> {
 
     private OverallContentsDoclet contentsDoclet;
 
-    public OWLContentsHTMLPage(OWLHTMLServer server) {
-        super(server);
+    public OWLContentsHTMLPage(OWLHTMLKit kit) {
+        super(kit);
 
-        addDoclet(new BookmarksDoclet(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, server));
+        addDoclet(new BookmarksDoclet(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, kit));
 
-        contentsDoclet = new OverallContentsDoclet(server, OWLHTMLConstants.CONTENTS_LABEL);
+        contentsDoclet = new OverallContentsDoclet(kit, OWLHTMLConstants.CONTENTS_LABEL);
+
         addDoclet(contentsDoclet);
 
         setTitle(OWLHTMLConstants.CONTENTS_LABEL);
 
-        final Set<OWLOntology> visibleOntologies = getServer().getVisibleOntologies();
+        final Set<OWLOntology> visibleOntologies = getHTMLGenerator().getVisibleOntologies();
 
         if (visibleOntologies.size() > 1){
             for (OWLOntology ont : visibleOntologies){
-                OntologyContentsDoclet doclet = new OntologyContentsDoclet(getServer());
+                OntologyContentsDoclet doclet = new OntologyContentsDoclet(getHTMLGenerator());
                 doclet.setPinned(true);
                 doclet.setUserObject(ont);
                 addDoclet(doclet);

@@ -1,6 +1,6 @@
 package org.coode.owl.mngr;
 
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
 /*
 * Copyright (C) 2007, University of Manchester
 *

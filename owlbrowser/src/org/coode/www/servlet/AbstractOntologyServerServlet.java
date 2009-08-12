@@ -1,23 +1,25 @@
 package org.coode.www.servlet;
 
 import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.*;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.index.OWLEntityIndexHTMLPage;
+import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.index.OWLObjectIndexHTMLPage;
 import org.coode.html.page.DefaultHTMLPage;
 import org.coode.html.page.EmptyOWLDocPage;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.suggestor.api.SuggestorManager;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.doclet.AutocompleteDoclet;
 import org.coode.www.exception.InvalidRequestException;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.mngr.SessionManager;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +31,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,12 +53,12 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     private String format = null;
 
-    protected abstract void handleXMLRequest(Map<String, String> params,
-                                             OWLHTMLServer server, URL servletURL,
+    protected abstract void handleXMLRequest(Map<OWLHTMLParam, String> params,
+                                             OWLHTMLKit kit, URL servletURL,
                                              PrintWriter out) throws OntServerException;
 
 
-    protected abstract HTMLDoclet handleHTMLRequest(Map<String, String> params, OWLHTMLServer server, URL pageURL) throws OntServerException;
+    protected abstract HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException;
 
 
     protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -68,41 +69,41 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         doRequest(request, response);
     }
 
-    protected abstract Map<String, Set<String>> getRequiredParams(OWLServer server);
+    protected abstract Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server);
 
     private void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final String sessionLabel = request.getParameter(OWLHTMLConstants.PARAM_SESSION_LABEL);
-        format = request.getParameter(OntologyBrowserConstants.PARAM_FORMAT);
+        final String sessionLabel = getParameter(request, OWLHTMLParam.session);
+        format = getParameter(request, OWLHTMLParam.format);
 
         final URL pageURL = buildRequestURL(request);
 
-        final OWLHTMLServer server = getServer(request, sessionLabel, pageURL);
+        final OWLHTMLKit kit = getHTMLGenerator(request, sessionLabel, pageURL);
 
         try {
-            final OWLOntology ont = server.getActiveOntology();
+            final OWLOntology ont = kit.getOWLServer().getActiveOntology();
 
             if (ont == null && !pageURL.getFile().contains(OWLHTMLConstants.MANAGE_HTML)){
-                response.sendRedirect(server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.MANAGE_HTML).toString());
+                response.sendRedirect(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.MANAGE_HTML).toString());
             }
             else{
                 // the param map is actually multivalued <String, String[]>, but to save hassle we'll simplify it
-                final Map<String, String> params = checkAndCreateParams(request, server);
+                final Map<OWLHTMLParam, String> params = checkAndCreateParams(request, kit);
 
                 if (OntologyBrowserConstants.FORMAT_XML.equals(format)){
                     response.setContentType(OntologyBrowserConstants.MIME_XML);
-                    handleXMLRequest(params, server, pageURL, response.getWriter());
+                    handleXMLRequest(params, kit, pageURL, response.getWriter());
                 }
                 else {
                     response.setContentType(OntologyBrowserConstants.MIME_HTML);
-                    HTMLDoclet ren = handleHTMLRequest(params, server, pageURL);
+                    HTMLDoclet ren = handleHTMLRequest(params, kit, pageURL);
 
                     if (ren != null){
-                        prepareMenuBar(ren, server, pageURL);
+                        prepareMenuBar(ren, kit, pageURL);
                         ren.renderAll(pageURL, response.getWriter());
                     }
                     else{
-                        renderError("Could not get renderer for request", null, server, pageURL, format, response);
+                        renderError("Could not get renderer for request", null, kit, pageURL, format, response);
                     }
                 }
             }
@@ -113,12 +114,18 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             response.sendRedirect(redir);
         }
         catch (Throwable e) {
-            logger.error(e);
-            renderError(null, e, server, pageURL, format, response);
+            e.printStackTrace();
+//            logger.error(e);
+            renderError(null, e, kit, pageURL, format, response);
         }
         finally{
             response.getWriter().flush();
         }
+    }
+
+
+    protected String getParameter(HttpServletRequest request, OWLHTMLParam param) {
+        return request.getParameter(param.name());
     }
 
 
@@ -128,14 +135,14 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
 
     private URL buildRequestURL(HttpServletRequest request) throws IOException {
-        // requestURL on its own is not good enough - doesn't include params - need to rebuild the URL and fix AbstractSummaryHTMLPage
+        // requestURL on its own is not good enough - doesn't include params - need to rebuild the URL and fix AbstractOWLEntitySummaryHTMLPage
         StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
         boolean appendedParams = false;
 
         String query = request.getQueryString();
         if (query != null){
             for (String param : query.split("&")){
-                if (!param.startsWith(OWLHTMLConstants.PARAM_SESSION_LABEL)){
+                if (!param.startsWith(OWLHTMLParam.session.name())){
                     if (appendedParams){
                         requestURL.append("&");
                     }
@@ -151,57 +158,73 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     }
 
 
-    private void prepareMenuBar(HTMLDoclet ren, OWLHTMLServer server, URL pageURL) {
+    private void prepareMenuBar(HTMLDoclet ren, OWLHTMLKit kit, URL pageURL) {
         if (ren instanceof NestedHTMLDoclet){
             MenuBarDoclet menuDoclet = (MenuBarDoclet)((NestedHTMLDoclet)ren).getDoclet(MenuBarDoclet.ID);
             if (menuDoclet != null){
 
                 // add the DL Query menuItem if the reasoner is enabled
-                if (server.getProperties().isSet(OWLHTMLConstants.OPTION_REASONER_ENABLED)){
+                if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionReasonerEnabled)){
                     menuDoclet.addToMenu(new MenuItemDoclet(OWLHTMLConstants.DL_QUERY_LABEL,
-                                                            server.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML),
+                                                            kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML),
                                                             OWLHTMLConstants.LinkTarget.subnav,
-                                                            server));
+                                                            kit));
                 }
 
                 menuDoclet.addToMenu(new MenuItemDoclet("Help",
                                                         OWLHTMLConstants.HOME_PAGE,
                                                         OWLHTMLConstants.LinkTarget._blank,
-                                                        server));
+                                                        kit));
 
-                AutocompleteDoclet searchboxDoclet = new AutocompleteDoclet(server, "find", true);
+                AutocompleteDoclet searchboxDoclet = new AutocompleteDoclet(kit, "find", true);
                 searchboxDoclet.setParamName("name");
                 searchboxDoclet.setSubmitName("find");
-                searchboxDoclet.setSubmitURL(server.getURLScheme().getURLForIndex(NamedObjectType.entities)); // could be more direct
+                searchboxDoclet.setSubmitURL(kit.getURLScheme().getURLForIndex(NamedObjectType.entities)); // could be more direct
                 searchboxDoclet.setTarget(OWLHTMLConstants.LinkTarget.content);
                 menuDoclet.addDoclet(searchboxDoclet);
             }
         }
     }
 
-    private OWLHTMLServer getServer(HttpServletRequest request, String sessionLabel, URL pageURL) throws ServletException {
+    private OWLHTMLKit getHTMLGenerator(HttpServletRequest request, String sessionLabel, URL pageURL) throws ServletException {
         try {
             return SessionManager.getServer(request, sessionLabel);
         }
         catch (OntServerException e) {
-            throw new ServletException("Severe exception initialising server session: " + pageURL, e);
+            throw new ServletException("Severe exception initialising kit session: " + pageURL, e);
         }
     }
 
-    private Map<String, String> checkAndCreateParams(HttpServletRequest request, OWLServer server) throws InvalidRequestException {
-        HashMap<String, String> params = new HashMap<String, String>();
-        final Set requestParams = request.getParameterMap().keySet();
-        final Map<String, Set<String>> requiredParams = getRequiredParams(server);
+    private Map<OWLHTMLParam, String> checkAndCreateParams(HttpServletRequest request,
+                                                           OWLHTMLKit kit) throws InvalidRequestException {
+        Map<OWLHTMLParam, String> params = new HashMap<OWLHTMLParam, String>();
 
-        for (String requiredParam : requiredParams.keySet()){
-            if (!requestParams.contains(requiredParam)){
+        final Map<OWLHTMLParam, Set<String>> requiredParams = getRequiredParams(kit.getOWLServer());
+
+        // check the parameters are known
+        for (Object key: request.getParameterMap().keySet()){
+            try{
+                params.put(OWLHTMLParam.valueOf((String)key), null);
+            }
+            catch (IllegalArgumentException e){
                 throw new InvalidRequestException(request, requiredParams);
             }
         }
-        for (Object param : requestParams){
-            if (!OWLHTMLConstants.PARAM_SESSION_LABEL.equals(param) &&
-                    !OntologyBrowserConstants.PARAM_FORMAT.equals(param)){
-                String[] v = (String[])request.getParameterMap().get(param);
+
+        // check that the required parameters are given
+        for (OWLHTMLParam requiredParam : requiredParams.keySet()){
+            if (!params.keySet().contains(requiredParam)){
+                throw new InvalidRequestException(request, requiredParams);
+            }
+        }
+
+
+        for (OWLHTMLParam param : params.keySet()){
+            switch(param){
+                case session: break;
+                case format: break;
+                default:
+                String[] v = (String[])request.getParameterMap().get(param.name());
                 try {
                     String value = v[0];
                     // hack to ensure that params are decoded (if not already uri escaped)
@@ -209,7 +232,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                         value = new String(value.getBytes("8859_1"), OWLHTMLConstants.DEFAULT_ENCODING);
                     }
                     value = URLDecoder.decode(value, OWLHTMLConstants.DEFAULT_ENCODING);
-                    params.put(param.toString(), value);
+                    params.put(param, value);
                 }
                 catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
@@ -220,32 +243,33 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     }
 
 
-    protected final SuggestorManager getSuggestorManager(OWLHTMLServer server) throws OntServerException {
-        return SessionManager.getSuggestorManager(server);
-    }
+//    protected final SuggestorManager getSuggestorManager(OWLHTMLKit kit) throws OntServerException {
+//        return SessionManager.getSuggestorManager(kit);
+//    }
 
-    private void renderError(String message, Throwable e, OWLHTMLServer server, URL servletURL, String format, HttpServletResponse response) throws IOException {
+    private void renderError(String message, Throwable e, OWLHTMLKit kit, URL servletURL, String format, HttpServletResponse response) throws IOException {
         if (OntologyBrowserConstants.FORMAT_XML.equals(format)){
             response.setContentType(OntologyBrowserConstants.MIME_XML);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println();
         }
         else if (OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(format)){
-            DefaultHTMLPage errorRenderer = createHTMLError(message, e, server, response);
+            DefaultHTMLPage errorRenderer = createHTMLError(message, e, kit, response);
             errorRenderer.removeDoclet(errorRenderer.getDoclet(MenuBarDoclet.ID));
             errorRenderer.removeDoclet(errorRenderer.getDoclet(TabsDoclet.ID));
             errorRenderer.renderContent(servletURL, response.getWriter());
         }
         else { // default to full page HTML
-            DefaultHTMLPage errorRenderer = createHTMLError(message, e, server, response);
+            EmptyOWLDocPage errorRenderer = createHTMLError(message, e, kit, response);
+            errorRenderer.addMessage("Error rendering page: " + servletURL);            
             errorRenderer.renderAll(servletURL, response.getWriter());
         }
     }
 
-    private DefaultHTMLPage createHTMLError(String message, Throwable e, OWLHTMLServer server, HttpServletResponse response) {
+    private EmptyOWLDocPage createHTMLError(String message, Throwable e, OWLHTMLKit kit, HttpServletResponse response) {
         response.setContentType(OntologyBrowserConstants.MIME_HTML);
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        EmptyOWLDocPage errorRenderer = new EmptyOWLDocPage(server);
+        EmptyOWLDocPage errorRenderer = new EmptyOWLDocPage(kit);
         if (message != null){
             errorRenderer.addError(message);
         }
@@ -267,11 +291,11 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     }
 
 
-    protected final <N extends OWLNamedObject> OWLEntityIndexHTMLPage createIndexRenderer(String title,
+    protected final <N extends OWLObject> OWLObjectIndexHTMLPage createIndexRenderer(String title,
                                                                                           Set<N> results,
-                                                                                          OWLHTMLServer server) throws OntServerException {
+                                                                                          OWLHTMLKit kit) throws OntServerException {
         try {
-            OWLEntityIndexHTMLPage<N> ren = new OWLEntityIndexHTMLPage<N>(server);
+            OWLObjectIndexHTMLPage<N> ren = new OWLObjectIndexHTMLPage<N>(kit);
             if (title != null){
                 ren.setTitle(title);
             }
@@ -285,22 +309,30 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     }
 
 
-    protected final void renderXMLResults(Set<OWLNamedObject> results,
+    protected final void renderXMLResults(Set<? extends OWLObject> results,
                                           OWLServer server,
                                           PrintWriter out) {
         out.println("<?xml version=\"1.0\" encoding=\"" + OWLHTMLConstants.DEFAULT_ENCODING + "\" ?>");
         out.println("<results>");
-        for (OWLNamedObject result : results){
-            final String name = server.getNameRenderer().getShortForm(result);
-            out.println("<rs id=\"" + result.getURI() + "\" info=\"\">" + name + "</rs>");
+        for (OWLObject result : results){
+            if (result instanceof OWLEntity){
+                OWLEntity entity = (OWLEntity)result;
+                final String name = server.getShortFormProvider().getShortForm(entity);
+                out.println("<rs id=\"" + entity.getURI() + "\" info=\"\">" + name + "</rs>");
+            }
+            else if (result instanceof OWLOntology){
+                OWLOntology ont = (OWLOntology)result;
+                final String name = server.getOntologyShortFormProvider().getShortForm(ont);
+                out.println("<rs id=\"" + ont.getOntologyID().getOntologyIRI() + "\" info=\"\">" + name + "</rs>");
+            }
         }
         out.println("</results>");
     }
 
 
     // @@TODO this is a duplicate of the method in AbstractHTMLPageRenderer
-    protected boolean isSingleFrameNavigation(OWLServer server) {
-        return server.getProperties().get(OWLHTMLConstants.OPTION_CONTENT_WINDOW) == null;
+    protected boolean isSingleFrameNavigation(OWLHTMLKit kit) {
+        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 
 

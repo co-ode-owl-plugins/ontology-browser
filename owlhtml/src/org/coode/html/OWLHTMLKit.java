@@ -1,9 +1,13 @@
-package org.coode.owl.mngr.impl;
+package org.coode.html;
 
+import org.coode.html.url.URLScheme;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owl.model.*;
+import org.coode.owl.mngr.ServerPropertiesAdapter;
+import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.net.URI;
+import java.net.URL;
+import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -33,41 +37,38 @@ import java.net.URI;
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Aug 8, 2007<br><br>
+ * Date: Oct 2, 2007<br><br>
  */
-public class LabelShortFormProvider extends FragmentShortFormProvider {
+public interface OWLHTMLKit {
 
-    private OWLServer server;
+    String getID();
 
-    private URI uri;
+    OWLServer getOWLServer();
+
+    ServerPropertiesAdapter<OWLHTMLProperty> getHTMLProperties();
+
+    URL getBaseURL();
+    
+    URLScheme getURLScheme();
+
+    void setURLScheme(URLScheme urlScheme);
 
 
-    public LabelShortFormProvider(OWLServer server, URI annotationURI) {
-        this.server = server;
-        this.uri = annotationURI;
-    }
+    /**
+     * The ontologies that are visible in the browser (reasoner should always use getActiveOntologies)
+     * @return ontologies that are to be rendered in the interface (not including the 'system' meta ontology)
+     */
+    Set<OWLOntology> getVisibleOntologies();
+
+    void setOntologyVisible(OWLOntology ontology, boolean visible);
 
 
-    public String getShortForm(OWLEntity entity) {
-        for (OWLOntology ont : server.getActiveOntologies()){
-            for (OWLAnnotation annot : (entity).getAnnotations(ont)){
-                final URI annotationURI = annot.getAnnotationURI();
-                if (annotationURI.equals(uri)){
-                    if (annot instanceof OWLConstantAnnotation){
-                        return ((OWLConstantAnnotation)annot).getAnnotationValue().getLiteral();
-                    }
-                }
-            }
-        }
-        return super.getShortForm(entity);
-    }
+    /**
+     * @param label
+     */
+    void setCurrentLabel(String label);
 
-    public String getShortForm(OWLNamedObject obj) {
-        if (obj instanceof OWLOntology){
-            return super.getShortForm(obj);
-        }
-        else{
-            return getShortForm((OWLEntity)obj);
-        }
-    }
+    String getCurrentLabel();
+
+    void dispose();
 }

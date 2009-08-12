@@ -3,11 +3,11 @@
 */
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLServer;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.bookmarks.OntologyBookmarks;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,15 +24,15 @@ import java.util.Set;
  */
 public class BookmarksDoclet extends AbstractOWLElementsDoclet<OWLOntology, OWLEntity>{
 
-    public BookmarksDoclet(String name, Format format, OWLHTMLServer server) {
-        super(name, format, server);
+    public BookmarksDoclet(String name, Format format, OWLHTMLKit kit) {
+        super(name, format, kit);
         setTarget(OWLHTMLConstants.LinkTarget.content);
     }
 
     protected Collection<OWLEntity> getElements(Set<OWLOntology> onts) {
         Set<OWLEntity> bookmarks = new HashSet<OWLEntity>();
         for (OWLOntology ont : onts){
-            bookmarks.addAll(new OntologyBookmarks(getServer().getOWLOntologyManager(), ont).getBookmarks());
+            bookmarks.addAll(new OntologyBookmarks(getHTMLGenerator().getOWLServer().getOWLOntologyManager(), ont).getBookmarks());
         }
         return bookmarks;
     }

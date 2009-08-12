@@ -1,19 +1,5 @@
 package org.coode.www.query;
 
-import org.apache.log4j.Logger;
-import org.coode.owl.mngr.OWLDescriptionParser;
-import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.ServerConstants;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.*;
-
-import java.net.URI;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -59,156 +45,156 @@ import java.util.Set;
  * Where a single appropriate property cannot be found, a common parent should be used.
  *
  */
-public class QuickDescriptionParser implements OWLDescriptionParser {
-
-    private static final Logger logger = Logger.getLogger(QuickDescriptionParser.class.getName());
-
-    private OWLServer server;
-    private OWLObjectProperty defaultProp;
-
-    public QuickDescriptionParser(OWLServer server){
-        this(server, server.getOWLOntologyManager().getOWLDataFactory().getOWLObjectProperty(ServerConstants.RELATED_TO));
-    }
-
-    public QuickDescriptionParser(OWLServer server, OWLObjectProperty defaultProp) {
-        this.server = server;
-        this.defaultProp = defaultProp;
-    }
-
-    public OWLDescription parse(String str) throws ParseException {
-        List<OWLClass> classes = createClassList(str, false);
-        if (!classes.isEmpty()){
-            OWLClass root = classes.get(0);
-            classes.remove(0);
-
-            if (!classes.isEmpty()){
-                final OWLDataFactory df = server.getOWLOntologyManager().getOWLDataFactory();
-                final Set<OWLDescription> intersection = new HashSet<OWLDescription>();
-                intersection.add(root);
-                for (OWLClass cls : classes){
-                    // @@TODO select a property that has this class in the range if there is one
-                    OWLObjectProperty property = getPropertyForClass(root, cls);
-                    intersection.add(df.getOWLObjectSomeRestriction(property, cls));
-                }
-                return df.getOWLObjectIntersectionOf(intersection);
-            }
-            else{
-                return root;
-            }
-        }
-        return null;
-    }
-
-    // @@TODO should we make this independent of the reasoner??
-    // @@TODO should return multiple properties
-    private OWLObjectProperty getPropertyForClass(OWLClass root, OWLClass cls) {
-        OWLObjectProperty bestMatchProperty = defaultProp;
-        OWLDescription bestMatchRange = null;
-
-        try {
-            OWLReasoner r = server.getOWLReasoner();
-            if (r.isSatisfiable(cls)){
-                for (OWLObjectProperty prop : getOWLObjectProperties()){
-                    if (isInRange(cls, prop)){
-                        final Set<OWLDescription> domains = prop.getDomains(server.getOntologies());
-                        if (!domains.isEmpty()){
-                            OWLDescription domain = createDescriptionFromClassSet(domains);
-                            if (r.isEquivalentClass(domain, root)){
-                                return prop;
-                            }
-                            else if (r.isSubClassOf(root, domain)){
-                                if (bestMatchProperty.equals(defaultProp)){
-                                    bestMatchProperty = prop;
-                                    bestMatchRange = domain;
-                                }
-                                else{
-                                    // if the range is narrower than the previous best match
-                                    if (r.isSubClassOf(domain,  bestMatchRange)){
-                                        bestMatchProperty = prop;
-                                        bestMatchRange = domain;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else{
-                logger.debug("TO IMPLEMENT: get narrow property for unsatisfiable class: " + cls);
-            }
-        }
-        catch (OWLReasonerException e) {
-            logger.error("Caught Exception: ", e);
-        }
-        return bestMatchProperty;
-    }
-
-    private boolean isInRange(OWLClass filler, OWLObjectProperty prop) throws OWLReasonerException {
-        boolean isInRange = true;
-        OWLReasoner r = server.getOWLReasoner();
-        final Set<OWLDescription> propRanges = prop.getRanges(server.getOntologies());
-        if (!propRanges.isEmpty()){
-            OWLDescription propRange = createDescriptionFromClassSet(propRanges);
-            isInRange = r.isSubClassOf(filler, propRange);
-        }
-        return isInRange;
-    }
-
-    private OWLDescription createDescriptionFromClassSet(Set<OWLDescription> clses){
-        final OWLDataFactory df = server.getOWLOntologyManager().getOWLDataFactory();
-
-        OWLDescription descr = null;
-        if (!clses.isEmpty()){
-            if (clses.size() == 1){
-                descr = clses.iterator().next();
-            }
-            else if (clses.size() > 1){
-                descr = df.getOWLObjectIntersectionOf(clses);
-            }
-        }
-        return descr;
-    }
-
-    private List<OWLClass> createClassList(String string, boolean createUnresolvedClasses) throws ParseException {
-        final List<OWLClass> classes = new ArrayList<OWLClass>();
-        final OWLDataFactory df = server.getOWLOntologyManager().getOWLDataFactory();
-
-        String[] elements = string.split(" ");
-        for (String element : elements){
-            String name = element.trim();
-            Set<OWLClass> matches = server.getFinder().getOWLClasses(name);
-            if (matches.isEmpty()){
-                if (createUnresolvedClasses){
-                    try {
-                        final OWLClass newClass = df.getOWLClass(new URI(server.getActiveOntology().getURI().toString() + "#" + name));
-                        classes.add(newClass);
-                        final AddAxiom addAxiom = new AddAxiom(server.getActiveOntology(), df.getOWLDeclarationAxiom(newClass));
-                        server.getOWLOntologyManager().applyChange(addAxiom);
-                        logger.debug("Added new class: " + newClass);
-                    }
-                    catch (Exception e) {
-                        throw new ParseException(e.getMessage(), 0);
-                    }
-                }
-                else{
-                    classes.add(df.getOWLThing());
-                }
-            }
-            else if(matches.size() == 1){
-                classes.add(matches.iterator().next());
-            }
-            else{
-                throw new ParseException("Ambiguous phrase: " + name + " resolves to multiple classes", 0);
-            }
-        }
-        return classes;
-    }
-
-    private Set<OWLObjectProperty> getOWLObjectProperties() {
-        Set<OWLObjectProperty> properties = new HashSet<OWLObjectProperty>();
-        for (OWLOntology ont : server.getOntologies()){
-            properties.addAll(ont.getReferencedObjectProperties());
-        }
-        return properties;
-    }
+public class QuickDescriptionParser{// implements OWLClassExpressionParser {
+//
+//    private static final Logger logger = Logger.getLogger(QuickDescriptionParser.class.getName());
+//
+//    private OWLServer kit;
+//    private OWLObjectProperty defaultProp;
+//
+//    public QuickDescriptionParser(OWLServer kit){
+//        this(kit, kit.getOWLOntologyManager().getOWLDataFactory().getOWLObjectProperty(ServerConstants.RELATED_TO));
+//    }
+//
+//    public QuickDescriptionParser(OWLServer kit, OWLObjectProperty defaultProp) {
+//        this.kit = kit;
+//        this.defaultProp = defaultProp;
+//    }
+//
+//    public OWLClassExpression parse(String str) throws ParseException {
+//        List<OWLClass> classes = createClassList(str, false);
+//        if (!classes.isEmpty()){
+//            OWLClass root = classes.get(0);
+//            classes.remove(0);
+//
+//            if (!classes.isEmpty()){
+//                final OWLDataFactory df = kit.getOWLOntologyManager().getOWLDataFactory();
+//                final Set<OWLClassExpression> intersection = new HashSet<OWLClassExpression>();
+//                intersection.add(root);
+//                for (OWLClass cls : classes){
+//                    // @@TODO select a property that has this class in the range if there is one
+//                    OWLObjectProperty property = getPropertyForClass(root, cls);
+//                    intersection.add(df.getOWLObjectSomeValuesFrom(property, cls));
+//                }
+//                return df.getOWLObjectIntersectionOf(intersection);
+//            }
+//            else{
+//                return root;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    // @@TODO should we make this independent of the reasoner??
+//    // @@TODO should return multiple properties
+//    private OWLObjectProperty getPropertyForClass(OWLClass root, OWLClass cls) {
+//        OWLObjectProperty bestMatchProperty = defaultProp;
+//        OWLClassExpression bestMatchRange = null;
+//
+//        try {
+//            OWLReasoner r = kit.getOWLReasoner();
+//            if (r.isSatisfiable(cls)){
+//                for (OWLObjectProperty prop : getOWLObjectProperties()){
+//                    if (isInRange(cls, prop)){
+//                        final Set<OWLClassExpression> domains = prop.getDomains(kit.getOntologies());
+//                        if (!domains.isEmpty()){
+//                            OWLClassExpression domain = createDescriptionFromClassSet(domains);
+//                            if (r.isEquivalentClass(domain, root)){
+//                                return prop;
+//                            }
+//                            else if (r.isSubClassOf(root, domain)){
+//                                if (bestMatchProperty.equals(defaultProp)){
+//                                    bestMatchProperty = prop;
+//                                    bestMatchRange = domain;
+//                                }
+//                                else{
+//                                    // if the range is narrower than the previous best match
+//                                    if (r.isSubClassOf(domain,  bestMatchRange)){
+//                                        bestMatchProperty = prop;
+//                                        bestMatchRange = domain;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            else{
+//                logger.debug("TO IMPLEMENT: get narrow property for unsatisfiable class: " + cls);
+//            }
+//        }
+//        catch (OWLReasonerException e) {
+//            logger.error("Caught Exception: ", e);
+//        }
+//        return bestMatchProperty;
+//    }
+//
+//    private boolean isInRange(OWLClass filler, OWLObjectProperty prop) throws OWLReasonerException {
+//        boolean isInRange = true;
+//        OWLReasoner r = kit.getOWLReasoner();
+//        final Set<OWLClassExpression> propRanges = prop.getRanges(kit.getOntologies());
+//        if (!propRanges.isEmpty()){
+//            OWLClassExpression propRange = createDescriptionFromClassSet(propRanges);
+//            isInRange = r.isSubClassOf(filler, propRange);
+//        }
+//        return isInRange;
+//    }
+//
+//    private OWLClassExpression createDescriptionFromClassSet(Set<OWLClassExpression> clses){
+//        final OWLDataFactory df = kit.getOWLOntologyManager().getOWLDataFactory();
+//
+//        OWLClassExpression descr = null;
+//        if (!clses.isEmpty()){
+//            if (clses.size() == 1){
+//                descr = clses.iterator().next();
+//            }
+//            else if (clses.size() > 1){
+//                descr = df.getOWLObjectIntersectionOf(clses);
+//            }
+//        }
+//        return descr;
+//    }
+//
+//    private List<OWLClass> createClassList(String string, boolean createUnresolvedClasses) throws ParseException {
+//        final List<OWLClass> classes = new ArrayList<OWLClass>();
+//        final OWLDataFactory df = kit.getOWLOntologyManager().getOWLDataFactory();
+//
+//        String[] elements = string.split(" ");
+//        for (String element : elements){
+//            String name = element.trim();
+//            Set<OWLClass> matches = kit.getFinder().getOWLClasses(name);
+//            if (matches.isEmpty()){
+//                if (createUnresolvedClasses){
+//                    try {
+//                        final OWLClass newClass = df.getOWLClass(new URI(kit.getActiveOntology().getURI().toString() + "#" + name));
+//                        classes.add(newClass);
+//                        final AddAxiom addAxiom = new AddAxiom(kit.getActiveOntology(), df.getOWLDeclarationAxiom(newClass));
+//                        kit.getOWLOntologyManager().applyChange(addAxiom);
+//                        logger.debug("Added new class: " + newClass);
+//                    }
+//                    catch (Exception e) {
+//                        throw new ParseException(e.getMessage(), 0);
+//                    }
+//                }
+//                else{
+//                    classes.add(df.getOWLThing());
+//                }
+//            }
+//            else if(matches.size() == 1){
+//                classes.add(matches.iterator().next());
+//            }
+//            else{
+//                throw new ParseException("Ambiguous phrase: " + name + " resolves to multiple classes", 0);
+//            }
+//        }
+//        return classes;
+//    }
+//
+//    private Set<OWLObjectProperty> getOWLObjectProperties() {
+//        Set<OWLObjectProperty> properties = new HashSet<OWLObjectProperty>();
+//        for (OWLOntology ont : kit.getOntologies()){
+//            properties.addAll(ont.getReferencedObjectProperties());
+//        }
+//        return properties;
+//    }
 }
