@@ -122,7 +122,7 @@ public class ServerPropertiesImpl implements ServerProperties {
 
 
     public boolean isSet(String booleanOption) {
-        return Boolean.getBoolean(properties.getProperty(booleanOption));
+        return Boolean.parseBoolean(properties.getProperty(booleanOption));
     }
 
 

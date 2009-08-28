@@ -107,7 +107,7 @@ public class Summary extends AbstractOntologyServerServlet {
                     return ren;
                 }
                 else {
-                    return getSummaryRenderer(object, kit, Boolean.getBoolean(expanded));
+                    return getSummaryRenderer(object, kit, Boolean.parseBoolean(expanded));
                 }
             }
         }
