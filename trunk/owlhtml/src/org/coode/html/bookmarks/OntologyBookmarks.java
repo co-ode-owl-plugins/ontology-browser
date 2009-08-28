@@ -105,8 +105,8 @@ public class OntologyBookmarks {
     private void parseAnnotation(String s) {
         for (String value : s.split("\n")){
             try {
-                URI uri = new URI(value);
-                OWLEntity e = getEntityFromURI(uri);
+                IRI iri = IRI.create(new URI(value));
+                OWLEntity e = getEntityFromIRI(iri);
                 if (e != null){
                     bookmarks.add(e);
                 }
@@ -117,30 +117,30 @@ public class OntologyBookmarks {
         }
     }
 
-    private OWLEntity getEntityFromURI(URI uri) {
+    private OWLEntity getEntityFromIRI(IRI iri) {
         for (OWLOntology ont : mngr.getOntologies()){
-            if (ont.containsClassReference(uri)){
-                return mngr.getOWLDataFactory().getOWLClass(uri);
+            if (ont.containsClassReference(iri)){
+                return mngr.getOWLDataFactory().getOWLClass(iri);
             }
 
-            if (ont.containsObjectPropertyReference(uri)){
-                return mngr.getOWLDataFactory().getOWLObjectProperty(uri);
+            if (ont.containsObjectPropertyReference(iri)){
+                return mngr.getOWLDataFactory().getOWLObjectProperty(iri);
             }
 
-            if (ont.containsDataPropertyReference(uri)){
-                return mngr.getOWLDataFactory().getOWLDataProperty(uri);
+            if (ont.containsDataPropertyReference(iri)){
+                return mngr.getOWLDataFactory().getOWLDataProperty(iri);
             }
 
-            if (ont.containsAnnotationPropertyReference(uri)){
-                return mngr.getOWLDataFactory().getOWLAnnotationProperty(uri);
+            if (ont.containsAnnotationPropertyReference(iri)){
+                return mngr.getOWLDataFactory().getOWLAnnotationProperty(iri);
             }
 
-            if (ont.containsIndividualReference(uri)){
-                return mngr.getOWLDataFactory().getOWLNamedIndividual(uri);
+            if (ont.containsIndividualReference(iri)){
+                return mngr.getOWLDataFactory().getOWLNamedIndividual(iri);
             }
 
-            if (ont.containsDatatypeReference(uri)){
-                return mngr.getOWLDataFactory().getOWLDatatype(uri);
+            if (ont.containsDatatypeReference(iri)){
+                return mngr.getOWLDataFactory().getOWLDatatype(iri);
             }
         }
 

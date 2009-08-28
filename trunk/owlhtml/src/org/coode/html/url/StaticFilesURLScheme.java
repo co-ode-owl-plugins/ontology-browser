@@ -96,7 +96,7 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            return new URL(getBaseURL(), type + OWLHTMLConstants.START_QUERY + INDEX_PREFIX + ontologyShortFormProvider.getShortForm(ont) + OWLHTMLConstants.DEFAULT_EXTENSION);
+            return new URL(getBaseURL(), type + OWLHTMLConstants.SLASH + INDEX_PREFIX + ontologyShortFormProvider.getShortForm(ont) + OWLHTMLConstants.DEFAULT_EXTENSION);
         }
         catch (MalformedURLException e) {
             logger.error(e);

@@ -110,7 +110,7 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
         final Set<OWLEntity> results = getOWLEntities(str, type);
         if (ont != null){
             for (OWLEntity result : results){
-                if (!ont.containsEntityReference(result.getURI())){
+                if (!ont.containsEntityReference(result.getIRI())){
                     results.remove(result);
                 }
             }

@@ -66,7 +66,7 @@ public class ManageOntologies extends AbstractOntologyServerServlet {
 
                 switch(action){
                     case load:
-                        boolean clear = Boolean.getBoolean(params.get(OWLHTMLParam.clear));
+                        boolean clear = Boolean.parseBoolean(params.get(OWLHTMLParam.clear));
                         ren = handleLoad(getURIFromParam(params.get(OWLHTMLParam.uri)), clear, kit, pageURL);
                         break;
                     case remove:

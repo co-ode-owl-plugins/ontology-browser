@@ -49,7 +49,7 @@ public class SignOut extends HttpServlet {
                     "</body></html>");
         }
         else{
-            if (Boolean.getBoolean(confirm)){
+            if (Boolean.parseBoolean(confirm)){
                 HttpSession session = request.getSession(false);
                 SessionManager.closeSession(session);
             }
