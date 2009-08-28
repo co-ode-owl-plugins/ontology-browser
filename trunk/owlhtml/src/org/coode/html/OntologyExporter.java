@@ -18,6 +18,7 @@ import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerProperty;
 import org.semanticweb.owlapi.model.*;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -83,6 +84,10 @@ public class OntologyExporter {
                     else if (argPair[0].equals("-c")){
                         logger.info("Switching ontology summary cloud on");
                         kit.getHTMLProperties().setBoolean(OWLHTMLProperty.optionRenderOntologySummaryCloud, true);
+                    }
+                    else if (argPair[0].equals("-v")){
+                        logger.info("Verbose");
+                        logger.setLevel(Level.DEBUG);
                     }
                     else{
                         // must be an ontology file
@@ -283,6 +288,8 @@ public class OntologyExporter {
 
             for (OWLEntity entity : entities){
 
+                logger.debug("Rendering " + type.getSingularRendering() + ": " + entity);
+
                 // add to ontology index
                 ontIndexRenderer.add(entity);
 
@@ -295,6 +302,8 @@ public class OntologyExporter {
                     indexAllResourcesRenderer.add(entity);
                 }
             }
+
+            logger.debug("Rendering index: " + type);
 
             ontIndexRenderer.renderAll(indexBaseURL, indexWriter);
             indexWriter.flush();
