@@ -10,11 +10,8 @@ import org.coode.html.util.URLUtils;
 import org.coode.owl.util.ModelUtil;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.vocab.Namespaces;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.semanticweb.owlapi.util.ShortFormProvider;
-import org.semanticweb.owlapi.util.URIShortFormProvider;
-import org.semanticweb.owlapi.util.SimpleURIShortFormProvider;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
 import java.io.IOException;
@@ -57,8 +54,6 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private ShortFormProvider sfProvider;
 
-    private URIShortFormProvider uriSFProvider;
-
     private OntologyIRIShortFormProvider ontologyIriSFProvider;
 
     private Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
@@ -75,7 +70,6 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
                           Writer out) {
         this.urlRenderer = urlRenderer;
         this.sfProvider = sfProvider;
-        this.uriSFProvider = new SimpleURIShortFormProvider();
         this.ontologyIriSFProvider = new OntologyIRIShortFormProvider();
         this.out = out;
     }
@@ -194,7 +188,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
     public void visit(IRI iri) {
-        writeIRIWithBoldFragment(iri, uriSFProvider.getShortForm(iri.toURI()));
+        writeIRIWithBoldFragment(iri, iri.getFragment());
     }
 
     public void visit(OWLAnonymousIndividual individual) {
@@ -451,13 +445,8 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
 
-    public void visit(SWRLLiteralVariable swrlLiteralVariable) {
-        // @@TODO SWRL SUpport
-    }
-
-
-    public void visit(SWRLIndividualVariable swrlIndividualVariable) {
-        // @@TODO SWRL SUpport
+    public void visit(SWRLVariable swrlVariable) {
+        // @@TODO SWRL Support
     }
 
 
