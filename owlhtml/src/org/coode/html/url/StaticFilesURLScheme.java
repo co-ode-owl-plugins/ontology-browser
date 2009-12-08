@@ -68,8 +68,8 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
                 }
                 else if (owlObject instanceof OWLOntology){
-                    URI uri = ((OWLOntology)owlObject).getOntologyID().getOntologyIRI().toURI();
-                    String name = ontologyShortFormProvider.getShortForm(uri) + ID_SPLITTER + uri.hashCode();
+                    IRI iri = ((OWLOntology)owlObject).getOntologyID().getOntologyIRI();
+                    String name = ontologyShortFormProvider.getShortForm(iri) + ID_SPLITTER + iri.hashCode();
                     name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
                     url = new URL(getBaseURL(), NamedObjectType.ontologies + OWLHTMLConstants.SLASH + name + OWLHTMLConstants.DEFAULT_EXTENSION);
                 }

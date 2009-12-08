@@ -10,8 +10,8 @@ import org.semanticweb.owlapi.util.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
-import uk.ac.manchester.cs.owl.inference.dig11.DIGReasoner;
-import uk.ac.manchester.cs.owl.inference.dig11.DIGReasonerPreferences;
+//import uk.ac.manchester.cs.owl.inference.dig11.DIGReasoner;
+//import uk.ac.manchester.cs.owl.inference.dig11.DIGReasonerPreferences;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -247,9 +247,10 @@ public class OWLServerImpl implements OWLServer {
                     reasoner = (OWLReasoner) constructor.newInstance(mngr);
                 }
                 else if (ServerConstants.DIG.equals(selectedReasoner)){
-                    logger.debug("  DIG");
-                    DIGReasonerPreferences.getInstance().setReasonerURL(new URL(properties.get(ServerProperty.optionReasonerUrl)));
-                    reasoner = new DIGReasoner(mngr);
+                    throw new RuntimeException("DIG not supported");
+//                    logger.debug("  DIG");
+//                    DIGReasonerPreferences.getInstance().setReasonerURL(new URL(properties.get(ServerProperty.optionReasonerUrl)));
+//                    reasoner = new DIGReasoner(mngr);
                 }
 
                 if (reasoner != null){

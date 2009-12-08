@@ -243,8 +243,8 @@ public class SynchronizedOWLReasoner implements OWLReasoner {
         return r.isIrreflexive(property);
     }
 
-    public synchronized boolean isAntiSymmetric(OWLObjectProperty property) throws OWLReasonerException {
-        return r.isAntiSymmetric(property);
+    public synchronized boolean isAsymmetric(OWLObjectProperty property) throws OWLReasonerException {
+        return r.isAsymmetric(property);
     }
 
     public synchronized Set<Set<OWLDataProperty>> getSuperProperties(OWLDataProperty property) throws OWLReasonerException {
