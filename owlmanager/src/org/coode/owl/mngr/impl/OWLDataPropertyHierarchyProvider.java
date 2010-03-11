@@ -3,16 +3,23 @@
 */
 package org.coode.owl.mngr.impl;
 
-import org.semanticweb.owlapi.inference.OWLPropertyReasoner;
-import org.semanticweb.owlapi.inference.OWLReasonerException;
-import org.semanticweb.owlapi.model.*;
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.OWLServerListener;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.*;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
+import org.semanticweb.owlapi.model.OWLSubPropertyAxiom;
 
 /**
  * Author: Nick Drummond<br>
@@ -112,7 +119,7 @@ public class OWLDataPropertyHierarchyProvider implements HierarchyProvider<OWLDa
         Set<OWLDataProperty> descendants = new HashSet<OWLDataProperty>();
         if (node.equals(getRoot())){
             for (OWLOntology ont : getOntologies()){
-                descendants.addAll(ont.getReferencedDataProperties());
+                descendants.addAll(ont.getDataPropertiesInSignature());
             }
         }
         else{
@@ -180,7 +187,7 @@ public class OWLDataPropertyHierarchyProvider implements HierarchyProvider<OWLDa
         if (implicitRoots == null){
             implicitRoots = new HashSet<OWLDataProperty>();
             for (OWLOntology ont : getOntologies()){
-                implicitRoots.addAll(ont.getReferencedDataProperties());
+                implicitRoots.addAll(ont.getDataPropertiesInSignature());
             }
             for (Iterator i=implicitRoots.iterator(); i.hasNext();){
                 OWLDataProperty p = (OWLDataProperty)i.next();
