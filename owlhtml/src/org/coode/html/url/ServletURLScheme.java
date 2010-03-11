@@ -49,7 +49,7 @@ public class ServletURLScheme extends AbstractURLScheme {
             URI uri = null;
             String type = null;
             if (owlObject instanceof OWLEntity){
-                uri = ((OWLEntity)owlObject).getURI();
+                uri = ((OWLEntity)owlObject).getIRI().toURI();
                 type = NamedObjectType.getType((OWLEntity)owlObject).toString();
             }
             else if (owlObject instanceof OWLOntology){

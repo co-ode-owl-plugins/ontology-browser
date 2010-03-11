@@ -35,7 +35,7 @@ public class ClassesByUsageCloud extends AbstractOWLCloudModel<OWLClass>{
     public Set<OWLClass> getEntities() {
         Set<OWLClass> owlClasses = new HashSet<OWLClass>();
         for (OWLOntology ont : getOntologies()) {
-            owlClasses.addAll(ont.getReferencedClasses());
+            owlClasses.addAll(ont.getClassesInSignature());
         }
         return owlClasses;
     }

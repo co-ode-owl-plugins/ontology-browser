@@ -153,10 +153,10 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         }
 
         write(" <span style='color:gray;'>(" +
-              "c:" + ontology.getReferencedClasses().size() +
-              ", op:" + ontology.getReferencedObjectProperties().size() +
-              ", dp:" + ontology.getReferencedDataProperties().size() +
-              ", i:" + ontology.getReferencedIndividuals().size() +
+              "c:" + ontology.getClassesInSignature().size() +
+              ", op:" + ontology.getObjectPropertiesInSignature().size() +
+              ", dp:" + ontology.getDataPropertiesInSignature().size() +
+              ", i:" + ontology.getIndividualsInSignature().size() +
               ")</span>");
     }
 
@@ -628,7 +628,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
     public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
-        writeKeyword(ManchesterOWLSyntax.DISJOINT_OBJECT_PROPERTIES.toString());
+        writeKeyword(ManchesterOWLSyntax.DISJOINT_PROPERTIES.toString());
         write("(");
         writeOpList(axiom.getProperties(), ", ", false);
         write(")");
@@ -636,7 +636,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
     public void visit(OWLDisjointDataPropertiesAxiom axiom) {
-        writeKeyword(ManchesterOWLSyntax.DISJOINT_DATA_PROPERTIES.toString());
+        writeKeyword(ManchesterOWLSyntax.DISJOINT_PROPERTIES.toString());
         write("(");
         writeOpList(axiom.getProperties(), ", ", false);
         write(")");
@@ -772,7 +772,10 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private void writeIRIWithBoldFragment(IRI iri, String shortForm) {
         final String fullURI = iri.toString();
-        int index = fullURI.lastIndexOf(shortForm);
+        int index = 0;
+        if (shortForm != null) {
+        	index = fullURI.lastIndexOf(shortForm);
+        }
         if (index == 0){
             write(fullURI);
         }
@@ -819,7 +822,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
 
     private void writeOWLEntity(OWLEntity entity) {
-        final URI uri = entity.getURI();
+        final URI uri = entity.getIRI().toURI();
 
         String name = getName(entity);
 
