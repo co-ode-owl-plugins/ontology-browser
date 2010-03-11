@@ -3,12 +3,12 @@
 */
 package org.coode.html.hierarchy;
 
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.owl.mngr.HierarchyProvider;
-import org.semanticweb.owlapi.inference.OWLReasonerException;
-import org.semanticweb.owlapi.model.*;
-
-import java.util.Set;
+import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 /**
  * Author: Nick Drummond<br>

@@ -76,7 +76,7 @@ public class OntologyBookmarks {
         String annotationValue = "";
         for (OWLObject bookmark : bookmarks){
             if (bookmark instanceof OWLEntity){
-                annotationValue += ((OWLEntity)bookmark).getURI() + "\n";
+                annotationValue += ((OWLEntity)bookmark).getIRI() + "\n";
             }
         }
         changes.addAll(clear());
@@ -119,27 +119,27 @@ public class OntologyBookmarks {
 
     private OWLEntity getEntityFromIRI(IRI iri) {
         for (OWLOntology ont : mngr.getOntologies()){
-            if (ont.containsClassReference(iri)){
+            if (ont.containsClassInSignature(iri)){
                 return mngr.getOWLDataFactory().getOWLClass(iri);
             }
 
-            if (ont.containsObjectPropertyReference(iri)){
+            if (ont.containsObjectPropertyInSignature(iri)){
                 return mngr.getOWLDataFactory().getOWLObjectProperty(iri);
             }
 
-            if (ont.containsDataPropertyReference(iri)){
+            if (ont.containsDataPropertyInSignature(iri)){
                 return mngr.getOWLDataFactory().getOWLDataProperty(iri);
             }
 
-            if (ont.containsAnnotationPropertyReference(iri)){
+            if (ont.containsAnnotationPropertyInSignature(iri)){
                 return mngr.getOWLDataFactory().getOWLAnnotationProperty(iri);
             }
 
-            if (ont.containsIndividualReference(iri)){
+            if (ont.containsIndividualInSignature(iri)){
                 return mngr.getOWLDataFactory().getOWLNamedIndividual(iri);
             }
 
-            if (ont.containsDatatypeReference(iri)){
+            if (ont.containsDatatypeInSignature(iri)){
                 return mngr.getOWLDataFactory().getOWLDatatype(iri);
             }
         }

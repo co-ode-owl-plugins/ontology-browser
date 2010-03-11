@@ -3,11 +3,18 @@
 */
 package org.coode.html.hierarchy;
 
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.inference.OWLReasonerException;
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import org.apache.log4j.Logger;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 /**
  * Author: Nick Drummond<br>

@@ -56,7 +56,7 @@ public class AnnotationPropsByUsageCloud extends AbstractOWLCloudModel<OWLAnnota
     public Set<OWLAnnotationProperty> getEntities() {
         Set<OWLAnnotationProperty> objectProperties = new HashSet<OWLAnnotationProperty>();
         for (OWLOntology ont : getOntologies()) {
-            objectProperties.addAll(ont.getReferencedAnnotationProperties());
+            objectProperties.addAll(ont.getAnnotationPropertiesInSignature());
         }
         return objectProperties;
     }

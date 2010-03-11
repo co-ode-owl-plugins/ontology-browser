@@ -62,7 +62,7 @@ public class RestURLScheme extends AbstractURLScheme {
 
             if (owlObject instanceof OWLEntity){
                 type = NamedObjectType.getType(owlObject).toString();
-                code = ((OWLEntity)owlObject).getURI().hashCode();
+                code = ((OWLEntity)owlObject).getIRI().hashCode();
             }
             else if (owlObject instanceof OWLOntology){
                 type = NamedObjectType.getType(owlObject).toString();
@@ -107,7 +107,7 @@ public class RestURLScheme extends AbstractURLScheme {
                     objs.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ont));
                 }
                 for (OWLEntity obj : objs){
-                    if (obj.getURI().hashCode() == hashCode){
+                    if (obj.getIRI().hashCode() == hashCode){
                         return obj;
                     }
                 }

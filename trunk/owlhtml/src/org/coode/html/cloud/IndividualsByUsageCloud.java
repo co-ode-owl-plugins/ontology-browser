@@ -56,7 +56,7 @@ public class IndividualsByUsageCloud extends AbstractOWLCloudModel<OWLNamedIndiv
     public Set<OWLNamedIndividual> getEntities() {
         Set<OWLNamedIndividual> entities = new HashSet<OWLNamedIndividual>();
         for (OWLOntology ont : getOntologies()) {
-            entities.addAll(ont.getReferencedIndividuals());
+            entities.addAll(ont.getIndividualsInSignature());
         }
         return entities;
     }

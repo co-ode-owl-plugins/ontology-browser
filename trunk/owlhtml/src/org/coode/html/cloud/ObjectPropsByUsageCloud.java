@@ -56,7 +56,7 @@ public class ObjectPropsByUsageCloud extends AbstractOWLCloudModel<OWLObjectProp
     public Set<OWLObjectProperty> getEntities() {
         Set<OWLObjectProperty> objectProperties = new HashSet<OWLObjectProperty>();
         for (OWLOntology ont : getOntologies()) {
-            objectProperties.addAll(ont.getReferencedObjectProperties());
+            objectProperties.addAll(ont.getObjectPropertiesInSignature());
         }
         return objectProperties;
     }

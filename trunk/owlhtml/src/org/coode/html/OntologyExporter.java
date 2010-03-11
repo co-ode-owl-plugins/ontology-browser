@@ -228,38 +228,38 @@ public class OntologyExporter {
         // export classes
         exportReferencedEntities(NamedObjectType.classes,
                                  clsSummary,
-                                 getReferencedClasses(ont),
+                                 getClassesInSignature(ont),
                                  ont);
 
         // export object properties
         exportReferencedEntities(NamedObjectType.objectproperties,
                                  objPropSummary,
-                                 ont.getReferencedObjectProperties(),
+                                 ont.getObjectPropertiesInSignature(),
                                  ont);
 
         // export data properties
         exportReferencedEntities(NamedObjectType.dataproperties,
                                  dataPropSummary,
-                                 ont.getReferencedDataProperties(),
+                                 ont.getDataPropertiesInSignature(),
                                  ont);
 
         // export annotation properties
         exportReferencedEntities(NamedObjectType.annotationproperties,
                                  annotationPropSummary,
-                                 ont.getReferencedAnnotationProperties(),
+                                 ont.getAnnotationPropertiesInSignature(),
                                  ont);
 
         // export individuals
         exportReferencedEntities(NamedObjectType.individuals,
                                  indSummary,
-                                 ont.getReferencedIndividuals(),
+                                 ont.getIndividualsInSignature(),
                                  ont);
 
 
         // export datatypes
         exportReferencedEntities(NamedObjectType.datatypes,
                                  datatypeSummary,
-                                 ont.getReferencedDatatypes(),
+                                 ont.getDatatypesInSignature(),
                                  ont);
     }
 
@@ -415,9 +415,9 @@ public class OntologyExporter {
 
 
     // get all classes (including owl:Thing)
-    private Set<OWLClass> getReferencedClasses(OWLOntology ont) {
+    private Set<OWLClass> getClassesInSignature(OWLOntology ont) {
         Set<OWLClass> referencedClasses = new HashSet<OWLClass>();
-        referencedClasses.addAll(ont.getReferencedClasses());
+        referencedClasses.addAll(ont.getClassesInSignature());
         final OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
         referencedClasses.add(df.getOWLThing());
         referencedClasses.add(df.getOWLNothing());

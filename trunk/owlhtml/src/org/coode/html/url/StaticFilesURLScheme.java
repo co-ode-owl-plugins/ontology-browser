@@ -62,7 +62,7 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
             if (url == null){
                 if (owlObject instanceof OWLEntity){
                     OWLEntity owlEntity = (OWLEntity)owlObject;
-                    String name = shortFormProvider.getShortForm(owlEntity) + ID_SPLITTER + owlEntity.getURI().hashCode();
+                    String name = shortFormProvider.getShortForm(owlEntity) + ID_SPLITTER + owlEntity.getIRI().hashCode();
                     name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
                     url = new URL(getBaseURL(), NamedObjectType.getType(owlEntity) + OWLHTMLConstants.SLASH + name + OWLHTMLConstants.DEFAULT_EXTENSION);
 
