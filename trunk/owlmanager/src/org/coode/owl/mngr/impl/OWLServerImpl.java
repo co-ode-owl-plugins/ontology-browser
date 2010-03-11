@@ -1,25 +1,53 @@
 package org.coode.owl.mngr.impl;
 
-import org.apache.log4j.Logger;
-import org.coode.owl.mngr.*;
-import org.coode.owl.util.OWLObjectComparator;
-import org.semanticweb.owlapi.inference.OWLReasoner;
-import org.semanticweb.owlapi.inference.OWLReasonerException;
-import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.util.*;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-import org.semanticweb.owlapi.expression.OWLEntityChecker;
-import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
-//import uk.ac.manchester.cs.owl.inference.dig11.DIGReasoner;
-//import uk.ac.manchester.cs.owl.inference.dig11.DIGReasonerPreferences;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
 import java.net.URI;
-import java.net.URL;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.coode.owl.mngr.HierarchyProvider;
+import org.coode.owl.mngr.OWLClassExpressionParser;
+import org.coode.owl.mngr.OWLEntityFinder;
+import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.mngr.OWLServerListener;
+import org.coode.owl.mngr.ServerConstants;
+import org.coode.owl.mngr.ServerPropertiesAdapter;
+import org.coode.owl.mngr.ServerProperty;
+import org.coode.owl.util.OWLObjectComparator;
+import org.semanticweb.owlapi.expression.OWLEntityChecker;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologySetProvider;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
+import org.semanticweb.owlapi.util.AnnotationValueShortFormProvider;
+import org.semanticweb.owlapi.util.CachingBidirectionalShortFormProvider;
+import org.semanticweb.owlapi.util.NonMappingOntologyIRIMapper;
+import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
+import org.semanticweb.owlapi.util.ReferencedEntitySetProvider;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 
 /**
@@ -105,7 +133,7 @@ public class OWLServerImpl implements OWLServer {
 
         handleCommonBaseMappers(physicalURI);
 
-        OWLOntology ont = mngr.loadOntologyFromPhysicalURI(physicalURI);
+        OWLOntology ont = mngr.loadOntologyFromOntologyDocument(IRI.create(physicalURI));
 
         if (getActiveOntology() == null){
             setActiveOntology(ont); // the active ontology is always the first that was loaded
@@ -234,6 +262,9 @@ public class OWLServerImpl implements OWLServer {
 
                 final String selectedReasoner = properties.get(ServerProperty.optionReasoner);
 
+                /*********************
+                 * TODO -- This code is broken...
+                 */
                 if (ServerConstants.PELLET.equals(selectedReasoner)){
                     logger.debug("  pellet");
                     Class cls = Class.forName("org.mindswap.pellet.owlapi.Reasoner");
@@ -255,8 +286,7 @@ public class OWLServerImpl implements OWLServer {
 
                 if (reasoner != null){
                     this.reasoner = new SynchronizedOWLReasoner(reasoner);
-                    this.reasoner.loadOntologies(getActiveOntologies());
-                    this.reasoner.classify();
+                    this.reasoner.prepareReasoner();
                 }
             }
             catch (Throwable e) {
@@ -402,12 +432,7 @@ public class OWLServerImpl implements OWLServer {
 
     private void resetReasoner() {
         if (reasoner != null){
-            try {
-                reasoner.dispose();
-            }
-            catch (OWLReasonerException e) {
-                logger.error(e);
-            }
+            reasoner.dispose();
             reasoner = null;
         }
     }
@@ -474,7 +499,7 @@ public class OWLServerImpl implements OWLServer {
         List<String> uriStrings = new ArrayList<String>();
         Set<OWLAnnotationProperty> annotationProps = new HashSet<OWLAnnotationProperty>();
         for (OWLOntology ont : getActiveOntologies()){
-            annotationProps.addAll(ont.getReferencedAnnotationProperties());
+            annotationProps.addAll(ont.getAnnotationPropertiesInSignature());
         }
         for (OWLAnnotationProperty prop : annotationProps){
             uriStrings.add(prop.getIRI().toString());

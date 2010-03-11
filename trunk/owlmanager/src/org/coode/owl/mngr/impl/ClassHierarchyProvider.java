@@ -1,42 +1,21 @@
 package org.coode.owl.mngr.impl;
 
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.util.ToldClassHierarchyReasoner;
-import org.semanticweb.owlapi.inference.OWLClassReasoner;
-import org.semanticweb.owlapi.inference.OWLReasonerException;
+import java.util.Collections;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.OWLServerListener;
 import org.coode.owl.util.ModelUtil;
-import org.apache.log4j.Logger;
-
-import java.util.Set;
-import java.util.Collections;
-
-import com.sun.tools.example.debug.gui.Environment;
-/*
-* Copyright (C) 2007, University of Manchester
-*
-* Modifications to the initial code base are copyright of their
-* respective authors, or their employers as appropriate.  Authorship
-* of the modifications may be determined from the ChangeLog placed at
-* the end of this file.
-*
-* This library is free software; you can redistribute it and/or
-* modify it under the terms of the GNU Lesser General Public
-* License as published by the Free Software Foundation; either
-* version 2.1 of the License, or (at your option) any later version.
-
-* This library is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-* Lesser General Public License for more details.
-
-* You should have received a copy of the GNU Lesser General Public
-* License along with this library; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLRuntimeException;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
+import org.semanticweb.owlapi.reasoner.OWLReasonerRuntimeException;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasoner;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 
 /**
  * Author: drummond<br>
@@ -52,7 +31,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     private OWLServer server;
 
-    private ToldClassHierarchyReasoner r;
+    private StructuralReasoner r;
 
     private OWLServerListener serverListener = new OWLServerListener(){
 
@@ -75,9 +54,9 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public Set<OWLClass> getParents(OWLClass node) {
         try {
-            return ModelUtil.filterClasses(getReasoner().getSuperClasses(node), getServer().getOWLOntologyManager().getOWLDataFactory());
+            return getReasoner().getSuperClasses(node,false).getFlattened();
         }
-        catch (OWLReasonerException e) {
+        catch (OWLReasonerRuntimeException e) {
             logger.error(e);
         }
         return Collections.emptySet();
@@ -86,9 +65,9 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public Set<OWLClass> getChildren(OWLClass node) {
         try {
-            return ModelUtil.filterClasses(getReasoner().getSubClasses(node), getServer().getOWLOntologyManager().getOWLDataFactory());
+            return getReasoner().getSubClasses(node, true).getFlattened();
         }
-        catch (OWLReasonerException e) {
+        catch (OWLReasonerRuntimeException e) {
             logger.error(e);
         }
         return Collections.emptySet();
@@ -97,9 +76,9 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public Set<OWLClass> getEquivalents(OWLClass node) {
         try{
-            return getReasoner().getEquivalentClasses(node);
+            return getReasoner().getEquivalentClasses(node).getEntities();
         }
-        catch (OWLReasonerException e) {
+        catch (OWLReasonerRuntimeException e) {
             logger.error(e);
         }
         return Collections.emptySet();
@@ -108,9 +87,9 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public Set<OWLClass> getDescendants(OWLClass node) {
         try {
-            return ModelUtil.filterClasses(getReasoner().getDescendantClasses(node), getServer().getOWLOntologyManager().getOWLDataFactory());
+            return getReasoner().getSubClasses(node, false).getFlattened();
         }
-        catch (OWLReasonerException e) {
+        catch (OWLReasonerRuntimeException e) {
             logger.error(e);
         }
         return Collections.emptySet();
@@ -119,9 +98,9 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public Set<OWLClass> getAncestors(OWLClass node) {
         try{
-            return ModelUtil.filterClasses(getReasoner().getAncestorClasses(node), getServer().getOWLOntologyManager().getOWLDataFactory());
+            return getReasoner().getSuperClasses(node, false).getFlattened();
         }
-        catch (OWLReasonerException e) {
+        catch (OWLReasonerRuntimeException e) {
             logger.error(e);
         }
         return Collections.emptySet();
@@ -143,11 +122,11 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     }
 
 
-    protected OWLClassReasoner getReasoner() {
+    protected OWLReasoner getReasoner() {
         if (r == null){
-            r = new ToldClassHierarchyReasoner(getServer().getOWLOntologyManager());
-            r.loadOntologies(getOntologies());
-            r.classify();
+            StructuralReasonerFactory factory = new StructuralReasonerFactory();
+            factory.createReasoner(getServer().getActiveOntology());
+            r.prepareReasoner();
         }
         return r;
     }

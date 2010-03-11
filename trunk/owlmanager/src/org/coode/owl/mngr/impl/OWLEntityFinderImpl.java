@@ -110,7 +110,7 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
         final Set<OWLEntity> results = getOWLEntities(str, type);
         if (ont != null){
             for (OWLEntity result : results){
-                if (!ont.containsEntityReference(result.getIRI())){
+                if (!ont.containsEntityInSignature(result.getIRI())){
                     results.remove(result);
                 }
             }
@@ -129,7 +129,7 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
                 for (OWLOntology ont : server.getActiveOntologies()){
                     for (NamedObjectType subType : NamedObjectType.entitySubtypes()){
                         OWLEntity entity = subType.getOWLEntity(IRI.create(uri), server.getOWLOntologyManager().getOWLDataFactory());
-                        if (ont.containsEntityReference(entity)){
+                        if (ont.containsEntityInSignature(entity)){
                             results.add(entity);
                         }
                     }
@@ -140,7 +140,7 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
             default:
                 OWLEntity entity = type.getOWLEntity(IRI.create(uri), server.getOWLOntologyManager().getOWLDataFactory());
                 for (OWLOntology ont : server.getActiveOntologies()){
-                    if (ont.containsEntityReference(entity)){
+                    if (ont.containsEntityInSignature(entity)){
                         return Collections.singleton(entity);
                     }
                 }
@@ -153,7 +153,7 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
         final Set<OWLEntity> results = getOWLEntities(uri, type);
         if (ont != null){
             for (OWLEntity result : results){
-                if (!ont.containsEntityReference(result)){
+                if (!ont.containsEntityInSignature(result)){
                     results.remove(result);
                 }
             }

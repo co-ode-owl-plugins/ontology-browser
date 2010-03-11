@@ -53,7 +53,7 @@ public class BaseURIMapper implements OWLOntologyIRIMapper {
     }
 
 
-    public URI getPhysicalURI(IRI ontologyIRI) {
+    public IRI getDocumentIRI(IRI ontologyIRI) {
         String base = getBase(ontologyIRI).toString();
         String ontologyName = ontologyIRI.toString().substring(base.length());
         URI loc = URI.create(baseURI + ontologyName);
@@ -66,13 +66,13 @@ public class BaseURIMapper implements OWLOntologyIRIMapper {
                 int response = con.getResponseCode();
                 con.disconnect();
                 if (response == HttpURLConnection.HTTP_OK){
-                    return loc;
+                    return IRI.create(loc);
                 }
             }
             else if (loc.getScheme().equals("file")){
                 File file = new File(loc);
                 if (file.exists()){
-                    return loc;
+                    return IRI.create(loc);
                 }
             }
         }
