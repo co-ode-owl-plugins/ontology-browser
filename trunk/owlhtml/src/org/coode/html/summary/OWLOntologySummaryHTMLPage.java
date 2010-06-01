@@ -25,7 +25,6 @@ import java.util.Collections;
 public class OWLOntologySummaryHTMLPage extends EmptyOWLDocPage<OWLOntology> {
 
     private ClassesByUsageCloud cloudModel;
-    private BookmarksDoclet bookmarksDoclet;
 
     public OWLOntologySummaryHTMLPage(final OWLHTMLKit kit) {
         super(kit);
@@ -38,9 +37,6 @@ public class OWLOntologySummaryHTMLPage extends EmptyOWLDocPage<OWLOntology> {
         addDoclet(referencesDoclet);
 
         addDoclet(new OntologyImportsDoclet(kit));
-
-        bookmarksDoclet = new BookmarksDoclet("Bookmarks", ElementsDoclet.Format.list, kit);
-        addDoclet(bookmarksDoclet);
 
         if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
             cloudModel = new ClassesByUsageCloud(getHTMLGenerator());
