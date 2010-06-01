@@ -30,8 +30,6 @@ public class OWLContentsHTMLPage extends EmptyOWLDocPage<OWLOntology> {
     public OWLContentsHTMLPage(OWLHTMLKit kit) {
         super(kit);
 
-        addDoclet(new BookmarksDoclet(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, kit));
-
         contentsDoclet = new OverallContentsDoclet(kit, OWLHTMLConstants.CONTENTS_LABEL);
 
         addDoclet(contentsDoclet);
@@ -48,6 +46,8 @@ public class OWLContentsHTMLPage extends EmptyOWLDocPage<OWLOntology> {
                 addDoclet(doclet);
             }
         }
+
+        addDoclet(new BookmarksDoclet(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, kit));
     }
 
     public void setTitle(String title) {
