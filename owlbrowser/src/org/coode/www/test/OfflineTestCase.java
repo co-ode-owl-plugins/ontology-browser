@@ -5,7 +5,8 @@ import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.semanticweb.owlapi.inference.OWLReasoner;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -34,21 +35,21 @@ public class OfflineTestCase extends TestCase {
         logger.debug("s = " + s);
     }
 
-    public void testImports(){
+   public void testImports(){
         OWLOntologyManager mngr = org.semanticweb.owlapi.apibinding.OWLManager.createOWLOntologyManager();
         try {
             // B imports A
-            URI a = getClass().getResource("A.owl").toURI();
-            URI b = getClass().getResource("B.owl").toURI();
-            mngr.loadOntologyFromPhysicalURI(b);
+            IRI a = IRI.create(getClass().getResource("A.owl").toURI());
+            IRI b = IRI.create(getClass().getResource("B.owl").toURI());
+            mngr.loadOntologyFromOntologyDocument(b);
 
             assertEquals(2, mngr.getOntologies().size());
 
-            mngr.loadOntologyFromPhysicalURI(a);
+            mngr.loadOntologyFromOntologyDocument(a);
 
             for (OWLOntology ont : mngr.getOntologies()){
                 logger.debug("ont = " + ont);
-                logger.debug("classes = " + ont.getReferencedClasses());
+                logger.debug("classes = " + ont.getClassesInSignature());
             }
 
             assertEquals(2, mngr.getOntologies().size());
@@ -78,7 +79,7 @@ public class OfflineTestCase extends TestCase {
             OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
             kit.getOWLServer().loadOntology(b);
 
-            String str = ren.render(df.getOWLClass(new URI("http://www.co-ode.org/ontologies/b.owl#class1")), null);
+            String str = ren.render(df.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/b.owl#class1")), null);
             logger.debug("str = " + str);
         }
         catch (Exception e) {

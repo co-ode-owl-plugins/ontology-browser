@@ -56,8 +56,8 @@ public class ManagerTestCase extends TestCase {
             OWLServer server = new OWLServerImpl(mngr);
 
             OWLDataFactory df = mngr.getOWLDataFactory();
-            OWLClass a = df.getOWLClass(URI.create("http://www.co-ode.org/ontologies/test/test.owl#A"));
-            OWLClass b = df.getOWLClass(URI.create("http://www.co-ode.org/ontologies/test/test.owl#B"));
+            OWLClass a = df.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/test/test.owl#A"));
+            OWLClass b = df.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/test/test.owl#B"));
             OWLSubClassOfAxiom bSubA = df.getOWLSubClassOfAxiom(b, a);
             List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
             changes.add(new AddAxiom(ont, bSubA));

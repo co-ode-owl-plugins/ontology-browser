@@ -6,8 +6,8 @@ package org.coode.www;
 import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
 import org.coode.owl.util.ModelUtil;
-import org.semanticweb.owlapi.inference.OWLReasoner;
-import org.semanticweb.owlapi.inference.OWLReasonerException;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -31,26 +31,17 @@ public enum QueryType {
     ancestors,
     instances;
 
-    private Logger logger = Logger.getLogger(QueryType.class);
-
     public Set<OWLEntity> getResults(OWLClassExpression descr, OWLHTMLKit kit) {
         Set<OWLEntity> results = new HashSet<OWLEntity>();
-        try{
-            final OWLReasoner r = kit.getOWLServer().getOWLReasoner();
-            final OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
-            switch(this){
-                case equivalents: results.addAll(r.getEquivalentClasses(descr)); break;
-                case subclasses: results.addAll(ModelUtil.filterClasses(r.getSubClasses(descr), df)); break;
-                case descendants: results.addAll(ModelUtil.filterClasses(r.getDescendantClasses(descr), df)); break;
-                case superclasses: results.addAll(ModelUtil.filterClasses(r.getSuperClasses(descr), df)); break;
-                case ancestors: results.addAll(ModelUtil.filterClasses(r.getAncestorClasses(descr), df)); break;
-                case instances: results.addAll(r.getIndividuals(descr, false)); break;
-            }
-        }
-        catch(OWLReasonerException e){
-            logger.error("Reasoner error", e);
+        final OWLReasoner r = kit.getOWLServer().getOWLReasoner();
+        switch(this){
+            case equivalents: results.addAll(r.getEquivalentClasses(descr).getEntities()); break;
+            case subclasses: results.addAll(r.getSubClasses(descr, true).getFlattened()); break;
+            case descendants: results.addAll(r.getSubClasses(descr, false).getFlattened()); break;
+            case superclasses: results.addAll(r.getSuperClasses(descr, true).getFlattened()); break;
+            case ancestors: results.addAll(r.getSuperClasses(descr, false).getFlattened()); break;
+            case instances: results.addAll(r.getInstances(descr, false).getFlattened()); break;
         }
         return results;
     }
-
 }
