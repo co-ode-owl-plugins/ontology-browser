@@ -66,7 +66,7 @@ public class SelectorContentsDoclet implements HTMLDoclet {
             defaultStr = (defaultValue != null && entity.equals(defaultValue))? " selected='selected'" : "";
             String value;
             if (entity instanceof OWLNamedObject){
-                value = ((OWLNamedObject)entity).getURI().toString();
+                value = ((OWLNamedObject)entity).getIRI().toString();
             }
             else{
                 value = htmlRen.render(entity, pageURL);

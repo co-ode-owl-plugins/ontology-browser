@@ -1,6 +1,6 @@
 package org.coode.www.exception;
 
-import org.semanticweb.owlapi.inference.OWLReasonerException;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 /**
  * Author: Nick Drummond<br>

@@ -202,7 +202,7 @@ public class ManageOntologies extends AbstractOntologyServerServlet {
         OWLServer server = kit.getOWLServer();
 
         try {
-            URI physicalLocation = server.getOWLOntologyManager().getPhysicalURIForOntology(ontology);
+            URI physicalLocation = server.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI();
 
             server.removeOntology(ontology);
             server.loadOntology(physicalLocation);
@@ -289,7 +289,7 @@ public class ManageOntologies extends AbstractOntologyServerServlet {
         Map<OWLOntologyID, URI> ontology2locationMap = new HashMap<OWLOntologyID, URI>();
         final Set<OWLOntology> ontologies = server.getOntologies();
         for (OWLOntology ont : ontologies){
-            ontology2locationMap.put(ont.getOntologyID(), server.getOWLOntologyManager().getPhysicalURIForOntology(ont));
+            ontology2locationMap.put(ont.getOntologyID(), server.getOWLOntologyManager().getOntologyDocumentIRI(ont).toURI());
             for (OWLImportsDeclaration importsDecl : ont.getImportsDeclarations()){
                 if (server.getOWLOntologyManager().getOntology(importsDecl.getIRI()) == null){
                     ontology2locationMap.put(new OWLOntologyID(importsDecl.getIRI()), null);

@@ -318,7 +318,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             if (result instanceof OWLEntity){
                 OWLEntity entity = (OWLEntity)result;
                 final String name = server.getShortFormProvider().getShortForm(entity);
-                out.println("<rs id=\"" + entity.getURI() + "\" info=\"\">" + name + "</rs>");
+                out.println("<rs id=\"" + entity.getIRI() + "\" info=\"\">" + name + "</rs>");
             }
             else if (result instanceof OWLOntology){
                 OWLOntology ont = (OWLOntology)result;
