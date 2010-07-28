@@ -4,6 +4,7 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.OWLEntity;
 
@@ -24,12 +25,18 @@ public class OWLEntityTitleDoclet<O extends OWLEntity> extends AbstractTitleDocl
 
     public String getTitle() {
         final O object = getUserObject();
-        return NamedObjectType.getType(object).getSingularRendering() + ": " +
-               getHTMLGenerator().getOWLServer().getShortFormProvider().getShortForm(object);
+        String title = "";
+        if (!isShowMiniHierarchiesEnabled()){
+            title = NamedObjectType.getType(object).getSingularRendering() + ": ";
+        }
+        return title + getOWLHTMLKit().getOWLServer().getShortFormProvider().getShortForm(object);
     }
-
 
     public String getSubtitle() {
         return getUserObject().getIRI().toString();
+    }
+
+    private boolean isShowMiniHierarchiesEnabled() {
+        return getOWLHTMLKit().getHTMLProperties().isSet(OWLHTMLProperty.optionShowMiniHierarchies);
     }
 }

@@ -27,18 +27,21 @@ public class LoadFormDoclet extends AbstractHTMLDoclet {
     protected void renderHeader(URL pageURL, PrintWriter out) {
         renderBoxStart("Load Ontologies", out);
 
-        out.println("    <form style='float: left;  width: 50%;' id='specify' method='POST' action='.' target='_top' >\n" +
-                    "        <label for='uri-spec'><h3 style='margin-bottom: 0;'>Specify the physical location of your ontology:</h3></label><br />\n" +
-                    "        <input id='" + OntologyBrowserConstants.LOAD_ONTOLOGIES_INPUT_ID +
-                    "' name='" + OWLHTMLParam.uri + "' type='text' style='width:80%; margin-top: 0;' />\n" +
-                    "        <input name='action' type='submit' value='load' />\n" +
-                    "    </form>\n" +
-                    "    <!--form method='post' enctype='multipart/form-data' action='.'>\n" +
-                    "      <p class='instructions'>Upload an ontology:</p>\n" +
-                    "      <p><label title='Choose a Local File to Upload and Validate' for='uploaded_file'>File:</label>\n" +
-                    "        <input type='file' id='uploaded_file' name='uploaded_file' size='30' /></p>\n" +
-                    "        <input name='action' type='submit' value='load' />\n" +
-                    "    </form-->");
+        out.println("    <form style='float: left;  width: 50%;' id='specify' method='POST' action='.' target='_top' >");
+        out.println("        <label for='uri-spec'><h3 style='margin-bottom: 0;'>Specify the physical location of your ontology:</h3></label><br />");
+        out.print("        <input id='");
+        out.print(OntologyBrowserConstants.LOAD_ONTOLOGIES_INPUT_ID);
+        out.print("' name='");
+        out.print(OWLHTMLParam.uri);
+        out.println("' type='text' style='width:80%; margin-top: 0;' />");
+        out.println("        <input name='action' type='submit' value='load' />");
+        out.println("    </form>");
+        out.println("    <!--form method='post' enctype='multipart/form-data' action='.'>");
+        out.println("      <p class='instructions'>Upload an ontology:</p>");
+        out.println("      <p><label title='Choose a Local File to Upload and Validate' for='uploaded_file'>File:</label>");
+        out.println("        <input type='file' id='uploaded_file' name='uploaded_file' size='30' /></p>");
+        out.println("        <input name='action' type='submit' value='load' />");
+        out.println("    </form-->");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {

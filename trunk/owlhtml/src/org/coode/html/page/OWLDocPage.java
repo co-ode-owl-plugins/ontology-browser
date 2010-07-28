@@ -8,7 +8,6 @@ import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.coode.html.url.PermalinkURLScheme;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
@@ -33,12 +32,12 @@ import java.net.URL;
  *
  * Content should be provided as additional doclets.
  */
-public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
+public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
     private OWLHTMLKit kit;
 
 
-    public EmptyOWLDocPage(OWLHTMLKit kit) {
+    public OWLDocPage(OWLHTMLKit kit) {
         this.kit = kit;
         String css = kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS);
         if (css != null){
@@ -60,15 +59,10 @@ public class EmptyOWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
     protected final void renderFooter(URL pageURL, PrintWriter out) {
 
         out.println("<p class='footer'>");
-
-        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderPermalink)){
-            renderLink(OWLHTMLConstants.PERMALINK_LABEL,
-                       new PermalinkURLScheme(kit.getURLScheme(), kit).getURLForAbsolutePage(pageURL),
-                       null, null, isSingleFrameNavigation(), pageURL, out);
-            out.print(" | ");
-        }
-
-        out.println("<a href='" + OWLHTMLConstants.HOME_PAGE + "' target='_blank'>OWL HTML inside</a></p>");
+        out.print("<a href='");
+        out.print(OWLHTMLConstants.HOME_PAGE);
+        out.println("' target='_blank'>OWL HTML inside</a>");
+        out.println("</p>");
 
         super.renderFooter(pageURL, out);
     }

@@ -95,7 +95,7 @@
 
     <servlet-mapping>
         <servlet-name>ManageOntologies</servlet-name>
-        <url-pattern>/manage/</url-pattern>
+        <url-pattern>/ontologies/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Find</servlet-name>
@@ -110,7 +110,7 @@
         <url-pattern>/contents.html</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>Index</servlet-name>
+        <servlet-name>ManageOntologies</servlet-name>
         <url-pattern>/index.html</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

@@ -4,9 +4,9 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.hierarchy.TreeFragment;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.renderer.OWLHTMLRenderer;
+import org.coode.owl.mngr.HierarchyProvider;
 import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
@@ -24,14 +24,12 @@ import java.util.Set;
  *
  * Special case, when the focused OWL Object is rendered, its subs are likely to be rendered differently from the rest of the tree
  */
-public class HierarchyNodeSubsDoclet<O extends OWLEntity> extends AbstractHierarchyNodeDoclet<O> {
+public class HierarchyNodeSubsDoclet<O extends OWLEntity> extends LeafNodeDoclet<O> {
 
     private int subThreshold = 3;
 
-    private List<O> children;
-
-    public HierarchyNodeSubsDoclet(OWLHTMLKit kit, TreeFragment<O> model) {
-        super(kit, model);
+    public HierarchyNodeSubsDoclet(OWLHTMLKit kit, O focus, HierarchyProvider<O> model) {
+        super(kit, focus, model);
     }
 
     /**
@@ -45,18 +43,20 @@ public class HierarchyNodeSubsDoclet<O extends OWLEntity> extends AbstractHierar
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
 
-        if (isShowSubsEnabled()){
+//        System.out.println("isShowSubsEnabled() = " + isShowSubsEnabled());
+//
+//        if (isShowSubsEnabled()){
 
             List<O> children = getChildren();
 
             if (!children.isEmpty()){
 
-                out.println("<ul>");
+//                out.println("<ul>");
 
                 //+1 takes into account additional line used for link
                 final boolean hideSomeChildren = hideSomeChildren();
 
-                final OWLHTMLRenderer owlhtmlRenderer = new OWLHTMLRenderer(getHTMLGenerator());
+                final OWLHTMLRenderer owlhtmlRenderer = new OWLHTMLRenderer(getOWLHTMLKit());
 
                 for (int i=0; i<children.size(); i++){
                     if (hideSomeChildren && i == subThreshold){
@@ -73,34 +73,23 @@ public class HierarchyNodeSubsDoclet<O extends OWLEntity> extends AbstractHierar
                                 + count + " more...</a></span>");
                 }
 
-                out.println("</ul>");
+//                out.println("</ul>");
             }
-        }
+//        }
     }
-
 
     private List<O> getChildren() {
-        if (children == null){
-            children = getModel().getChildren(getUserObject());
-        }
-        return children;
+        return asOrderedList(getHierarchyProvider().getChildren(getUserObject()));
     }
-
 
     private boolean hideSomeChildren() {
         return !isAutoExpandSubs() && getChildren().size() > subThreshold + 1;
     }
 
-
-    protected void renderFooter(URL pageURL, PrintWriter out) {
-        //@@TODO implement
-    }
-
-
     public Set<URL> getRequiredJS() {
         Set<URL> js = super.getRequiredJS();
         if (hideSomeChildren()){
-            js.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_TREE));
+            js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_TREE));
         }
         return js;
     }

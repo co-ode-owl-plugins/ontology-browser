@@ -3,8 +3,8 @@ package org.coode.html.doclet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.cloud.CloudModel;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.awt.*;
 import java.io.PrintWriter;

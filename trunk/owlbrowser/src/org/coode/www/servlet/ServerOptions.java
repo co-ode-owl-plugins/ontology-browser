@@ -3,10 +3,12 @@ package org.coode.www.servlet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.impl.OWLHTMLParam;
-import org.coode.html.page.EmptyOWLDocPage;
-import org.coode.owl.mngr.*;
+import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.page.OWLDocPage;
+import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.mngr.ServerPropertiesAdapter;
+import org.coode.owl.mngr.ServerProperty;
 import org.coode.www.doclet.OptionsTableDoclet;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
@@ -53,19 +55,23 @@ public class ServerOptions extends AbstractOntologyServerServlet {
     protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
         boolean success = handleOptionsSet(params, kit);
 
-//        if (success){
-//            out.println("<options><" + option + " value='" + value + "'/></options>");
-//        }
+        if (success){
+            String propertyName = params.get(OWLHTMLParam.property);
+            String value = params.get(OWLHTMLParam.value);
+
+            out.println("<options><" + propertyName + " value='" + value + "'/></options>");
+        }
     }
 
     protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         boolean success = handleOptionsSet(params, kit);
 
         if (success){
+            
             throw new RedirectException(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
         }
         else{
-            EmptyOWLDocPage page = new EmptyOWLDocPage(kit);
+            OWLDocPage page = new OWLDocPage(kit);
             page.addDoclet(new OptionsTableDoclet(params, kit));
             return page;
         }

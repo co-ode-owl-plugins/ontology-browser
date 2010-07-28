@@ -11,4 +11,4 @@ package org.coode.www;
  * Bio Health Informatics Group<br>
  * Date: Feb 8, 2008<br><br>
  */
-public enum ManageAction{load, remove, reload, browse, hide, unhide}
+public enum OntologyAction {load, remove, reload}//, hide, unhide}

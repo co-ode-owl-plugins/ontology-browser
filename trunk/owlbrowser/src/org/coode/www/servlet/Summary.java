@@ -1,23 +1,27 @@
 package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.util.URLUtils;
-import org.coode.html.doclet.*;
-import org.coode.html.hierarchy.OWLClassHierarchyTreeFragment;
-import org.coode.html.hierarchy.OWLPropertyHierarchyTreeFragment;
+import org.coode.html.doclet.HTMLDoclet;
+import org.coode.html.doclet.HierarchyDoclet;
+import org.coode.html.doclet.OntologyTitleDoclet;
+import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLObjectIndexHTMLPage;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.coode.html.summary.*;
-import org.coode.owl.mngr.*;
-import org.coode.owl.mngr.impl.ClassHierarchyProvider;
+import org.coode.html.url.URLScheme;
+import org.coode.html.util.URLUtils;
+import org.coode.owl.mngr.HierarchyProvider;
+import org.coode.owl.mngr.NamedObjectType;
+import org.coode.owl.mngr.OWLEntityFinder;
+import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.impl.InferredClassHierarchyProvider;
 import org.coode.owl.util.ModelUtil;
+import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
-import org.coode.www.OntologyBrowserConstants;
 import org.semanticweb.owlapi.model.*;
 
 import java.io.PrintWriter;
@@ -50,11 +54,12 @@ public class Summary extends AbstractOntologyServerServlet {
 
         String uri = params.get(OWLHTMLParam.uri);
         String entityName = params.get(OWLHTMLParam.name);
+        String ontology = params.get(OWLHTMLParam.ontology);
         NamedObjectType type = kit.getURLScheme().getType(servletURL);
 
         Set<OWLObject> results = Collections.emptySet();
         if (uri == null && entityName == null){
-            results = getIndexResults(params, kit, type);
+            results = getIndexResults(getOntology(ontology, kit), kit, type);
         }
         renderXMLResults(results, kit.getOWLServer(), out);
         // not yet implemented for entities
@@ -65,71 +70,104 @@ public class Summary extends AbstractOntologyServerServlet {
         String uri = params.get(OWLHTMLParam.uri);
         String entityName = params.get(OWLHTMLParam.name);
         String ontology = params.get(OWLHTMLParam.ontology);
-        String expanded = params.get(OWLHTMLParam.expanded);
+//        String expanded = params.get(OWLHTMLParam.expanded);
 
-        NamedObjectType type = kit.getURLScheme().getType(pageURL);
-        try {
+        final URLScheme urlScheme = kit.getURLScheme();
 
-            if (uri != null || entityName != null){
-                // if a name or uri is specified then redirect to search
-                OWLHTMLParam criteria = uri != null ? OWLHTMLParam.uri : OWLHTMLParam.input;
+        NamedObjectType type = urlScheme.getType(pageURL);
 
-                Map<OWLHTMLParam, String> map = new HashMap<OWLHTMLParam, String>();
-                map.put(OWLHTMLParam.format, OntologyBrowserConstants.FORMAT_HTML);
-                map.put(OWLHTMLParam.type, type.toString());
-                map.put(criteria, URLEncoder.encode(uri, OWLHTMLConstants.DEFAULT_ENCODING));
-                if (ontology != null){
-                    map.put(OWLHTMLParam.ontology, ontology);
+        // if a name or uri is specified then redirect to search
+        if (uri != null || entityName != null){
+            performSearch(type, uri, entityName, ontology, kit);
+        }
+        else{
+            OWLObject object = urlScheme.getOWLObjectForURL(pageURL);
+
+            // @@TODO handle summary pages when ontology specified
+
+            if (object == null && ontology == null && isShowMiniHierarchiesEnabled(kit)){
+                final OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
+                switch(urlScheme.getType(pageURL)){
+                    case classes:
+                        throw new RedirectException(urlScheme.getURLForOWLObject(df.getOWLThing()));
+                    case objectproperties:
+                        throw new RedirectException(urlScheme.getURLForOWLObject(df.getOWLTopObjectProperty()));
+                    case dataproperties:
+                        throw new RedirectException(urlScheme.getURLForOWLObject(df.getOWLTopDataProperty()));
+                    case annotationproperties:
+                        Set<OWLAnnotationProperty> annotationProperties = kit.getOWLServer().getOWLAnnotationPropertyHierarchyProvider().getRoots();
+                        if (!annotationProperties.isEmpty()){
+                            List<OWLAnnotationProperty> aps = new ArrayList<OWLAnnotationProperty>(annotationProperties);
+                            Collections.sort(aps, kit.getOWLObjectComparator());
+                            throw new RedirectException(urlScheme.getURLForOWLObject(aps.get(0)));
+                        }
+                        break;
+                    case datatypes:
+                        throw new RedirectException(urlScheme.getURLForOWLObject(df.getTopDatatype()));
                 }
-                StringBuilder sb = new StringBuilder("find/");
-                sb.append(URLUtils.renderParams(map));
+            }
 
-                throw new RedirectException(kit.getURLScheme().getURLForRelativePage(sb.toString()));
+            if (object == null){
+                return getIndexRenderer(type, kit, getOntology(ontology, kit));
+            }
+            else {
+                return getSummaryPage(object, kit, true);
+            }
+        }
+        throw new RuntimeException("Cannot get here");
+    }
+
+    private void performSearch(NamedObjectType type, String uri, String entityName, String ontology, OWLHTMLKit kit) throws OntServerException {
+        try{
+            Map<OWLHTMLParam, String> map = new HashMap<OWLHTMLParam, String>();
+            map.put(OWLHTMLParam.format, OntologyBrowserConstants.FORMAT_HTML);
+            map.put(OWLHTMLParam.type, type.toString());
+            if (uri != null){
+                map.put(OWLHTMLParam.uri, URLEncoder.encode(uri, OWLHTMLConstants.DEFAULT_ENCODING));
             }
             else{
-                OWLObject object = kit.getURLScheme().getOWLObjectForURL(pageURL);
-
-                if (object == null){
-                    final OWLOntology ont = getOntology(ontology, kit);
-                    StringBuilder sb = new StringBuilder();
-                    if (ont != null){
-                        sb.append(type.getPluralRendering());
-                        sb.append(" referenced in ");
-                        sb.append(kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont));
-                    }
-                    else{
-                        sb.append("All ");
-                        sb.append(type.getPluralRendering());
-                    }
-                    Set<OWLObject> results = getIndexResults(params, kit, type);
-                    OWLObjectIndexHTMLPage ren = createIndexRenderer(sb.toString(), results, kit);
-                    prepareIndex(ren, ont, type, kit);
-                    return ren;
-                }
-                else {
-                    return getSummaryRenderer(object, kit, Boolean.parseBoolean(expanded));
-                }
+                map.put(OWLHTMLParam.input, entityName);
             }
+
+            if (ontology != null){
+                map.put(OWLHTMLParam.ontology, ontology);
+            }
+            StringBuilder sb = new StringBuilder("find/");
+            sb.append(URLUtils.renderParams(map));
+
+            throw new RedirectException(kit.getURLScheme().getURLForRelativePage(sb.toString()));
         }
         catch (UnsupportedEncodingException e) {
             throw new OntServerException(e);
         }
     }
 
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        Map<OWLHTMLParam, Set<String>> params = new HashMap<OWLHTMLParam,  Set<String>>();
-        // all optional
-        return params;
+    private HTMLDoclet getIndexRenderer(NamedObjectType type, OWLHTMLKit kit, OWLOntology ont) throws OntServerException {
+        StringBuilder sb = new StringBuilder();
+        if (ont != null){
+            sb.append(type.getPluralRendering());
+            sb.append(" referenced in ");
+            sb.append(kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont));
+        }
+        else{
+            sb.append("All ");
+            sb.append(type.getPluralRendering());
+        }
+        Set<OWLObject> results = getIndexResults(ont, kit, type);
+        OWLObjectIndexHTMLPage ren = createIndexRenderer(sb.toString(), results, kit);
+        prepareIndex(ren, ont, type, kit);
+        return ren;
     }
 
-    private Set<OWLObject> getIndexResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, NamedObjectType type) throws OntServerException {
+
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
+        // all optional
+        return new HashMap<OWLHTMLParam,  Set<String>>();
+    }
+
+    private Set<OWLObject> getIndexResults(OWLOntology ont, OWLHTMLKit kit, NamedObjectType type) throws OntServerException {
 
         Set<OWLObject> results = new HashSet<OWLObject>();
-
-        String ontStr = params.get(OWLHTMLParam.ontology);
-
-        OWLOntology ont = getOntology(ontStr, kit);
 
         if (ont != null){ // if ontology specified, just display that one
             results.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ont));
@@ -152,7 +190,7 @@ public class Summary extends AbstractOntologyServerServlet {
     }
 
 
-    private EmptyOWLDocPage createNotFoundHTML(NamedObjectType type, String entityName, OWLHTMLKit kit) throws OntServerException {
+    private OWLDocPage createNotFoundHTML(NamedObjectType type, String entityName, OWLHTMLKit kit) throws OntServerException {
         final String message = "Cannot render a page for unknown " + type + ": " + entityName;
         if (entityName != null){
             OWLEntityFinder finder = kit.getOWLServer().getFinder();
@@ -173,33 +211,10 @@ public class Summary extends AbstractOntologyServerServlet {
             titleDoclet.setPinned(true);
             ren.addDoclet(titleDoclet, position++);
         }
-
-        // add a tiny fragment of the class tree from owl:Thing
-        if (type.equals(NamedObjectType.classes) && isShowMiniHierarchiesEnabled(kit)){
-            final OWLClass owlThing = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory().getOWLThing();
-            ren.setUserObject(owlThing);
-            HierarchyProvider<OWLClass> hp;
-            if (ont != null){
-                hp = new ClassHierarchyProvider(kit.getOWLServer()){
-                    
-                    protected Set<OWLOntology> getOntologies() {
-                        return Collections.singleton(ont);
-                    }
-                };
-            }
-            else{
-                hp = kit.getOWLServer().getClassHierarchyProvider();
-            }
-            OWLClassHierarchyTreeFragment model = new OWLClassHierarchyTreeFragment(kit, hp, "Asserted Class Hierarchy");
-            model.setAncestorLevels(3);
-            model.setDescendantLevels(2);
-            HierarchyRootDoclet<OWLClass> hierarchyDoclet = new HierarchyRootDoclet<OWLClass>(kit, model);
-            ren.addDoclet(hierarchyDoclet, position);
-        }
     }
 
-    private EmptyOWLDocPage getSummaryRenderer(OWLObject owlObject, OWLHTMLKit kit, boolean expand) {
-        EmptyOWLDocPage ren = null;
+    private OWLDocPage getSummaryPage(OWLObject owlObject, OWLHTMLKit kit, boolean expand) throws OntServerException {
+        OWLDocPage page = null;
 
         if (owlObject instanceof OWLClass){
             OWLClassSummaryHTMLPage summaryRenderer = new OWLClassSummaryHTMLPage(kit);
@@ -209,66 +224,85 @@ public class Summary extends AbstractOntologyServerServlet {
                 String title;
                 if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionShowInferredHierarchies)){
                     hp = new InferredClassHierarchyProvider(kit.getOWLServer());
-                    title = "Inferred Class Hierarchy";
+                    title = "Classes (Inferred)";
                 }
                 else{
                     hp = kit.getOWLServer().getClassHierarchyProvider();
-                    title = "Asserted Class Hierarchy";
+                    title = "Classes";
                 }
-                final OWLClassHierarchyTreeFragment treeModel = new OWLClassHierarchyTreeFragment(kit, hp, title);
-                HierarchyRootDoclet<OWLClass> hierarchyRenderer = new HierarchyRootDoclet<OWLClass>(kit, treeModel);
+                HierarchyDoclet<OWLClass> hierarchyRenderer = new HierarchyDoclet<OWLClass>(title, kit, hp);
                 hierarchyRenderer.setAutoExpandEnabled(expand);
-                summaryRenderer.setOWLHierarchyRenderer(hierarchyRenderer);
+                summaryRenderer.setNavigationRenderer(hierarchyRenderer);
             }
-            ren = summaryRenderer;
+            page = summaryRenderer;
         }
         else if (owlObject instanceof OWLObjectProperty){
             OWLObjectPropertySummaryHTMLPage summaryRenderer = new OWLObjectPropertySummaryHTMLPage(kit);
 
             if (isShowMiniHierarchiesEnabled(kit)){
-                final OWLPropertyHierarchyTreeFragment<OWLObjectProperty> treeModel =
-                        new OWLPropertyHierarchyTreeFragment<OWLObjectProperty>(kit, kit.getOWLServer().getOWLObjectPropertyHierarchyProvider());
-                HierarchyRootDoclet<OWLObjectProperty> hierarchyRenderer = new HierarchyRootDoclet<OWLObjectProperty>(kit, treeModel);
+                final HierarchyProvider<OWLObjectProperty> hp = kit.getOWLServer().getOWLObjectPropertyHierarchyProvider();
+                HierarchyDoclet<OWLObjectProperty> hierarchyRenderer = new HierarchyDoclet<OWLObjectProperty>("Object Properties", kit, hp);
                 hierarchyRenderer.setAutoExpandEnabled(expand);
-                summaryRenderer.setOWLHierarchyRenderer(hierarchyRenderer);
+                summaryRenderer.setNavigationRenderer(hierarchyRenderer);
             }
-            ren = summaryRenderer;
+            page = summaryRenderer;
         }
         else if (owlObject instanceof OWLDataProperty){
             OWLDataPropertySummaryHTMLPage summaryRenderer = new OWLDataPropertySummaryHTMLPage(kit);
 
             if (isShowMiniHierarchiesEnabled(kit)){
-                final OWLPropertyHierarchyTreeFragment<OWLDataProperty> treeModel =
-                        new OWLPropertyHierarchyTreeFragment<OWLDataProperty>(kit, kit.getOWLServer().getOWLDataPropertyHierarchyProvider());
-                HierarchyRootDoclet<OWLDataProperty> hierarchyRenderer = new HierarchyRootDoclet<OWLDataProperty>(kit, treeModel);
+                final HierarchyProvider<OWLDataProperty> hp = kit.getOWLServer().getOWLDataPropertyHierarchyProvider();
+                HierarchyDoclet<OWLDataProperty> hierarchyRenderer = new HierarchyDoclet<OWLDataProperty>("Data Properties", kit, hp);
                 hierarchyRenderer.setAutoExpandEnabled(expand);
-                summaryRenderer.setOWLHierarchyRenderer(hierarchyRenderer);
+                summaryRenderer.setNavigationRenderer(hierarchyRenderer);
             }
-            ren = summaryRenderer;
+            page = summaryRenderer;
         }
         else if (owlObject instanceof OWLAnnotationProperty){
-//            if (kit.getProperties().isSet(OWLHTMLConstants.OPTION_SHOW_MINI_HIERARCHIES)){
-//                final OWLAnnotationPropertyHierarchyTreeFragment treeModel = new OWLPropertyHierarchyTreeFragment(kit, kit.getPropertyHierarchyProvider());
-//                HierarchyRootDoclet<OWLDataProperty> hierarchyRenderer = new HierarchyRootDoclet<OWLDataProperty>(kit, treeModel);
-//                hierarchyRenderer.setAutoExpandEnabled(expand);
-//                summaryRenderer.setOWLHierarchyRenderer(hierarchyRenderer);
-//            }
-            ren = new OWLAnnotationPropertySummaryHTMLPage(kit);
+            OWLAnnotationPropertySummaryHTMLPage summaryRenderer = new OWLAnnotationPropertySummaryHTMLPage(kit);
+            if (isShowMiniHierarchiesEnabled(kit)){
+                final HierarchyProvider<OWLAnnotationProperty> hp = kit.getOWLServer().getOWLAnnotationPropertyHierarchyProvider();
+                HierarchyDoclet<OWLAnnotationProperty> hierarchyRenderer = new HierarchyDoclet<OWLAnnotationProperty>("Annotation Properties", kit, hp);
+                hierarchyRenderer.setAutoExpandEnabled(expand);
+                summaryRenderer.setNavigationRenderer(hierarchyRenderer);
+            }
+            page = summaryRenderer;
         }
         else if (owlObject instanceof OWLNamedIndividual){
-            ren = new OWLIndividualSummaryHTMLPage(kit);
+            OWLIndividualSummaryHTMLPage summaryRenderer = new OWLIndividualSummaryHTMLPage(kit);
+            if (isShowMiniHierarchiesEnabled(kit)){
+                final HierarchyProvider<OWLObject> hp = kit.getOWLServer().getOWLIndividualsHierarchyProvider();
+                HierarchyDoclet<OWLObject> hierarchyRenderer = new HierarchyDoclet<OWLObject>("Individuals by type", kit, hp);
+                hierarchyRenderer.setAutoExpandEnabled(expand);
+                summaryRenderer.setNavigationRenderer(hierarchyRenderer);
+            }
+            page = summaryRenderer;
         }
         else if (owlObject instanceof OWLDatatype){
-            ren = new OWLDatatypeSummaryHTMLPage(kit);
+            OWLDatatypeSummaryHTMLPage summaryRenderer = new OWLDatatypeSummaryHTMLPage(kit);
+            if (isShowMiniHierarchiesEnabled(kit)){
+                final HierarchyProvider<OWLDatatype> hp = kit.getOWLServer().getOWLDatatypeHierarchyProvider();
+                HierarchyDoclet<OWLDatatype> hierarchyRenderer = new HierarchyDoclet<OWLDatatype>("Datatypes", kit, hp);
+                hierarchyRenderer.setAutoExpandEnabled(expand);
+                summaryRenderer.setNavigationRenderer(hierarchyRenderer);
+            }
+            page = summaryRenderer;
         }
         else if (owlObject instanceof OWLOntology){
-            ren = new OWLOntologySummaryHTMLPage(kit);
+            OWLOntologySummaryHTMLPage summaryRenderer = new OWLOntologySummaryHTMLPage(kit);
+            if (isShowMiniHierarchiesEnabled(kit)){
+                final HierarchyProvider<OWLOntology> hp = kit.getOWLServer().getOntologyHierarchyProvider();
+                HierarchyDoclet<OWLOntology> hierarchyRenderer = new HierarchyDoclet<OWLOntology>("Ontologies", kit, hp);
+                hierarchyRenderer.setAutoExpandEnabled(expand);
+                summaryRenderer.setNavigationRenderer(hierarchyRenderer);
+            }
+            page = summaryRenderer;
         }
 
-        if (ren != null){
-            ren.setUserObject(owlObject);
+        if (page != null){
+            page.setUserObject(owlObject);
         }
-        return ren;
+        return page;
     }
 
 
@@ -279,7 +313,7 @@ public class Summary extends AbstractOntologyServerServlet {
 
     private OWLOntology getOntology(String ontStr, OWLHTMLKit kit) throws OntServerException {
         if (ontStr != null){
-            return kit.getOWLServer().getOWLOntologyManager().getOntology(IRI.create(ontStr));
+            return kit.getOWLServer().getOntologyForIRI(IRI.create(ontStr));
         }
         return null;
     }

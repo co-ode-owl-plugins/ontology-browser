@@ -62,7 +62,7 @@ public class QueryCreateForm{// extends AbstractOntologyServerServlet{
 //
 //        final SimpleQueryFormDoclet formDoclet = new SimpleQueryFormDoclet(kit);
 //
-//        EmptyOWLDocPage<OWLClassExpression> formRenderer = new EmptyOWLDocPage<OWLClassExpression>(kit);
+//        OWLDocPage<OWLClassExpression> formRenderer = new OWLDocPage<OWLClassExpression>(kit);
 //        formRenderer.setTitle("Query Form");
 //        formRenderer.addOnLoad("setAddVisible(true); sendQuery(getCurrentQuery());");
 //

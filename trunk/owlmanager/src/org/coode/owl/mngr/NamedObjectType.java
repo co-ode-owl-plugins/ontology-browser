@@ -20,14 +20,14 @@ import java.util.Set;
  */
 public enum NamedObjectType {
 
+    ontologies ("Ontologies", "Ontology"),
     entities ("Entities", "Entity"),
     classes ("Classes", "Class"),
     objectproperties ("Object Properties", "Object Property"),
     dataproperties ("Data Properties", "Data Property"),
     annotationproperties ("Annotation Properties", "Annotation Property"),
     individuals ("Individuals", "Individual"),
-    datatypes ("Datatypes", "Datatype"),
-    ontologies ("Ontologies", "Ontology");
+    datatypes ("Datatypes", "Datatype");
 
     private static NamedObjectType[] entitySubTypes = new NamedObjectType[]{classes, objectproperties, dataproperties, annotationproperties, individuals, datatypes};
 

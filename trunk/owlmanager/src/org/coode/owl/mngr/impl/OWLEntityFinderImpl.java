@@ -1,18 +1,15 @@
 package org.coode.owl.mngr.impl;
 
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.mngr.OWLNameCache;
 import org.coode.owl.mngr.OWLEntityFinder;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.util.ModelUtil;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.util.CachingBidirectionalShortFormProvider;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

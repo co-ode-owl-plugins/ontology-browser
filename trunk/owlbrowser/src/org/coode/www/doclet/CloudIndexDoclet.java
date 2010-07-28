@@ -31,7 +31,7 @@ public class CloudIndexDoclet extends AbstractOWLDocDoclet {
         renderBoxStart("Clouds", out);
         for (CloudType cloud : CloudType.values()){
             out.print("<li>");
-            renderLink(cloud.getRendering(), getHTMLGenerator().getURLScheme().getURLForRelativePage("cloud/?type=" + cloud), OWLHTMLConstants.LinkTarget.subnav, "", isSingleFrameNavigation(), pageURL, out);
+            renderLink(cloud.getRendering(), getOWLHTMLKit().getURLScheme().getURLForRelativePage("cloud/?type=" + cloud), OWLHTMLConstants.LinkTarget.subnav, "", isSingleFrameNavigation(), pageURL, out);
             out.print("</li>");
         }
     }

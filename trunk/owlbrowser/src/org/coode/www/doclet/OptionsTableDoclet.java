@@ -4,17 +4,16 @@
 package org.coode.www.doclet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Nick Drummond<br>
@@ -24,43 +23,40 @@ import java.util.List;
  * Bio Health Informatics Group<br>
  * Date: Jan 21, 2008<br><br>
  */
-public class OptionsTableDoclet extends AbstractHTMLDoclet {
+public class OptionsTableDoclet extends AbstractOWLDocDoclet {
 
     public static final String ID = "doclet.options";
 
     private Map<OWLHTMLParam, String> params;
-    private OWLHTMLKit kit;
 
 
     public OptionsTableDoclet(Map<OWLHTMLParam, String> params, OWLHTMLKit kit) {
+        super(kit);
         this.params = params;
-        this.kit = kit;
-    }
-
-    public String getTitle() {
-        return "Server Options";
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        renderBoxStart(getTitle(), out);
 
-        out.print("<div style='float: left; width: 45%;'>");
-        renderProperties(kit.getHTMLProperties(), OWLHTMLProperty.values(), "Look and Feel", out);
-        out.println("</div>");
+        renderProperties(getOWLHTMLKit().getHTMLProperties(),
+                         OWLHTMLProperty.values(),
+                         "Look and Feel",
+                         pageURL,
+                         out);
 
-        out.print("<div style='float: right; width: 45%;'>");
-        renderProperties(kit.getOWLServer().getProperties(), ServerProperty.values(), "Model", out);
-        out.println("</div>");
+        renderProperties(getOWLHTMLKit().getOWLServer().getProperties(),
+                         ServerProperty.values(),
+                         "Model",
+                         pageURL,
+                         out);
     }
 
 
-    private <E extends Enum> void renderProperties(ServerPropertiesAdapter<E> properties, E[] keys, String title, PrintWriter out) {
+    private <E extends Enum> void renderProperties(ServerPropertiesAdapter<E> properties, E[] keys, String title, URL pageURL, PrintWriter out) {
+
+        renderBoxStart(title, out);
 
         String lastProperty = params.get(OWLHTMLParam.property);
 
-        out.print("<h2>");
-        out.print(title);
-        out.println("</h2>");
         out.println("<table style='margin-bottom: 10px;'>");
         for (E key : keys){
             String value = properties.get(key);
@@ -69,25 +65,29 @@ public class OptionsTableDoclet extends AbstractHTMLDoclet {
                 css = " style='font-weight: bolder'";
             }
             out.println("<tr" + css + ">");
-            out.println("<td style='width: 250px; text-align: right;''>" + key.toString() + "</td>");
+            out.println("<td class='key'>" + key.toString() + "</td>");
             out.println("<td>");
-            out.println("<form method='POST' action='./'>");
 
             List<String> allowedValues = properties.getAllowedValues(key);
             if (allowedValues.isEmpty()){
+                out.println("<form method='POST' action='./'>");
                 renderEditor(key, value, out);
+                out.println("<input type='submit' value='ok' /></form>");
             }
 //            else if (allowedValues.contains(OWLHTMLConstants.TRUE)){
 //                renderCheckbox(key, value, out);
 //            }
             else{
-                renderSelector(key, value, allowedValues, out);
+                // messy - should add Doclet
+                OptionSelectorDoclet selectorDoclet = new OptionSelectorDoclet(getOWLHTMLKit(), key.name(), value, allowedValues);
+                selectorDoclet.renderAll(pageURL, out);
             }
-            out.println("<input type='submit' value='ok' /></form></td>");
-            out.println("</tr>");
+            out.println("</td></tr>");
         }
 
         out.println("</table>");
+
+        renderBoxEnd(title, out);
     }
 
 
@@ -106,26 +106,10 @@ public class OptionsTableDoclet extends AbstractHTMLDoclet {
 
     private void renderEditor(Enum option, String value, PrintWriter out) {
         out.println("<input type='hidden' name='" + OWLHTMLParam.property + "' value='" + option.name() + "' />");
-        out.println("<input type='text' name='" + OWLHTMLParam.value + "' value='" + value + "' style='width:80%;'/>");
+        out.print("<input type='text' name='" + OWLHTMLParam.value + "' value='" + value + "' />");
     }
-
-
-    private void renderSelector(Enum option, String value, List<String> allowedValues, PrintWriter out) {
-        out.println("<input type='hidden' name='" + OWLHTMLParam.property + "' value='" + option.name() + "' />");
-        out.println("<select style='width:80%;' name='" + OWLHTMLParam.value + "'>");
-        for (String allowedValue : allowedValues){
-            out.print("<option value='" + allowedValue + "'");
-            if (allowedValue.equals(value)){
-                out.print(" selected='selected'");
-            }
-            out.println(">" + allowedValue + "</option>");
-        }
-        out.println("</select>");
-    }
-
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        renderBoxEnd(getTitle(), out);
     }
 
     public String getID() {

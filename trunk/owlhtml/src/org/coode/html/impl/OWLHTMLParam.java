@@ -46,5 +46,6 @@ public enum OWLHTMLParam {
     name,
     expanded,
     property,
-    value
+    value,
+    confirm
 }

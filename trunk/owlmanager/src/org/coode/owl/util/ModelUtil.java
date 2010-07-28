@@ -1,12 +1,9 @@
 package org.coode.owl.util;
 
-import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.*;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.net.URI;
 
 /**
  * Author: Nick Drummond<br>
@@ -30,11 +27,20 @@ public class ModelUtil {
     public static Set<? extends OWLEntity> getOWLEntitiesFromOntology(NamedObjectType type, OWLOntology ont) {
         switch(type){
             case classes: return ont.getClassesInSignature();
-            case objectproperties: return ont.getObjectPropertiesInSignature();
-            case dataproperties: return ont.getDataPropertiesInSignature();
+            case objectproperties:
+                Set<OWLObjectProperty> ops = ont.getObjectPropertiesInSignature();
+                ops.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLTopObjectProperty());
+                return ops;
+            case dataproperties:
+                Set<OWLDataProperty> dps = ont.getDataPropertiesInSignature();
+                dps.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLTopDataProperty());
+                return dps;
             case annotationproperties: return ont.getAnnotationPropertiesInSignature();
             case individuals: return ont.getIndividualsInSignature();
-            case datatypes: return ont.getDatatypesInSignature();
+            case datatypes:
+                Set<OWLDatatype> dts = ont.getDatatypesInSignature();
+                dts.add(ont.getOWLOntologyManager().getOWLDataFactory().getTopDatatype());
+                return dts;
             case entities: return ont.getSignature();
             default: throw new RuntimeException("Object type not known: " + type);
         }

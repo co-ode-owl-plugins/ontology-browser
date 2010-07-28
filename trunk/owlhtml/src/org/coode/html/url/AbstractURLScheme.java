@@ -3,11 +3,11 @@
 */
 package org.coode.html.url;
 
+import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;

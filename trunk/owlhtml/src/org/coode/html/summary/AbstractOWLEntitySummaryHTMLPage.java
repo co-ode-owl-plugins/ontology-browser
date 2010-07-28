@@ -4,9 +4,9 @@
 package org.coode.html.summary;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.doclet.HierarchyRootDoclet;
+import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.OWLEntityTitleDoclet;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
@@ -17,9 +17,9 @@ import org.semanticweb.owlapi.model.OWLEntity;
  * Bio Health Informatics Group<br>
  * Date: Jan 24, 2008<br><br>
  */
-public abstract class AbstractOWLEntitySummaryHTMLPage<O extends OWLEntity> extends EmptyOWLDocPage<O> {
+public abstract class AbstractOWLEntitySummaryHTMLPage<O extends OWLEntity> extends OWLDocPage<O> {
 
-    private HierarchyRootDoclet<O> hierarchy;
+    private HTMLDoclet<O> hierarchy;
     private OWLEntityTitleDoclet<O> titleDoclet;
 
     protected AbstractOWLEntitySummaryHTMLPage(OWLHTMLKit kit) {
@@ -29,14 +29,14 @@ public abstract class AbstractOWLEntitySummaryHTMLPage<O extends OWLEntity> exte
     }
 
 
-    public final void setOWLHierarchyRenderer(HierarchyRootDoclet<O> hierarchyRenderer){
-        if (hierarchyRenderer == null && this.hierarchy != null){
+    public final void setNavigationRenderer(HTMLDoclet doclet){
+        if (doclet == null && this.hierarchy != null){
             removeDoclet(this.hierarchy);
         }
         else{
-            addDoclet(hierarchyRenderer, indexOf(getDoclet(OWLEntityTitleDoclet.ID))+1);
+            addDoclet(doclet, indexOf(getDoclet(OWLEntityTitleDoclet.ID)));
         }
-        this.hierarchy = hierarchyRenderer;
+        this.hierarchy = doclet;
     }
 
     protected String getTitle() {

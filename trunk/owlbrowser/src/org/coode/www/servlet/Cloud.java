@@ -6,17 +6,17 @@ import org.coode.html.doclet.CloudDoclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.www.exception.OntServerException;
 import org.coode.www.doclet.CloudIndexDoclet;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.PrintWriter;
 import java.net.URI;
-import java.net.URL;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class Cloud extends AbstractOntologyServerServlet {
 
         String cloudParam = params.get(OWLHTMLParam.type);
 
-        EmptyOWLDocPage page = new EmptyOWLDocPage(kit);
+        OWLDocPage page = new OWLDocPage(kit);
 
         if (cloudParam == null){
             page.addDoclet(new CloudIndexDoclet(kit));

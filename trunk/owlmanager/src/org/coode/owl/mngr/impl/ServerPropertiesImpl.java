@@ -3,9 +3,7 @@
 */
 package org.coode.owl.mngr.impl;
 
-import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerProperties;
-import org.coode.owl.mngr.ServerProperty;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -75,8 +73,10 @@ public class ServerPropertiesImpl implements ServerProperties {
 
     public void remove(String key) {
         String oldValue = properties.getProperty(key);
-        properties.remove(key);
-        notifyPropertyChanged(key, oldValue, null);
+        if (oldValue != null){
+            properties.remove(key);
+            notifyPropertyChanged(key, oldValue, null);
+        }
     }
 
 
@@ -105,7 +105,7 @@ public class ServerPropertiesImpl implements ServerProperties {
 
     public void addDeprecatedNames(Map<String, String> names){
         this.deprecatedNamesMap.putAll(names);
-        cleanupDeprecatedNames();        
+        cleanupDeprecatedNames();
     }
 
 

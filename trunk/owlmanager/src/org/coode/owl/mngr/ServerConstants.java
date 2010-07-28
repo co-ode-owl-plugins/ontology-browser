@@ -1,11 +1,5 @@
 package org.coode.owl.mngr;
 
-import org.apache.log4j.Logger;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -43,6 +37,8 @@ public class ServerConstants {
     public static final String PELLET = "pellet";
     public static final String FACTPLUSPLUS = "factPlusPlus";
     public static final String DIG = "DIG";
+
+    public static final String FACTPP_FACTORY_CLASS = "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory";
 
     public static enum Syntax {man, simple, qd}
 

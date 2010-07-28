@@ -10,15 +10,15 @@ import org.coode.html.util.URLUtils;
 import org.coode.owl.util.ModelUtil;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.vocab.OWLFacet;
-import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
-import java.net.URL;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -64,6 +64,8 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private OWLHTMLConstants.LinkTarget targetWindow = null;
 
+    private boolean writeStats = false;
+
 
     public OWLHTMLVisitor(OWLObjectURLRenderer urlRenderer,
                           ShortFormProvider sfProvider,
@@ -90,13 +92,13 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         this.activeOntology = activeOnt;
     }
 
-    /**
-     * Sets the indentation level of subsequent lines used when wrapping some expressions
-     * @param indent
-     */
-    public void setIndentation(int indent){
-        this.indent = indent;
-    }
+//    /**
+//     * Sets the indentation level of subsequent lines used when wrapping some expressions
+//     * @param indent
+//     */
+//    public void setIndentation(int indent){
+//        this.indent = indent;
+//    }
 
     /**
      * Sets the target window of any links - in case frames or popups are required
@@ -152,12 +154,14 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             write("</a>");
         }
 
+        if (writeStats){
         write(" <span style='color:gray;'>(" +
               "c:" + ontology.getClassesInSignature().size() +
               ", op:" + ontology.getObjectPropertiesInSignature().size() +
               ", dp:" + ontology.getDataPropertiesInSignature().size() +
               ", i:" + ontology.getIndividualsInSignature().size() +
               ")</span>");
+        }
     }
 
 
@@ -202,7 +206,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         writeKeyword(ManchesterOWLSyntax.SOME.toString(), CSS_SOME);
         write(" ");
-        writeOp(desc.getFiller());
+        writeOp(desc.getFiller(), true);
     }
 
     public void visit(OWLObjectAllValuesFrom desc) {
@@ -210,7 +214,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         writeKeyword(ManchesterOWLSyntax.ONLY.toString(), CSS_ONLY);
         write(" ");
-        writeOp(desc.getFiller());
+        writeOp(desc.getFiller(), true);
     }
 
     public void visit(OWLObjectHasValue desc) {
@@ -218,7 +222,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         writeKeyword(ManchesterOWLSyntax.VALUE.toString(), CSS_VALUE);
         write(" ");
-        writeOp(desc.getValue());
+        writeOp(desc.getValue(), true);
     }
 
     public void visit(OWLObjectMinCardinality desc) {
@@ -236,7 +240,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     public void visit(OWLObjectComplementOf desc) {
         writeKeyword(ManchesterOWLSyntax.NOT.toString());
         write(" ");
-        writeOp(desc.getOperand());
+        writeOp(desc.getOperand(), false);
     }
 
     public void visit(OWLObjectHasSelf desc) {
@@ -269,7 +273,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         writeKeyword(ManchesterOWLSyntax.SOME.toString(), CSS_SOME);
         write(" ");
-        writeOp(desc.getFiller());
+        writeOp(desc.getFiller(), true);
     }
 
     public void visit(OWLDataAllValuesFrom desc) {
@@ -277,7 +281,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         writeKeyword(ManchesterOWLSyntax.ONLY.toString(), CSS_ONLY);
         write(" ");
-        writeOp(desc.getFiller());
+        writeOp(desc.getFiller(), true);
     }
 
     public void visit(OWLDataHasValue desc) {
@@ -285,7 +289,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         writeKeyword(ManchesterOWLSyntax.VALUE.toString(), CSS_VALUE);
         write(" ");
-        writeOp(desc.getValue());
+        writeOp(desc.getValue(), true);
     }
 
     public void visit(OWLDataMinCardinality desc) {
@@ -316,7 +320,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     public void visit(OWLDataComplementOf node) {
         writeKeyword(ManchesterOWLSyntax.NOT.toString());
         write(" ");
-        writeOp(node.getDataRange());
+        writeOp(node.getDataRange(), true);
     }
 
 
@@ -334,7 +338,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     public void visit(OWLObjectInverseOf property) {
         writeKeyword(ManchesterOWLSyntax.INVERSE_OF.toString());
         write(" ");
-        writeOp(property.getInverse());
+        writeOp(property.getInverse(), true);
     }
 
     public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
@@ -366,35 +370,35 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
     public void visit(OWLObjectPropertyDomainAxiom axiom) {
-        writeOp(axiom.getProperty());
+        writeOp(axiom.getProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.DOMAIN.toString());
         write(" ");
-        writeOp(axiom.getDomain());
+        writeOp(axiom.getDomain(), true);
         writeAnnotations(axiom);
     }
 
     public void visit(OWLObjectPropertyRangeAxiom axiom) {
-        writeOp(axiom.getProperty());
+        writeOp(axiom.getProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.RANGE.toString());
         write(" ");
-        writeOp(axiom.getRange());
+        writeOp(axiom.getRange(), true);
         writeAnnotations(axiom);
     }
 
     public void visit(OWLInverseObjectPropertiesAxiom axiom) {
-        writeOp(axiom.getFirstProperty());
+        writeOp(axiom.getFirstProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.INVERSE.toString());
         write(" ");
-        writeOp(axiom.getSecondProperty());
+        writeOp(axiom.getSecondProperty(), true);
         writeAnnotations(axiom);
     }
 
 
     public void visit(OWLHasKeyAxiom axiom) {
-        writeOp(axiom.getClassExpression());
+        writeOp(axiom.getClassExpression(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.HAS_KEY.toString());
         write(" ");
@@ -475,26 +479,26 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         writeKeyword(ManchesterOWLSyntax.SUB_PROPERTY_OF.toString());
         write(" ");
-        writeOp(axiom.getSuperProperty());
+        writeOp(axiom.getSuperProperty(), true);
         writeAnnotations(axiom);
     }
 
 
     public void visit(OWLDataPropertyDomainAxiom axiom) {
-        writeOp(axiom.getProperty());
+        writeOp(axiom.getProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.DOMAIN.toString());
         write(" ");
-        writeOp(axiom.getDomain());
+        writeOp(axiom.getDomain(), true);
         writeAnnotations(axiom);
     }
 
     public void visit(OWLDataPropertyRangeAxiom axiom) {
-        writeOp(axiom.getProperty());
+        writeOp(axiom.getProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.RANGE.toString());
         write(" ");
-        writeOp(axiom.getRange());
+        writeOp(axiom.getRange(), true);
         writeAnnotations(axiom);
     }
 
@@ -506,40 +510,63 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     ////////// Annotations
 
     public void visit(OWLAnnotationAssertionAxiom axiom) {
-        axiom.getSubject().accept(this);
-        writeKeyword(" /*&nbsp;", "comment");
+        final OWLAnnotationSubject subject = axiom.getSubject();
+        // extract the entities with this IRI
+        if (subject instanceof IRI){
+            Set<OWLEntity> entities = new HashSet<OWLEntity>();
+            for (OWLOntology ont : ontologies){
+                entities.addAll(ont.getEntitiesInSignature((IRI)subject));
+            }
+            if (!entities.isEmpty()){
+                boolean started = false;
+                for (OWLEntity entity : entities){
+                    if (started){
+                        write("&nbsp;");
+                    }
+                    entity.accept(this);
+                    started = true;
+                }
+            }
+            else{
+                subject.accept(this);
+            }
+        }
+        else{
+            subject.accept(this);
+        }
+        write("&nbsp;");
         axiom.getAnnotation().accept(this);
-        writeKeyword("&nbsp;*/", "comment");
+        write("&nbsp;");
         writeAnnotations(axiom); // in theory, you could annotate the annotation axioms !!
     }
 
 
     public void visit(OWLSubAnnotationPropertyOfAxiom axiom) {
-        writeOp(axiom.getSubProperty());
+        writeOp(axiom.getSubProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.SUB_PROPERTY_OF.toString());
         write(" ");
-        writeOp(axiom.getSuperProperty());
+        writeOp(axiom.getSuperProperty(), true);
         writeAnnotations(axiom);
     }
 
 
     public void visit(OWLAnnotationPropertyDomainAxiom axiom) {
-        writeOp(axiom.getProperty());
+        writeOp(axiom.getProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.RANGE.toString());
         write(" ");
-        writeOp(axiom.getDomain());
+        writeOp(axiom.getDomain(), true);
         writeAnnotations(axiom);
     }
 
 
     public void visit(OWLAnnotationPropertyRangeAxiom axiom) {
-        writeOp(axiom.getProperty());
+        writeOp(axiom.getProperty(), true);
         write(" ");
         writeKeyword(ManchesterOWLSyntax.RANGE.toString());
         write(" ");
-        writeOp(axiom.getRange());
+        writeOp(axiom.getRange(), true);
         writeAnnotations(axiom);
     }
 
@@ -562,13 +589,49 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
     public void visit(OWLTypedLiteral node) {
-        write("<span class='" + CSS_LITERAL + "'>\"");
-        writeLiteralContents(node.getLiteral());
-        write("\"</span> (");
-        node.getDatatype().accept(this);
-        write(")");
+        write("<span class='" + CSS_LITERAL + "'>");
+        final OWLDatatype dt = node.getDatatype();
+        if (dt.isInteger() || dt.isFloat()){
+            writeLiteralContents(node.getLiteral());
+            write("</span>");
+        }
+        else{
+            write("\"");
+            writeLiteralContents(node.getLiteral());
+            write("\"");
+            write("</span>");
+            write("(");
+            dt.accept(this);
+            write(")");
+        }
     }
 
+// OWLAPI v3.1
+//    public void visit(OWLLiteral node) {
+//        write("<span class='" + CSS_LITERAL + "'>");
+//        final OWLDatatype dt = node.getDatatype();
+//        if (dt.isInteger() || dt.isFloat()){
+//            writeLiteralContents(node.getLiteral());
+//            write("</span>");
+//        }
+//        else{
+//            write("\"");
+//            writeLiteralContents(node.getLiteral());
+//            write("\"");
+//            write("</span>");
+//            if (node.hasLang()){
+//                final String lang = node.getLang();
+//                if (lang != null){
+//                    write(" <span style='color: black;'>@" + lang + "</span>");
+//                }
+//            }
+//            else{
+//                write("(");
+//                dt.accept(this);
+//                write(")");
+//            }
+//        }
+//    }
 
     /////////// Axioms
 
@@ -734,7 +797,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
     private String getName(OWLEntity entity){
-        return sfProvider.getShortForm(entity);
+        return sfProvider.getShortForm(entity).replaceAll(" ", "&nbsp;");
     }
 
     private String getBase(URI uri){
@@ -774,7 +837,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         final String fullURI = iri.toString();
         int index = 0;
         if (shortForm != null) {
-        	index = fullURI.lastIndexOf(shortForm);
+            index = fullURI.lastIndexOf(shortForm);
         }
         if (index == 0){
             write(fullURI);
@@ -800,23 +863,32 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
 
     // useful to add brackets around the anonymous operators of unions and intersections and the fillers of restrictions
-    private void writeOp(OWLObject op) {
+    private void writeOp(OWLObject op, boolean wrap) {
         if (op instanceof OWLEntity ||
             op instanceof OWLObjectOneOf ||
             op instanceof OWLDataOneOf ||
-            op instanceof OWLDatatypeRestriction){
+            op instanceof OWLDatatypeRestriction ||
+            op instanceof OWLLiteral){
             op.accept(this);
         }
         else{ // provide brackets for clarity
             write("(");
+            if (wrap && op instanceof OWLObjectIntersectionOf){
+                indent++;
+                write("<br>");
+                writeIndent();
+            }
             op.accept(this);
+            if (wrap && op instanceof OWLObjectIntersectionOf){
+                indent--;
+            }
             write(")");
         }
     }
 
     private void writeIndent() {
         for (int i=0; i<indent; i++){
-            write("&nbsp;");
+            write("&nbsp;&nbsp;&nbsp;&nbsp;");
         }
     }
 
@@ -866,14 +938,14 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         writeKeyword(" " + cardinalityType + " ", cardinalityType);
         write(desc.getCardinality() + " ");
         if (desc.getFiller() != null){
-            writeOp(desc.getFiller());
+            writeOp(desc.getFiller(), true);
         }
     }
 
     private void writeUnaryPropertyAxiom(OWLUnaryPropertyAxiom axiom, String keyword) {
         writeKeyword(keyword);
         write(" (");
-        writeOp(axiom.getProperty());
+        writeOp(axiom.getProperty(), true);
         write(")");
         writeAnnotations(axiom);
     }
@@ -912,8 +984,15 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
 
     private void writeAnnotations(OWLAxiom axiom) {
-        for (OWLAnnotation annot : axiom.getAnnotations()){
-            annot.accept(this);
+        final Set<OWLAnnotation> annotations = axiom.getAnnotations();
+        if (!annotations.isEmpty()){
+            write("<ul>");
+            for (OWLAnnotation annot : annotations){
+                write("<li>");
+                annot.accept(this);
+                write("</li>");
+            }
+            write("</ul>");
         }
     }
 

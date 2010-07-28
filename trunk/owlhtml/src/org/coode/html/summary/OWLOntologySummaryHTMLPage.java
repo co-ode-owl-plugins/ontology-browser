@@ -1,10 +1,10 @@
 package org.coode.html.summary;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.page.EmptyOWLDocPage;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.cloud.ClassesByUsageCloud;
 import org.coode.html.doclet.*;
+import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.page.OWLDocPage;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -22,9 +22,11 @@ import java.util.Collections;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLOntologySummaryHTMLPage extends EmptyOWLDocPage<OWLOntology> {
+public class OWLOntologySummaryHTMLPage extends OWLDocPage<OWLOntology> {
 
     private ClassesByUsageCloud cloudModel;
+
+    private HierarchyDoclet<OWLOntology> hierarchy = null;
 
     public OWLOntologySummaryHTMLPage(final OWLHTMLKit kit) {
         super(kit);
@@ -56,5 +58,15 @@ public class OWLOntologySummaryHTMLPage extends EmptyOWLDocPage<OWLOntology> {
             // only show the classes in this ontology
             cloudModel.setOntologies(Collections.singleton(getUserObject()));
         }
+    }
+
+    public void setNavigationRenderer(HierarchyDoclet<OWLOntology> doclet) {
+        if (doclet == null && this.hierarchy != null){
+            removeDoclet(this.hierarchy);
+        }
+        else{
+            addDoclet(doclet, indexOf(getDoclet(OntologyTitleDoclet.ID)));
+        }
+        this.hierarchy = doclet;
     }
 }

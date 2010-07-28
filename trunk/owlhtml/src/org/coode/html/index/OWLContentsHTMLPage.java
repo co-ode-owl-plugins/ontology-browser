@@ -6,7 +6,7 @@ import org.coode.html.doclet.ElementsDoclet;
 import org.coode.html.doclet.OntologyContentsDoclet;
 import org.coode.html.doclet.OverallContentsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
@@ -23,7 +23,7 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLContentsHTMLPage extends EmptyOWLDocPage<OWLOntology> {
+public class OWLContentsHTMLPage extends OWLDocPage<OWLOntology> {
 
     private OverallContentsDoclet contentsDoclet;
 
