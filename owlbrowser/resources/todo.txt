@@ -10,7 +10,6 @@ Bugs
 - individuals summary - how do we get to other types?
 - When session id is in browser location cannot set the active ontology (or label)
 - reload ontology that is imported breaks the import
-- mygrid and amino ontology redirect loop for owl:Thing
 
 Features
 

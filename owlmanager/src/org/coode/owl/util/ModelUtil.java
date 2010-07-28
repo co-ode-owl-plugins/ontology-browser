@@ -26,14 +26,20 @@ public class ModelUtil {
     
     public static Set<? extends OWLEntity> getOWLEntitiesFromOntology(NamedObjectType type, OWLOntology ont) {
         switch(type){
-            case classes: return ont.getClassesInSignature();
+            case classes:
+                Set<OWLClass> clses = ont.getClassesInSignature();
+                clses.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
+                clses.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLNothing());
+                return clses;
             case objectproperties:
                 Set<OWLObjectProperty> ops = ont.getObjectPropertiesInSignature();
                 ops.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLTopObjectProperty());
+                ops.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLBottomObjectProperty());
                 return ops;
             case dataproperties:
                 Set<OWLDataProperty> dps = ont.getDataPropertiesInSignature();
                 dps.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLTopDataProperty());
+                dps.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLBottomDataProperty());
                 return dps;
             case annotationproperties: return ont.getAnnotationPropertiesInSignature();
             case individuals: return ont.getIndividualsInSignature();
