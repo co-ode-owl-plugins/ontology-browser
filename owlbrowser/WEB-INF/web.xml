@@ -8,7 +8,7 @@
     <servlet>
         <servlet-name>ManageOntologies</servlet-name>
         <display-name>Load Ontology</display-name>
-        <servlet-class>org.coode.www.servlet.ManageOntologies</servlet-class>
+        <servlet-class>org.coode.www.servlet.Ontologies</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SignOut</servlet-name>
