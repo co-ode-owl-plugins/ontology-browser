@@ -6,7 +6,7 @@
     <description>server for navigating through OWL ontologies</description>
     <distributable/>
     <servlet>
-        <servlet-name>ManageOntologies</servlet-name>
+        <servlet-name>Ontologies</servlet-name>
         <display-name>Load Ontology</display-name>
         <servlet-class>org.coode.www.servlet.Ontologies</servlet-class>
     </servlet>
@@ -94,7 +94,7 @@
 
 
     <servlet-mapping>
-        <servlet-name>ManageOntologies</servlet-name>
+        <servlet-name>Ontologies</servlet-name>
         <url-pattern>/ontologies/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
@@ -110,7 +110,7 @@
         <url-pattern>/contents.html</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ManageOntologies</servlet-name>
+        <servlet-name>Ontologies</servlet-name>
         <url-pattern>/index.html</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
