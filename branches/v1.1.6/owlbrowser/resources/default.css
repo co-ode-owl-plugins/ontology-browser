@@ -1,0 +1,72 @@
+body {
+    background: url("images/co-ode-logo-back.png") no-repeat;
+    font-family: Verdana, Arial, sans-serif; font-size: 9pt; padding: 5px;}
+
+img {border: none;}
+img.button {position: relative; top: 8px;}
+
+.literal {color: green;}
+.annotation-uri {color: gray;}
+.ontology-uri {color: #990099;}
+
+.active-ontology-uri {color: #330033;}
+.active-entity {color: darkblue; font-weight: bold;}
+.deprecated {color: #222222; text-decoration: line-through;}
+
+/* keywords - default cyan */
+.keyword {color: #00B2B2; font-weight: bolder;}
+.comment {color: green;}
+.some, .only, .value, .min, .max, .exactly {color: #B200B2; font-weight:bolder;}
+
+div {margin-top: 0;}
+
+div.codebox {overflow: hidden;
+    background: #f1f5f9; width: 95%; padding: 5px;
+    border-width: 1px; border-style: solid; border-color: #c7cfd5;
+}
+
+div.message {overflow: hidden;
+    background: #f9f944; width: 95%; padding: 5px;
+    border-width: 1px; border-style: solid; border-color: #c7cfd5;
+}
+
+div.error {overflow: hidden;
+    background: #f94444; width: 95%; padding: 5px;
+    border-width: 1px; border-style: solid; border-color: #c7cfd5;
+}
+
+#queryform {background: #ddddff; padding: 5px;}
+#most_used_classes {text-align: center;}
+
+h1 {margin-top: 5px; font-size: 14pt; font-weight: bold;}
+h2 {margin-top: 10px; margin-bottom: 3px; font-size: 12pt; font-weight: normal;}
+h2.summaryURI {color: #444444; margin-top: 0px; margin-bottom: 10px;}
+
+#menu{width: 95%; padding-left: 2px; padding-right: 2px; background-color: #ddddff; border: solid 1px blue; margin-bottom: 5px;}
+#menu a{font-weight: bolder;}
+#menu a:hover{text-decoration: none; color: white; background-color: black;}
+
+
+a {text-decoration: none; color: #000000;}
+a:hover {text-decoration: underline; color: blue;}
+
+a.subsexpand {color: #555555; font-size: 7pt; text-decoration: underline; line-height: 180%;}
+
+ul {margin-top: 1px; margin-bottom: 1px; margin-left: 1.5em; padding-left: 0.5em;}
+ul.minihierarchy {list-style-type: disc;}
+li {margin-bottom: 0; margin-top: 2px; border: solid 1px #f1f5f9;}
+li.expandable {list-style-type: none; margin-left: -1.5em;}
+
+p.footer {font-size: 7pt; text-align: right; width: 95%;}
+
+table {border-collapse: collapse}
+td, tr {font-size: 9pt; border: none; vertical-align: top; padding: 3px;}
+th {background-color:black; color:white;}
+
+.disabled {background-color: #bbbbdd;}
+.warn {color: #ff0000;}
+
+#tabs{font-size: smaller;}
+#options{float: right;}
+
+form.autocomplete {display: inline;}
