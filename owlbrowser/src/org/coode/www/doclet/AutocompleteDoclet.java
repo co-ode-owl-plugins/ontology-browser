@@ -116,7 +116,7 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
 
-        String findURL = URLUtils.createRelativeURL(pageURL, getHTMLGenerator().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities&"));
+        String findURL = URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities&"));
 
         out.print("<script type=\"text/javascript\">\n" +
                 "    var options = {\n" +
@@ -140,13 +140,13 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
     public Set<URL> getRequiredCSS() {
         Set<URL> css = super.getRequiredCSS();
-        css.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_CSS));
+        css.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_CSS));
         return css;
     }
 
     public Set<URL> getRequiredJS() {
         Set<URL> js = super.getRequiredJS();
-        js.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_JS));
+        js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_JS));
         return js;
     }
 }

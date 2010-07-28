@@ -3,14 +3,10 @@
 */
 package org.coode.www;
 
-import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
-import org.coode.owl.util.ModelUtil;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import java.util.HashSet;
 import java.util.Set;

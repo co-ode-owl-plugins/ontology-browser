@@ -9,7 +9,7 @@ import org.coode.html.doclet.MenuBarDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 
@@ -35,7 +35,7 @@ public class FramesHeader extends AbstractOntologyServerServlet {
 
     protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
-        EmptyOWLDocPage ren = new EmptyOWLDocPage(kit) {
+        OWLDocPage ren = new OWLDocPage(kit) {
             public String getTitle() {
                 return "OWLDoc Frames Header";
             }

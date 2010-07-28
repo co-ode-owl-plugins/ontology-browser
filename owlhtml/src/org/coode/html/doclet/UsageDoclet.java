@@ -19,7 +19,7 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jan 25, 2008<br><br>
  */
-public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<O, OWLAxiom>{
+public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<O, OWLObject>{
 
     private UsageVisibilityVisitor usageVisibilityVisitor = new UsageVisibilityVisitor();
 
@@ -27,9 +27,9 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
         super("Usage", ElementsDoclet.Format.list, kit);
     }
 
-    protected Collection<OWLAxiom> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLObject> getElements(Set<OWLOntology> onts) {
         OWLEntity entity = getUserObject();
-        Collection<OWLAxiom> usage = new HashSet<OWLAxiom>();
+        Collection<OWLObject> usage = new HashSet<OWLObject>();
         for (OWLOntology ont : onts){
             for (OWLAxiom ax : ont.getReferencingAxioms(entity)){
                 if (usageVisibilityVisitor.getShowUsage(ax, entity)){
@@ -37,6 +37,16 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
                 }
             }
 
+        }
+
+        if (entity instanceof OWLAnnotationProperty){
+            for (OWLOntology ont : onts){
+                for (OWLAnnotation annot : ont.getAnnotations()){
+                    if (annot.getProperty().equals(entity)){
+                        usage.add(annot);
+                    }
+                }
+            }
         }
         return usage;
     }
@@ -46,6 +56,11 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
 
         private boolean showUsage;
         private OWLEntity currentEntity;
+
+        @Override
+        public void visit(OWLDeclarationAxiom axiom) {
+            showUsage = false;
+        }
 
         public void visit(OWLAnnotationAssertionAxiom axiom) {
             if (axiom.getSubject() instanceof IRI && axiom.getSubject().equals(currentEntity.getIRI())){

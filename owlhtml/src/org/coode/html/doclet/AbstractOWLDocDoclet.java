@@ -26,11 +26,11 @@ public abstract class AbstractOWLDocDoclet<O extends OWLObject> extends Abstract
         this.kit = kit;
     }
 
-    protected final OWLHTMLKit getHTMLGenerator(){
+    protected final OWLHTMLKit getOWLHTMLKit(){
         return kit;
     }
 
     protected boolean isSingleFrameNavigation() {
-        return getHTMLGenerator().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
+        return getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 }

@@ -7,7 +7,7 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.doclet.AutocompleteDoclet;
 
@@ -23,7 +23,7 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jan 24, 2008<br><br>
  */
-public class DLQueryHTMLPage extends EmptyOWLDocPage {
+public class DLQueryHTMLPage extends OWLDocPage {
 
     private static final String DL_QUERY_AC_ID = "dlQuery";
 

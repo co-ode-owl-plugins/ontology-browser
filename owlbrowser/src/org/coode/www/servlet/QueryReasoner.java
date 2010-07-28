@@ -1,14 +1,14 @@
 package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLParam;
-import org.coode.html.page.EmptyOWLDocPage;
-import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
+import org.coode.html.doclet.HTMLDoclet;
+import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.page.OWLDocPage;
 import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.www.QueryType;
 import org.coode.www.OntologyBrowserConstants;
+import org.coode.www.QueryType;
 import org.coode.www.doclet.ReasonerResultsDoclet;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -82,7 +82,7 @@ public class QueryReasoner extends AbstractOntologyServerServlet {
             return new ReasonerResultsDoclet(QueryType.valueOf(query), classDescription, kit);
         }
         else{
-            EmptyOWLDocPage page = new EmptyOWLDocPage(kit);
+            OWLDocPage page = new OWLDocPage(kit);
             page.addDoclet(new AbstractOWLDocDoclet(kit){
 
                 protected void renderHeader(URL pageURL, PrintWriter out) {

@@ -7,13 +7,12 @@ import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.url.RestURLScheme;
 import org.coode.owl.mngr.ServerConstants;
-import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
+import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
 import org.coode.suggestor.api.SuggestorManager;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
-import org.coode.www.servlet.ManageOntologies;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -103,7 +104,7 @@ public class SessionManager {
         try {
             OutputStream out = new FileOutputStream(file);
             PrintWriter writer = new PrintWriter(out);
-            Map<OWLOntologyID, URI> ontologyMappings = ManageOntologies.getMap(kit.getOWLServer());
+            Map<OWLOntologyID, URI> ontologyMappings = kit.getOWLServer().getLocationsMap();
             Set<OWLOntologyID> onts = ontologyMappings.keySet();
 
             // this saves the base properties (which includes the OWL server properties)

@@ -20,7 +20,7 @@ public class OWLClassSummaryHTMLPage extends AbstractOWLEntitySummaryHTMLPage<OW
 
     public OWLClassSummaryHTMLPage(OWLHTMLKit kit) {
         super(kit);
-        
+
         addDoclet(new AnnotationsDoclet<OWLClass>(kit));
         addDoclet(new AssertedEquivalentsDoclet(kit));
         addDoclet(new AssertedSuperclassesDoclet(kit));

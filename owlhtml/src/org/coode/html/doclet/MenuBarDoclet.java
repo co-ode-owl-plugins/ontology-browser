@@ -6,15 +6,14 @@ package org.coode.html.doclet;
 import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.url.URLScheme;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.ServerProperty;
-import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.util.AnnotationValueShortFormProvider;
+import org.semanticweb.owlapi.util.ShortFormProvider;
 
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLEncoder;
 
 /**
  * Author: Nick Drummond<br>
@@ -40,70 +39,83 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.println("<div id='menu'>");
 
-        renderOptions(pageURL, out);
+        final OWLHTMLKit kit = getOWLHTMLKit();
+        final URLScheme urlScheme = kit.getURLScheme();
+
+        out.println("<div id='menu'>");
 
         out.println("<a style='display: none;' href='#content'>skip to content</a> ");
 
-        renderLink(OWLHTMLConstants.CONTENTS_LABEL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML), OWLHTMLConstants.LinkTarget.content, "", isSingleFrameNavigation(), pageURL, out);
-        out.print(" | ");
-        renderLink(OWLHTMLConstants.MANAGE_LABEL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.MANAGE_HTML), OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
-        out.print(" | ");
-        renderLink(OWLHTMLConstants.RESTART_LABEL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.SIGNOUT_HTML), OWLHTMLConstants.LinkTarget._top, "", isSingleFrameNavigation(), pageURL, out);
+        out.print("<a id='signout' href='");
+        out.print(urlScheme.getURLForRelativePage(OWLHTMLConstants.SIGNOUT_HTML));
+        out.print("' target='");
+        out.print(OWLHTMLConstants.LinkTarget._top);
+        out.print("'>");
+        out.print("<img src='");
+        out.print(urlScheme.getURLForRelativePage("images/close.png"));
+        out.print("' width='16' height='16' title='close' />");
+        out.println("</a>");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
+
+        renderOptions(pageURL, out);
+
         out.println("</div> <!-- menu -->");
     }
 
-    public void addToMenu(MenuItemDoclet menuItem){
-        addDoclet(menuItem); // will insert before the sign out item
-    }
-
     private void renderOptions(URL pageURL, PrintWriter out) {
-        String pageRelToBase = URLUtils.createRelativeURL(getHTMLGenerator().getBaseURL(), pageURL);
-        String optionsURL = URLUtils.createRelativeURL(pageURL, getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
-
         out.println("<div id='options'>");
 
-        if (isSingleFrameNavigation()){
-            try {
-                String encodedURI = URLEncoder.encode(pageRelToBase, OWLHTMLConstants.DEFAULT_ENCODING);
-                String relOptionURL = URLUtils.createRelativeURL(pageURL, getHTMLGenerator().getURLScheme().getURLForRelativePage("?content=" + encodedURI));
-                out.println("<a onclick=\"option('" + OWLHTMLProperty.optionUseFrames + "', 'true', '" + relOptionURL + "', '" + optionsURL + "');\">frames</a> | ");
-            }
-            catch (UnsupportedEncodingException e) {
-                logger.error("Could not encode URL: " + pageRelToBase, e);
-            }
-        }
-        else{
-            out.println("<a onclick=\"option('" + OWLHTMLProperty.optionUseFrames + "', 'false', getContentURL(), '" + optionsURL + "');\">hide frames</a> | ");
-        }
+        final URL optionsURL = getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML);
 
-        final boolean renderLabels = !getHTMLGenerator().getOWLServer().getShortFormProvider().getClass().equals(SimpleShortFormProvider.class);
-        out.println("<form id='" + RENDERER_FORM + "' style='display: inline;'>");
-        out.println("<label for='" + RENDERER_NAME + "' />Render labels</label>");
-        out.println("<input type='checkbox' name='"+ RENDERER_NAME +"' onclick='" + renderCheckAction(optionsURL) + "'");
-        if (renderLabels){
-            out.println(" checked='checked'");
+        renderLink("Options", optionsURL, OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
+
+        out.print("| <form id='");
+        out.print(RENDERER_FORM);
+        out.println("' style='display: inline;'>");
+
+        out.print("<label for='");
+        out.print(RENDERER_NAME);
+        out.println("'>Render labels</label>");
+
+        out.print("<input type='checkbox' name='");
+        out.print(RENDERER_NAME);
+        out.print("' id=");
+        out.print(RENDERER_NAME);
+        out.print("' onclick='");
+        printCheckAction(URLUtils.createRelativeURL(pageURL, optionsURL), out);
+        out.print("'");
+        if (isRenderLabels()){
+            out.print(" checked='checked'");
         }
         out.println(" />");
-        out.println("</form>");
 
-        out.print(" | ");
-        renderLink("more options", getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML), OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
+        out.println("</form>");
 
         out.println("</div> <!-- options -->");
     }
 
+    private boolean isRenderLabels() {
+        final ShortFormProvider sfp = getOWLHTMLKit().getOWLServer().getShortFormProvider();
+        return sfp.getClass().equals(AnnotationValueShortFormProvider.class);
+    }
 
-    private String renderCheckAction(String optionsURL) {
-        return "var rendererName = \"" + OWLHTMLConstants.RENDERER_FRAG + "\";" +
-               "if (document.getElementById(\"" + RENDERER_FORM + "\")." + RENDERER_NAME + ".checked == true){" +
-               "rendererName = \"" + OWLHTMLConstants.RENDERER_LABEL + "\";" +
-               "}" +
-               "option(\"" + ServerProperty.optionRenderer.name() + "\", rendererName, null, \"" + optionsURL + "\");";
+
+    private void printCheckAction(String optionsURL, PrintWriter out) {
+        out.print("var rendererName = \"");
+        out.print(OWLHTMLConstants.RENDERER_FRAG);
+        out.println("\";");
+        out.print("if (document.getElementById(\"");
+        out.print(RENDERER_FORM);
+        out.print("\").");
+        out.print(RENDERER_NAME);
+        out.print(".checked == true){rendererName = \"");
+        out.print(OWLHTMLConstants.RENDERER_LABEL);
+        out.print("\";}option(\"");
+        out.print(ServerProperty.optionRenderer.name());
+        out.print("\", rendererName, null);");
     }
 
 

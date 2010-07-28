@@ -1,20 +1,15 @@
 package org.coode.owl.mngr;
 
-import java.net.URI;
-import java.util.Comparator;
-import java.util.Set;
-
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 import org.semanticweb.owlapi.util.ShortFormProvider;
+
+import java.net.URI;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -47,6 +42,16 @@ public interface OWLServer {
 
     void clearOntologies();
 
+    Map<OWLOntologyID, URI> getLocationsMap();
+
+    /**
+     * First get an ontology with a matching version IRI if one exists.
+     * If not, get an ontology with a matching ontology IRI.
+     * @param iri the IRI
+     * @return an Ontology if one matches or null if none is found
+     */
+    OWLOntology getOntologyForIRI(IRI iri);
+
     void addServerListener(OWLServerListener l);
 
     void removeServerListener(OWLServerListener l);
@@ -55,10 +60,13 @@ public interface OWLServer {
 
     OWLReasoner getOWLReasoner();
 
+    HierarchyProvider<OWLOntology> getOntologyHierarchyProvider();
     HierarchyProvider<OWLClass> getClassHierarchyProvider();
     HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider();
     HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider();
-//    HierarchyProvider<OWLAnnotationProperty> getAnnotationPropertyHierarchyProvider();
+    HierarchyProvider<OWLAnnotationProperty> getOWLAnnotationPropertyHierarchyProvider();
+    HierarchyProvider<OWLObject> getOWLIndividualsHierarchyProvider();    
+    HierarchyProvider<OWLDatatype> getOWLDatatypeHierarchyProvider();
 
     Comparator<OWLObject> getComparator();
 

@@ -1,8 +1,8 @@
 package org.coode.html.util;
 
 import org.apache.log4j.Logger;
-import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLParam;
 
 import java.net.URL;
 import java.util.*;

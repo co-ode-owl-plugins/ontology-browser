@@ -15,11 +15,14 @@ import org.coode.html.impl.OWLHTMLConstants;
  */
 public class OntologyBrowserConstants extends OWLHTMLConstants {
 
-    public static String VERSION = "1.1.6";
+    public static String VERSION = "1.2.0";
 
     public static final String SERVER_STATES_DIR = "caches/";
     public static final String SERVER_STATES_EXT = ".saved";
+
+    // bookmarks
     public static final String BOOKMARKS_XML = "custom.bookmarks.xml";
+    public static final String DEFAULT_BOOKMARKS_XML = "default.bookmarks.xml";
 
     // debugging flags
     public static final boolean SIMULATE_SERVER_LATENCY = false;

@@ -6,10 +6,10 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.NamespaceUtil;
 
 import java.net.URI;

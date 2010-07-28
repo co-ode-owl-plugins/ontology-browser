@@ -5,7 +5,7 @@ import org.coode.html.doclet.AbstractOWLElementsDoclet;
 import org.coode.html.doclet.ElementsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -25,7 +25,7 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLObjectIndexHTMLPage<O extends OWLObject> extends EmptyOWLDocPage<OWLOntology> {
+public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLOntology> {
 
     private Set<O> index = new HashSet<O>();
 

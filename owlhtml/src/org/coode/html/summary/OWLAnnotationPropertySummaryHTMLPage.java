@@ -2,7 +2,7 @@ package org.coode.html.summary;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.*;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 
 /**
  * Author: Nick Drummond<br>

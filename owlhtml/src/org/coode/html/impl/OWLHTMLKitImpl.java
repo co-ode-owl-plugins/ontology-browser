@@ -3,17 +3,17 @@ package org.coode.html.impl;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.url.StaticFilesURLScheme;
 import org.coode.html.url.URLScheme;
+import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.impl.OWLServerImpl;
 import org.coode.owl.mngr.impl.ServerPropertiesAdapterImpl;
-import org.coode.owl.mngr.*;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.coode.owl.util.OWLObjectComparator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -61,6 +61,8 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     private String id;
 
+    private Comparator<OWLObject> comparator;
+
 
     public OWLHTMLKitImpl(String id, URL baseURL) {
         this(id, new OWLServerImpl(OWLManager.createOWLOntologyManager()), baseURL);
@@ -71,6 +73,7 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         this.id = id;
         this.owlServer = server;
         this.baseURL = baseURL;
+        this.comparator = new OWLObjectComparator<OWLObject>(server);
     }
 
 
@@ -127,11 +130,18 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         this.urlScheme = urlScheme;
     }
 
+    public Comparator<OWLObject> getOWLObjectComparator() {
+        return comparator;
+    }
+
     public Set<OWLOntology> getVisibleOntologies() {
         Set<OWLOntology> visOnts = new HashSet<OWLOntology>();
-        for (OWLOntology ont : owlServer.getOWLOntologyManager().getImportsClosure(owlServer.getActiveOntology())){
-            if (!hiddenOntologies.contains(ont)){
-                visOnts.add(ont);
+        final OWLOntology activeOnt = owlServer.getActiveOntology();
+        if (activeOnt != null){
+            for (OWLOntology ont : owlServer.getOWLOntologyManager().getImportsClosure(activeOnt)){
+                if (!hiddenOntologies.contains(ont)){
+                    visOnts.add(ont);
+                }
             }
         }
         return visOnts;

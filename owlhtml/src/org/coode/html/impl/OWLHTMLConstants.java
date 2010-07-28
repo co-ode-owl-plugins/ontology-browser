@@ -2,8 +2,8 @@ package org.coode.html.impl;
 
 import org.coode.owl.mngr.ServerConstants;
 
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -64,14 +64,11 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String SIGNOUT_HTML = "signout" + DEFAULT_EXTENSION;
 
     public static final String DL_QUERY_LABEL = "DL Query";
-    public static final String PERMALINK_LABEL = "Permalink";    
-    public static final String MANAGE_LABEL = "Manage";
+    public static final String LOAD_LABEL = "Load";
     public static final String CONTENTS_LABEL = "Contents";
     public static final String RESTART_LABEL = "Restart";
     public static final String BOOKMARKS_LABEL = "Bookmarks";
-
-    public static final int MAX_SESSIONS = 4;
-    public static final int SESSION_TIMEOUT = 5;
+    public static final String PERMALINK_LABEL = "permalink";
 
     public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
 
@@ -84,6 +81,12 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String EQUALS = "=";
     public static final String PARAM_SEP = "&";
     public static final String SLASH = "/";
+
+    // how far towards the root do we trim the trees
+    public static final int DEFAULT_TREE_ANCESTORS_COUNT = 10;
+
+     // actually needs one more layer than displayed, as this is required for determining if leaf
+    public static final int DEFAULT_TREE_DESCENDANTS_COUNT = 2;
 
 
     static {

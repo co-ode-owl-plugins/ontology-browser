@@ -2,14 +2,22 @@
 
 var xmlHttpOption;  // XML HTTP object for option
 var onSuccess; // page to go to once the option has been set
-
+var optionsURL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+function optionFromSelect(select){
+    Item = select.selectedIndex;
+    Result = select.options[Item].text;
+    optionId = select.form.id; // get the ID of the form
+
+    option(optionId, Result, null);
+}
 
 // successPage is optional
 // - if specified, this page will be loaded when the option is set successfully
 // - if omitted, the current page will be refreshed when the option is set successfully
-function option(opt, value, successpage, optionsURL){
+function option(opt, value, successpage){
 
     xmlHttpOption=GetXmlHttpObject(optionSet);
 
@@ -21,7 +29,7 @@ function option(opt, value, successpage, optionsURL){
 
         xmlHttpOption.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-        var attrs =  "property=" + opt + "&value=" + value;
+        var attrs =  "property=" + opt + "&value=" + value + "&format=xml";
 
         onSuccess = successpage;
 

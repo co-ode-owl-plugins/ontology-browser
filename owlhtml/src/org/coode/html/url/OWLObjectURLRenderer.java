@@ -3,8 +3,6 @@
 */
 package org.coode.html.url;
 
-import org.semanticweb.owlapi.model.OWLNamedObject;
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import java.net.URL;

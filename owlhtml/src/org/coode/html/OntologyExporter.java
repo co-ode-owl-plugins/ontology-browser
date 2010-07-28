@@ -1,29 +1,27 @@
 package org.coode.html;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.coode.html.doclet.HierarchyDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLContentsHTMLPage;
 import org.coode.html.index.OWLObjectIndexHTMLPage;
-import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.page.OWLDocPage;
 import org.coode.html.summary.*;
 import org.coode.html.url.URLScheme;
-import org.coode.html.util.URLUtils;
 import org.coode.html.util.FileUtils;
-import org.coode.html.hierarchy.OWLClassHierarchyTreeFragment;
-import org.coode.html.hierarchy.OWLPropertyHierarchyTreeFragment;
-import org.coode.html.doclet.HierarchyRootDoclet;
+import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerProperty;
 import org.semanticweb.owlapi.model.*;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -215,14 +213,15 @@ public class OntologyExporter {
         final OWLDatatypeSummaryHTMLPage datatypeSummary = new OWLDatatypeSummaryHTMLPage(kit);
 
         if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionShowMiniHierarchies)){
-            final OWLClassHierarchyTreeFragment clsTreeModel = new OWLClassHierarchyTreeFragment(kit, kit.getOWLServer().getClassHierarchyProvider(), "Asserted Class Hierarchy");
-            clsSummary.setOWLHierarchyRenderer(new HierarchyRootDoclet<OWLClass>(kit, clsTreeModel));
+            clsSummary.setNavigationRenderer(new HierarchyDoclet<OWLClass>("Asserted Class Hierarchy", kit, kit.getOWLServer().getClassHierarchyProvider()));
 
-            final OWLPropertyHierarchyTreeFragment<OWLObjectProperty> objPropTreeModel = new OWLPropertyHierarchyTreeFragment<OWLObjectProperty>(kit, kit.getOWLServer().getOWLObjectPropertyHierarchyProvider());
-            objPropSummary.setOWLHierarchyRenderer(new HierarchyRootDoclet<OWLObjectProperty>(kit, objPropTreeModel));
+            objPropSummary.setNavigationRenderer(new HierarchyDoclet<OWLObjectProperty>("Object Properties", kit, kit.getOWLServer().getOWLObjectPropertyHierarchyProvider()));
 
-            final OWLPropertyHierarchyTreeFragment<OWLDataProperty> dataPropTreeModel = new OWLPropertyHierarchyTreeFragment<OWLDataProperty>(kit, kit.getOWLServer().getOWLDataPropertyHierarchyProvider());
-            dataPropSummary.setOWLHierarchyRenderer(new HierarchyRootDoclet<OWLDataProperty>(kit, dataPropTreeModel));
+            dataPropSummary.setNavigationRenderer(new HierarchyDoclet<OWLDataProperty>("Data Properties", kit, kit.getOWLServer().getOWLDataPropertyHierarchyProvider()));
+
+            annotationPropSummary.setNavigationRenderer(new HierarchyDoclet<OWLAnnotationProperty>("Annotation Properties", kit, kit.getOWLServer().getOWLAnnotationPropertyHierarchyProvider()));
+
+            datatypeSummary.setNavigationRenderer(new HierarchyDoclet<OWLDatatype>("Datatypes", kit, kit.getOWLServer().getOWLDatatypeHierarchyProvider()));
         }
 
         // export classes
@@ -263,7 +262,7 @@ public class OntologyExporter {
                                  ont);
     }
 
-    private void exportReferencedEntities(NamedObjectType type, EmptyOWLDocPage ren,
+    private void exportReferencedEntities(NamedObjectType type, OWLDocPage ren,
                                           Set<? extends OWLEntity>entities, OWLOntology ont) throws IOException {
         if (!entities.isEmpty()){
 
@@ -311,7 +310,7 @@ public class OntologyExporter {
         }
     }
 
-    private boolean exportEntity(OWLEntity entity, EmptyOWLDocPage ren) throws IOException {
+    private boolean exportEntity(OWLEntity entity, OWLDocPage ren) throws IOException {
 
         URL entityURL = kit.getURLScheme().getURLForOWLObject(entity);
         String localFilename = URLUtils.createRelativeURL(kit.getBaseURL(), entityURL);

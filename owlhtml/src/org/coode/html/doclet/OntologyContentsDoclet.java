@@ -60,7 +60,7 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
         }
         else{
             // create link text
-            URL ontURL = getHTMLGenerator().getURLScheme().getURLForOWLObject(getUserObject());
+            URL ontURL = getOWLHTMLKit().getURLScheme().getURLForOWLObject(getUserObject());
             StringWriter writer = new StringWriter();
             PrintWriter out = new PrintWriter(writer);
             renderLink(getOntologyName(), ontURL,
@@ -72,12 +72,12 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
     }
 
     private String getOntologyName() {
-        return getHTMLGenerator().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
+        return getOWLHTMLKit().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
     }
 
     private void renderIndexLink(int count, NamedObjectType type, URL pageURL, PrintWriter out) {
         if (count > 0){
-            URL indexURL = getHTMLGenerator().getURLScheme().getURLForOntologyIndex(getUserObject(), type);
+            URL indexURL = getOWLHTMLKit().getURLScheme().getURLForOntologyIndex(getUserObject(), type);
             out.println("<li>");
             String label = type.getPluralRendering();
             renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);

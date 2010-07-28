@@ -1,21 +1,18 @@
 package org.coode.owl.mngr.impl;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.OWLServerListener;
-import org.coode.owl.util.ModelUtil;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLRuntimeException;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
-import org.semanticweb.owlapi.reasoner.OWLReasonerRuntimeException;
+import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Author: drummond<br>
@@ -31,7 +28,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     private OWLServer server;
 
-    private StructuralReasoner r;
+    private OWLReasoner r;
 
     private OWLServerListener serverListener = new OWLServerListener(){
 
@@ -40,21 +37,27 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         }
     };
 
-
     public ClassHierarchyProvider(OWLServer server) {
         this.server = server;
         server.addServerListener(serverListener);
     }
 
 
-    public OWLClass getRoot() {
-        return getServer().getOWLOntologyManager().getOWLDataFactory().getOWLThing();
+    public Set<OWLClass> getRoots() {
+        return Collections.singleton(getOWLThing());
     }
 
+    public boolean isRoot(OWLClass node) {
+        return node.equals(getOWLThing());
+    }
+
+    public boolean isLeaf(OWLClass node) {
+        return getChildren(node).isEmpty();
+    }
 
     public Set<OWLClass> getParents(OWLClass node) {
         try {
-            return getReasoner().getSuperClasses(node,false).getFlattened();
+            return getReasoner().getSuperClasses(node, true).getFlattened();
         }
         catch (OWLReasonerRuntimeException e) {
             logger.error(e);
@@ -65,7 +68,20 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public Set<OWLClass> getChildren(OWLClass node) {
         try {
-            return getReasoner().getSubClasses(node, true).getFlattened();
+            NodeSet<OWLClass> subsets = getReasoner().getSubClasses(node, true);
+            if (node.equals(getServer().getOWLOntologyManager().getOWLDataFactory().getOWLThing())){
+                if (getReasoner() instanceof StructuralReasoner){
+                // TODO fix orphans - they don't show up when Thing asserted as supercls
+//                ((StructuralReasoner)getReasoner()).dumpClassHierarchy(false);
+                }
+            }
+            Set<OWLClass> children = new HashSet<OWLClass>();
+            for (Node<OWLClass> synset : subsets.getNodes()){
+                if (!synset.isBottomNode()){
+                    children.addAll(synset.getEntities());
+                }
+            }
+            return children;
         }
         catch (OWLReasonerRuntimeException e) {
             logger.error(e);
@@ -76,8 +92,8 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public Set<OWLClass> getEquivalents(OWLClass node) {
         try{
-            return getReasoner().getEquivalentClasses(node).getEntities();
-        }
+            return getReasoner().getEquivalentClasses(node).getEntitiesMinus(node);
+        } 
         catch (OWLReasonerRuntimeException e) {
             logger.error(e);
         }
@@ -106,6 +122,10 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         return Collections.emptySet();
     }
 
+    public boolean hasAncestor(OWLClass node, OWLClass ancestor) {
+        return getAncestors(node).contains(ancestor);
+    }
+
 
     public void dispose() {
         getServer().removeServerListener(serverListener);
@@ -124,8 +144,13 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     protected OWLReasoner getReasoner() {
         if (r == null){
-            StructuralReasonerFactory factory = new StructuralReasonerFactory();
-            factory.createReasoner(getServer().getActiveOntology());
+            OWLReasonerFactory factory = new StructuralReasonerFactory();
+            r = factory.createReasoner(getServer().getActiveOntology());
+
+            // OWLAPI v3.1
+//            r.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+
+            // OWLAPI v3.0
             r.prepareReasoner();
         }
         return r;
@@ -136,5 +161,9 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
             r.dispose();
             r = null;
         }
+    }
+
+    private OWLClass getOWLThing() {
+        return server.getOWLOntologyManager().getOWLDataFactory().getOWLThing();
     }
 }

@@ -2,8 +2,8 @@ package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
@@ -39,9 +39,10 @@ public class Index extends AbstractOntologyServerServlet {
 
         String page = params.get(OWLHTMLParam.content);
 
+        
         if (isSingleFrameNavigation(kit)){
             if (page == null){
-                throw new RedirectException(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML));
+                throw new RedirectException(kit.getURLScheme().getURLForRelativePage(NamedObjectType.ontologies.getPluralRendering().toLowerCase()));
             }
             else{
                 throw new RedirectException(kit.getURLScheme().getURLForRelativePage(page));

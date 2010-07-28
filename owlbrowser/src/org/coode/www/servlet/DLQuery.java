@@ -4,8 +4,8 @@
 package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.doclet.HTMLDoclet;
+import org.coode.html.impl.OWLHTMLParam;
 import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;

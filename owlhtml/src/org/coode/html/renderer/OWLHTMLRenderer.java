@@ -2,7 +2,7 @@ package org.coode.html.renderer;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

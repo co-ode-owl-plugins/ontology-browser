@@ -1,7 +1,9 @@
 package org.coode.html.summary;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.doclet.*;
+import org.coode.html.doclet.AnnotationsDoclet;
+import org.coode.html.doclet.DatatypeDefinitionDoclet;
+import org.coode.html.doclet.UsageDoclet;
 import org.semanticweb.owlapi.model.OWLDatatype;
 
 /**

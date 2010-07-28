@@ -22,7 +22,7 @@ public class MembersDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLIndivi
 
 
     public MembersDoclet(OWLHTMLKit kit) {
-        super("Disjoints", Format.csv, kit);
+        super("Members", Format.csv, kit);
     }
 
     protected Collection<OWLIndividual> getElements(Set<OWLOntology> onts) {

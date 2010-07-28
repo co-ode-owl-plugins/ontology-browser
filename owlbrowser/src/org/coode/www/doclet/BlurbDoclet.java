@@ -5,7 +5,6 @@ package org.coode.www.doclet;
 
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.www.OntologyBrowserConstants;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -26,12 +25,19 @@ public class BlurbDoclet extends AbstractHTMLDoclet {
 
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.println("<h1>" + OntologyBrowserConstants.ONTOLOGY_SERVER_NAME + " " + OntologyBrowserConstants.VERSION + "</h1>");
-        renderBoxStart(DOCUMENTATION_BOX, out);
-        out.println("<p style='font-weight: bold;/*text-decoration: underline;*/'><a href=\"" + OWLHTMLConstants.HOME_PAGE + "\" target=\"docs\">Ontology Browser Homepage</a><br />" +
-                    "<a href=\"" + OWLHTMLConstants.HOME_PAGE + "wiki/GettingStarted\" target=\"docs\">Getting started</a><br />" +
-                    "<a href=\"" + OWLHTMLConstants.HOME_PAGE + "wiki/ReleaseNotes\" target=\"docs\">Release notes</a><br />" +
-                    "<a href=\"" + OWLHTMLConstants.HOME_PAGE + "issues/list\" target=\"docs\">Bugs/Feature requests</a></p>");
+        renderBoxStart(null, out);
+        out.print("<p style='font-weight: bold;/*text-decoration: underline;*/'><a href=\"");
+        out.print(OWLHTMLConstants.HOME_PAGE);
+        out.println("\" target=\"docs\">Ontology Browser Homepage</a><br />");
+        out.print("<a href=\"");
+        out.print(OWLHTMLConstants.HOME_PAGE);
+        out.println("wiki/GettingStarted\" target=\"docs\">Getting started</a><br />");
+        out.print("<a href=\"");
+        out.print(OWLHTMLConstants.HOME_PAGE);
+        out.println("wiki/ReleaseNotes\" target=\"docs\">Release notes</a><br />");
+        out.print("<a href=\"");
+        out.print(OWLHTMLConstants.HOME_PAGE);
+        out.println("issues/list\" target=\"docs\">Bugs/Feature requests</a></p>");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
