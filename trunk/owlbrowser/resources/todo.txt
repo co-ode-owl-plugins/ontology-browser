@@ -8,7 +8,6 @@ Bugs
     - loop? in http://localhost:8080/browser/ontologies/?session=12a12e51055-2-12a12e6b79d
 - DL query - hook up to reasoner
 - individuals summary - how do we get to other types?
-- When session id is in browser location cannot set the active ontology (or label)
 - reload ontology that is imported breaks the import
 
 Features
