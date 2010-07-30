@@ -329,8 +329,6 @@ public class SessionManager {
 
         properties.setBoolean(OWLHTMLProperty.optionShowInferredHierarchies, false);
 
-        properties.setBoolean(OWLHTMLProperty.optionRenderSubExpandLinks, false);
-
         // default location for DIG reasoner
         if (kit.getBaseURL().toString().contains("localhost")){ // just to make sure I don't accidentally publish this address
             kit.getOWLServer().getProperties().set(ServerProperty.optionReasonerUrl, "http://rpc295.cs.man.ac.uk:8080");

@@ -43,7 +43,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
         final OWLHTMLKit kit = getOWLHTMLKit();
         final URLScheme urlScheme = kit.getURLScheme();
 
-        out.println("<div id='menu'>");
+        out.println("\n\n<div id='menu'>");
 
         out.println("<a style='display: none;' href='#content'>skip to content</a> ");
 
@@ -62,11 +62,11 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
         renderOptions(pageURL, out);
 
-        out.println("</div> <!-- menu -->");
+        out.println("</div> <!-- menu -->\n");
     }
 
     private void renderOptions(URL pageURL, PrintWriter out) {
-        out.println("<div id='options'>");
+        out.println("\n<div id='options'>");
 
         final URL optionsURL = getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML);
 
@@ -94,7 +94,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
         out.println("</form>");
 
-        out.println("</div> <!-- options -->");
+        out.println("</div> <!-- options -->\n");
     }
 
     private boolean isRenderLabels() {

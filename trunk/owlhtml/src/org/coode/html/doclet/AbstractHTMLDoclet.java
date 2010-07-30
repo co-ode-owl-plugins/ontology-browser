@@ -39,9 +39,15 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
     }
 
     public final void renderAll(URL pageURL, PrintWriter out) {
-        renderHeader(pageURL, out);
-        renderContent(pageURL, out);
-        renderFooter(pageURL, out);
+        try{
+            renderHeader(pageURL, out);
+            renderContent(pageURL, out);
+            renderFooter(pageURL, out);
+        }
+        catch (Error e) {
+            e.printStackTrace();
+            out.println("<p>" + e.getMessage() + "</p>");
+        }
     }
 
     public final void addDoclet(HTMLDoclet<O> doclet){
@@ -156,6 +162,7 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
     }
 
     protected final void renderBoxStart(String name, String id, PrintWriter out) {
+        out.println();
         if (name != null){
             out.print("<h4>");
             out.print(name);
@@ -167,6 +174,6 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
     }
 
     protected final void renderBoxEnd(String name, PrintWriter out) {
-        out.println("</div><!-- " + name.toLowerCase() + " -->");
+        out.println("</div><!-- " + name.toLowerCase() + " -->\n\n");
     }
 }

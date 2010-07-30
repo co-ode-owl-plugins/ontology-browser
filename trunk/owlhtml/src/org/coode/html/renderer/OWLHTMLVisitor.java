@@ -155,12 +155,12 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         }
 
         if (writeStats){
-        write(" <span style='color:gray;'>(" +
-              "c:" + ontology.getClassesInSignature().size() +
-              ", op:" + ontology.getObjectPropertiesInSignature().size() +
-              ", dp:" + ontology.getDataPropertiesInSignature().size() +
-              ", i:" + ontology.getIndividualsInSignature().size() +
-              ")</span>");
+            write(" <span style='color:gray;'>(" +
+                  "c:" + ontology.getClassesInSignature().size() +
+                  ", op:" + ontology.getObjectPropertiesInSignature().size() +
+                  ", dp:" + ontology.getDataPropertiesInSignature().size() +
+                  ", i:" + ontology.getIndividualsInSignature().size() +
+                  ")</span>");
         }
     }
 
@@ -577,37 +577,18 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         annotation.getValue().accept(this);
     }
 
-    public void visit(OWLStringLiteral node) {
-        write("<span class='" + CSS_LITERAL + "'>\"");
-        writeLiteralContents(node.getLiteral());
-        write("\"");
-        final String lang = node.getLang();
-        if (lang != null){
-            write(" <span style='color: black;'>(" + lang + ")</span>");
-        }
-        write("</span>");
-    }
-
-    public void visit(OWLTypedLiteral node) {
-        write("<span class='" + CSS_LITERAL + "'>");
-        final OWLDatatype dt = node.getDatatype();
-        if (dt.isInteger() || dt.isFloat()){
-            writeLiteralContents(node.getLiteral());
-            write("</span>");
-        }
-        else{
-            write("\"");
-            writeLiteralContents(node.getLiteral());
-            write("\"");
-            write("</span>");
-            write("(");
-            dt.accept(this);
-            write(")");
-        }
-    }
-
-// OWLAPI v3.1
-//    public void visit(OWLLiteral node) {
+//    public void visit(OWLStringLiteral node) {
+//        write("<span class='" + CSS_LITERAL + "'>\"");
+//        writeLiteralContents(node.getLiteral());
+//        write("\"");
+//        final String lang = node.getLang();
+//        if (lang != null){
+//            write(" <span style='color: black;'>(" + lang + ")</span>");
+//        }
+//        write("</span>");
+//    }
+//
+//    public void visit(OWLTypedLiteral node) {
 //        write("<span class='" + CSS_LITERAL + "'>");
 //        final OWLDatatype dt = node.getDatatype();
 //        if (dt.isInteger() || dt.isFloat()){
@@ -619,19 +600,40 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 //            writeLiteralContents(node.getLiteral());
 //            write("\"");
 //            write("</span>");
-//            if (node.hasLang()){
-//                final String lang = node.getLang();
-//                if (lang != null){
-//                    write(" <span style='color: black;'>@" + lang + "</span>");
-//                }
-//            }
-//            else{
-//                write("(");
-//                dt.accept(this);
-//                write(")");
-//            }
+//            write("(");
+//            dt.accept(this);
+//            write(")");
 //        }
 //    }
+
+// OWLAPI v3.1
+    public void visit(OWLLiteral node) {
+        write("<span class='" + CSS_LITERAL + "'>");
+        final OWLDatatype dt = node.getDatatype();
+        if (dt.isInteger() || dt.isFloat()){
+            writeLiteralContents(node.getLiteral());
+            write("</span>");
+        }
+        else{
+            write("\"");
+            writeLiteralContents(node.getLiteral());
+            write("\"");
+            write("</span>");
+            if (node.isRDFPlainLiteral()){
+                if (node.hasLang()){
+                    final String lang = node.getLang();
+                    if (lang != null){
+                        write(" <span style='color: black;'>@" + lang + "</span>");
+                    }
+                }
+            }
+            else{
+                write("(");
+                dt.accept(this);
+                write(")");
+            }
+        }
+    }
 
     /////////// Axioms
 

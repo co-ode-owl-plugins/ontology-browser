@@ -29,7 +29,7 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
     }
 
     public void renderHeader(URL pageURL, PrintWriter out) {
-        out.println("<div id='tabs'>");
+        out.println("\n<div id='tabs'>");
 
         OWLHTMLKit kit = getOWLHTMLKit();
         final boolean singleFrame = isSingleFrameNavigation();
@@ -114,7 +114,7 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        out.println("</div> <!-- tabs -->");
+        out.println("</div> <!-- tabs -->\n\n");
     }
 
     public String getID() {

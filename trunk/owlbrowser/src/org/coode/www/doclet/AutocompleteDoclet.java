@@ -89,26 +89,35 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         if (submitURL != null){
             actionStr = URLUtils.createRelativeURL(pageURL, submitURL);
         }
-        out.println("<form class='autocomplete' method='" + method + "' id='chooser'" +
-//                    " accept-charset='" + OWLHTMLConstants.DEFAULT_ENCODING + "'" + 
-                    " name='" + id + "Form' action='" + actionStr + "'");
 
+        out.print("\n<form class='autocomplete' method='");
+        out.print(method);
+        out.print("' id='chooser");
+//        out.print("' accept-charset='");
+//        out.print(OWLHTMLConstants.DEFAULT_ENCODING);
+        out.print("' name='");
+        out.print(id);
+        out.print("Form' action='");
+        out.print(actionStr);
+        out.print("'");
         if (!isSingleFrameNavigation() && target != null){
             out.print(" target='" + target + "'");
         }
+        out.println(">");
 
-        out.println("><input name='" + paramName + "' type='text'");
+        out.print("<input name='" + paramName + "' type='text'");
         if (initialValue != null && initialValue.length() > 0){
             out.println(" value='" + initialValue + "'");
         }
-        out.println(" id='" + id + "' style='width: " + width + ";' />\n" +
-                "        <input name='syntax' id='dlQuerySyntax' type='hidden' value='man' />"); // no harm leaving this in both
+        out.println(" id='" + id + "' style='width: " + width + ";' />");
+
+        out.println("<input name='syntax' id='dlQuerySyntax' type='hidden' value='man' />"); // no harm leaving this in both
 
         if (jsAction != null){
             out.println("<input type='button' value='" + submitName + "' onmouseup='" + jsAction + "' />");
         }
         else{
-            out.println("        <input type='submit' value='" + submitName + "' />");
+            out.println("<input type='submit' value='" + submitName + "' />");
         }
 
         out.println("</form>");

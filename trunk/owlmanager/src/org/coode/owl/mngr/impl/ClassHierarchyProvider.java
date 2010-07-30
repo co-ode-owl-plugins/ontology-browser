@@ -4,8 +4,7 @@ import org.apache.log4j.Logger;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.OWLServerListener;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
@@ -37,6 +36,10 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         }
     };
 
+    // TODO: should we also reset on an ontology load/remove?
+
+    private Set<OWLClass> implicitRoots = null;
+
     public ClassHierarchyProvider(OWLServer server) {
         this.server = server;
         server.addServerListener(serverListener);
@@ -67,21 +70,23 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
 
     public Set<OWLClass> getChildren(OWLClass node) {
+        logger.debug("getChildren(" + node + ")");
         try {
-            NodeSet<OWLClass> subsets = getReasoner().getSubClasses(node, true);
-            if (node.equals(getServer().getOWLOntologyManager().getOWLDataFactory().getOWLThing())){
-                if (getReasoner() instanceof StructuralReasoner){
-                // TODO fix orphans - they don't show up when Thing asserted as supercls
-//                ((StructuralReasoner)getReasoner()).dumpClassHierarchy(false);
-                }
+            if (node.equals(getOWLThing()) && getReasoner() instanceof StructuralReasoner){
+                // fix orphans - they don't show up when Thing asserted as supercls
+                return getImplicitRoots();
             }
-            Set<OWLClass> children = new HashSet<OWLClass>();
-            for (Node<OWLClass> synset : subsets.getNodes()){
-                if (!synset.isBottomNode()){
-                    children.addAll(synset.getEntities());
+            else{
+                Set<OWLClass> children = new HashSet<OWLClass>();
+
+                NodeSet<OWLClass> subsets = getReasoner().getSubClasses(node, true);
+                for (Node<OWLClass> synset : subsets.getNodes()){
+                    if (!synset.isBottomNode()){
+                        children.addAll(synset.getEntities());
+                    }
                 }
+                return children;
             }
-            return children;
         }
         catch (OWLReasonerRuntimeException e) {
             logger.error(e);
@@ -89,11 +94,11 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         return Collections.emptySet();
     }
 
-
     public Set<OWLClass> getEquivalents(OWLClass node) {
+        logger.debug("getEquivalents(" + node + ")");
         try{
             return getReasoner().getEquivalentClasses(node).getEntitiesMinus(node);
-        } 
+        }
         catch (OWLReasonerRuntimeException e) {
             logger.error(e);
         }
@@ -102,6 +107,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
 
     public Set<OWLClass> getDescendants(OWLClass node) {
+        logger.debug("getDescendants(" + node + ")");
         try {
             return getReasoner().getSubClasses(node, false).getFlattened();
         }
@@ -148,10 +154,13 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
             r = factory.createReasoner(getServer().getActiveOntology());
 
             // OWLAPI v3.1
-//            r.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+            r.precomputeInferences(InferenceType.CLASS_HIERARCHY,
+                                   InferenceType.OBJECT_PROPERTY_HIERARCHY,
+                                   InferenceType.DATA_PROPERTY_HIERARCHY,
+                                   InferenceType.SAME_INDIVIDUAL);
 
             // OWLAPI v3.0
-            r.prepareReasoner();
+//            r.prepareReasoner();
         }
         return r;
     }
@@ -161,9 +170,57 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
             r.dispose();
             r = null;
         }
+        implicitRoots = null;
     }
 
     private OWLClass getOWLThing() {
         return server.getOWLOntologyManager().getOWLDataFactory().getOWLThing();
+    }
+
+
+    // TODO: remove this when OWL API bug fixed
+    // TODO: see https://sourceforge.net/tracker/?func=detail&aid=3037035&group_id=90989&atid=595534
+    private Set<OWLClass> getImplicitRoots() {
+        if (implicitRoots == null){
+            implicitRoots = new HashSet<OWLClass>();
+            for (OWLOntology ont : getOntologies()){
+                implicitRoots.addAll(ont.getClassesInSignature());
+            }
+            implicitRoots.remove(getOWLThing());
+            for (OWLOntology ont : getOntologies()){
+                for (OWLSubClassOfAxiom ax : ont.getAxioms(AxiomType.SUBCLASS_OF)){
+                    if (!ax.getSubClass().isAnonymous()){
+                        if (isImplicitNamedClass(ax.getSuperClass())){
+                            implicitRoots.remove(ax.getSubClass().asOWLClass());            
+                        }
+                    }
+                }
+                for (OWLEquivalentClassesAxiom ax : ont.getAxioms(AxiomType.EQUIVALENT_CLASSES)){
+                    Set<OWLClass> names = new HashSet<OWLClass>();
+                    boolean remove = false;
+                    for (OWLClassExpression cls : ax.getClassExpressions()){
+                        if (!cls.isAnonymous()){
+                            names.add(cls.asOWLClass());
+                        }
+                        else if (isImplicitNamedClass(cls)){
+                            remove = true;
+                        }
+                    }
+                    if (remove){
+                        implicitRoots.removeAll(names);
+                    }
+                }
+            }
+        }
+        return new HashSet<OWLClass>(implicitRoots);
+    }
+
+    private boolean isImplicitNamedClass(OWLClassExpression superClass) {
+        for (OWLClassExpression op : superClass.asConjunctSet()){
+            if (!op.isAnonymous()){
+                return true;
+            }
+        }
+        return false;
     }
 }

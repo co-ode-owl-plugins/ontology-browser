@@ -98,8 +98,6 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
             properties.setAllowedValues(OWLHTMLProperty.optionRenderPermalink, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowMiniHierarchies, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowInferredHierarchies, booleanValues);
-            properties.setAllowedValues(OWLHTMLProperty.optionRenderSubExpandLinks, booleanValues);
-
         }
         return properties;
     }
