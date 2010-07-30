@@ -53,7 +53,6 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
         OWLHTMLKit kit = getOWLHTMLKit();
-        final Set<OWLOntology> visibleOnts = kit.getVisibleOntologies();
 
         renderBoxStart(null, out);
 
@@ -72,6 +71,8 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
         OWLHTMLRenderer owlRen = new OWLHTMLRenderer(kit);
 
         printLoadRow(out);
+
+        Set<OWLOntology> visibleOnts = kit.getVisibleOntologies();
 
         for (OWLOntologyID ontURI : map.keySet()){
             URI physicalURI = map.get(ontURI);
