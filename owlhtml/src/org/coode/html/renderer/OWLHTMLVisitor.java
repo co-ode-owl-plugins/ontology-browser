@@ -979,6 +979,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             if (!writtenExternalRef){
                 literal = literal.replace("<", "&lt;");
                 literal = literal.replace(">", "&gt;");
+                literal = literal.replace("\n", "<br />");
                 write(literal);
             }
         }
