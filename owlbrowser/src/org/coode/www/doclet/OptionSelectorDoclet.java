@@ -35,7 +35,7 @@ public class OptionSelectorDoclet extends AbstractOWLDocDoclet{
 
     @Override
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.print("<form id='");
+        out.print("\n<form id='");
         out.print(getID());
         out.println("' method='POST'>");
 
@@ -53,12 +53,12 @@ public class OptionSelectorDoclet extends AbstractOWLDocDoclet{
             out.println(">" + allowedValue + "</option>");
         }
 
-        out.print("</select>");
+        out.println("</select>");
     }
 
     @Override
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        out.println("</form>");
+        out.println("</form>\n");
     }
 
     public String getID() {

@@ -37,7 +37,8 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
 
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.println("<html><head>");
+        out.println("<html>");
+        out.println("<head>");
 
         out.println("<title>" + getTitle() + "</title>");
 
@@ -53,7 +54,7 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
                         "' type='text/javascript'></script>");
         }
 
-        out.println("</head>");
+        out.println("</head>\n\n");
 
         out.print("<body");
 
@@ -77,7 +78,8 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
 
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        out.println("</body></html>");
+        out.println("</body>");
+        out.println("</html>");
     }
 
     protected void addCSS(URL css){

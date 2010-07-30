@@ -157,8 +157,9 @@ ul.minihierarchy ul {list-style-type: none;}
 ul.minihierarchy li {white-space: nowrap; color: red;}
 
 li {margin-bottom: 0; margin-top: 2px;}
-li.expandable {}
-li.not_expandable {}
+
+ul.minihierarchy li{}
+ul.minihierarchy li.expandable {}
 
 p.footer {font-size: 7pt; text-align: right; padding-right: 30px; clear: both;}
 

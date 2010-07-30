@@ -379,20 +379,26 @@ public class OWLServerImpl implements OWLServer {
                 shortFormProvider = new MySimpleShortFormProvider();
             }
             else if (ren.equals(ServerConstants.RENDERER_LABEL)){
-                String lang = properties.get(ServerProperty.optionLabelLang);
-                if ("".equals(lang)){
-                    lang = null;
-                }
                 OWLAnnotationProperty prop = mngr.getOWLDataFactory().getOWLAnnotationProperty(IRI.create(properties.get(ServerProperty.optionLabelUri)));
-                Map<OWLAnnotationProperty, List<String>> annot2LangMap = new HashMap<OWLAnnotationProperty, List<String>>();
-                annot2LangMap.put(prop, Collections.singletonList(lang));
+
                 final OWLOntologySetProvider activeOntologiesSetProvider = new OWLOntologySetProvider() {
                     public Set<OWLOntology> getOntologies() {
                         return getActiveOntologies();
                     }
                 };
+
+                String lang = properties.get(ServerProperty.optionLabelLang);
+
+                final Map<OWLAnnotationProperty, List<String>> langMap;
+                if (lang.length() == 0){
+                    langMap = Collections.emptyMap();
+                }
+                else{
+                    langMap = Collections.singletonMap(prop, Collections.singletonList(lang));
+                }
+                
                 shortFormProvider = new AnnotationValueShortFormProvider(Collections.singletonList(prop),
-                                                                         annot2LangMap,
+                                                                         langMap,
                                                                          activeOntologiesSetProvider,
                                                                          new MySimpleShortFormProvider());
             }

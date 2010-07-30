@@ -6,9 +6,7 @@ package org.coode.html.doclet;
 import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.semanticweb.owlapi.model.OWLObject;
 
@@ -124,11 +122,10 @@ public class LeafNodeDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O>
     @Override
     protected void renderHeader(URL pageURL, PrintWriter out) {
         if (hp.isLeaf(getNodeObject())){
-            out.print("<li class='not_expandable'>-&nbsp;");
+            out.print("<li>-&nbsp;");
         }
         else{
-            out.print("<li class='expandable'>");
-            renderExpandLink(getNodeObject(), pageURL, out);
+            out.print("<li class='expandable'>+");
         }
 
         out.print("&nbsp;");
@@ -137,7 +134,9 @@ public class LeafNodeDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O>
         if (node != null){
             renderNode(node, new OWLHTMLRenderer(getOWLHTMLKit()), pageURL, out);
         }
+
         if (getSubDocletCount() > 0){
+            out.println(); 
             out.println("<ul>");
         }
     }
@@ -159,34 +158,7 @@ public class LeafNodeDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O>
         if (getSubDocletCount() > 0){
             out.println("</ul>");
         }
-        
+
         out.println("</li>");
-    }
-
-    protected void renderExpandLink(O node, URL pageURL, PrintWriter out) {
-        if (isRenderSubExpandLinksEnabled()){
-            String link = URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForOWLObject(node));
-            if (!link.contains(OWLHTMLConstants.START_QUERY)){
-                link += OWLHTMLConstants.START_QUERY;
-            }
-            else{
-                link += OWLHTMLConstants.PARAM_SEP;
-            }
-
-            out.print("<a href='" + link + "expanded=true'>[+]</a>");
-        }
-        else{
-            out.print("+");
-        }
-    }
-
-
-    protected boolean isRenderSubsEnabled(){
-        return getOWLHTMLKit().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderSubs);
-    }
-
-
-    protected boolean isRenderSubExpandLinksEnabled() {
-        return getOWLHTMLKit().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderSubExpandLinks);
     }
 }
