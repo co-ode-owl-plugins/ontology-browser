@@ -27,12 +27,21 @@ public class OntologyHierarchyProvider implements HierarchyProvider<OWLOntology>
 
     public Set<OWLOntology> getRoots() {
         Set<OWLOntology> allImported = new HashSet<OWLOntology>();
+        Set<OWLOntology> cycles = new HashSet<OWLOntology>();
         for (OWLOntology ontology : server.getOntologies()){
-            allImported.addAll(ontology.getImports());
+            for (OWLOntology importedOnt : ontology.getDirectImports()){
+                if (hasAncestor(ontology, importedOnt)){
+                    cycles.add(ontology);
+                }
+                else{
+                    allImported.add(importedOnt);
+                }
+            }
         }
         Set<OWLOntology> roots = server.getOntologies();
-        if (allImported.size() != roots.size()){ // sometimes there are cycles - then just show all
-            roots.removeAll(allImported);
+        roots.removeAll(allImported);
+        if (!cycles.isEmpty()){            // cycle detected
+            roots.addAll(cycles);
         }
         return roots;
     }
