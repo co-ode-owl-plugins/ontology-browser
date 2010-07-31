@@ -2,6 +2,7 @@ package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.cloud.*;
+import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.CloudDoclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
@@ -54,6 +55,8 @@ import java.util.Set;
  */
 public class Cloud extends AbstractOntologyServerServlet {
 
+    private String title = "Clouds";
+
     protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
         // no implementation currently - could do an xml version though
     }
@@ -63,6 +66,19 @@ public class Cloud extends AbstractOntologyServerServlet {
         String cloudParam = params.get(OWLHTMLParam.type);
 
         OWLDocPage page = new OWLDocPage(kit);
+
+        page.addDoclet(new AbstractTitleDoclet(kit){
+
+                @Override
+                public String getTitle() {
+                    return title;
+                }
+
+                @Override
+                public String getSubtitle() {
+                    return null;
+                }
+            });
 
         if (cloudParam == null){
             page.addDoclet(new CloudIndexDoclet(kit));
@@ -100,6 +116,8 @@ public class Cloud extends AbstractOntologyServerServlet {
             cloudRenderer.setThreshold(8);
             cloudRenderer.setZoom(10);
 
+            title = cloudModel.getTitle();
+            
             page.addDoclet(cloudRenderer);
         }
         return page;

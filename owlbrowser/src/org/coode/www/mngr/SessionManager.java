@@ -10,7 +10,6 @@ import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
-import org.coode.suggestor.api.SuggestorManager;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.OWLOntologyID;
@@ -55,7 +54,7 @@ public class SessionManager {
     private static final String ID = "ID";
 
     private static Map<SessionID, OWLHTMLKit> activeServers = new HashMap<SessionID, OWLHTMLKit>();
-    private static Map<String, SuggestorManager> activeSuggestorManagers = new HashMap<String, SuggestorManager>();
+//    private static Map<String, SuggestorManager> activeSuggestorManagers = new HashMap<String, SuggestorManager>();
     private static final String URI_MAPPING_MARKER = "##";
 
 
@@ -225,13 +224,13 @@ public class SessionManager {
             final String serverID = kit.getID();
             kit.dispose();
 
-            SuggestorManager sm = activeSuggestorManagers.remove(serverID);
-            if (sm != null){
-                sm.dispose();
-            }
+//            SuggestorManager sm = activeSuggestorManagers.remove(serverID);
+//            if (sm != null){
+//                sm.dispose();
+//            }
 
             logger.debug("(killed) active servers: " + activeServers.size());
-            logger.debug("(killed) active suggestor managers: " + activeSuggestorManagers.size());
+//            logger.debug("(killed) active suggestor managers: " + activeSuggestorManagers.size());
 
             System.gc();
             System.gc();
@@ -255,7 +254,7 @@ public class SessionManager {
             logger.error(e);
         }
         logger.debug("active servers: " + activeServers.size());
-        logger.debug("active suggestor managers: " + activeSuggestorManagers.size());
+//        logger.debug("active suggestor managers: " + activeSuggestorManagers.size());
     }
 
     private static OWLHTMLKit createServer(String id, URL basePath) {
@@ -308,6 +307,10 @@ public class SessionManager {
 
     private static void setupDefaultServerProperties(OWLHTMLKit kit) {
 
+        // make sure the reasoner is enabled to allow dl query etc
+        kit.getOWLServer().getProperties().setBoolean(ServerProperty.optionReasonerEnabled, true);
+
+        
         ServerPropertiesAdapter<OWLHTMLProperty> properties = kit.getHTMLProperties();
 
         // by default, do not use frames navigation
@@ -319,9 +322,6 @@ public class SessionManager {
         // the default entities index is at the location "entities/"
         properties.set(OWLHTMLProperty.optionIndexAllURL, "entities/");
 
-        // make sure the reasoner is enabled to allow dl query etc
-        properties.setBoolean(OWLHTMLProperty.optionReasonerEnabled, true);
-        
         // render a permalink
         properties.setBoolean(OWLHTMLProperty.optionRenderPermalink, true);
 

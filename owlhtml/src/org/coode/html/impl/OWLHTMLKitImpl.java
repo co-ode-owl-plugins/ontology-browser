@@ -94,7 +94,6 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
             // Allowed values
             List<String> booleanValues = Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString());
             properties.setAllowedValues(OWLHTMLProperty.optionRenderSubs, booleanValues);
-            properties.setAllowedValues(OWLHTMLProperty.optionReasonerEnabled, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionRenderPermalink, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowMiniHierarchies, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowInferredHierarchies, booleanValues);
@@ -168,5 +167,9 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         properties = null;
         urlScheme = null;
         baseURL = null;
+    }
+
+    public boolean isActive() {
+        return !owlServer.isDead() && !owlServer.getOntologies().isEmpty();
     }
 }

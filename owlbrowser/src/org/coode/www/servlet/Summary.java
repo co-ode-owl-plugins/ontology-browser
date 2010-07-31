@@ -17,7 +17,6 @@ import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.OWLEntityFinder;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.impl.InferredClassHierarchyProvider;
 import org.coode.owl.util.ModelUtil;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
@@ -220,14 +219,12 @@ public class Summary extends AbstractOntologyServerServlet {
             OWLClassSummaryHTMLPage summaryRenderer = new OWLClassSummaryHTMLPage(kit);
 
             if (isShowMiniHierarchiesEnabled(kit)){
-                final HierarchyProvider<OWLClass> hp;
+                final HierarchyProvider<OWLClass> hp = kit.getOWLServer().getClassHierarchyProvider();
                 String title;
                 if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionShowInferredHierarchies)){
-                    hp = new InferredClassHierarchyProvider(kit.getOWLServer());
                     title = "Classes (Inferred)";
                 }
                 else{
-                    hp = kit.getOWLServer().getClassHierarchyProvider();
                     title = "Classes";
                 }
                 HierarchyDoclet<OWLClass> hierarchyRenderer = new HierarchyDoclet<OWLClass>(title, kit, hp);

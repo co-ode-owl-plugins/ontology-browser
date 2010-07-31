@@ -34,6 +34,7 @@ var queryArray = [
 // have to pass the servlet base in dynamically
 function sendQuery(expression, syntax, servletBase){
     if (expression != ""){
+        alert(expression);
         document.getElementById("resultsForm").innerHTML="";
 
         for (var i=0; i<QUERY_COUNT; i++){

@@ -74,4 +74,10 @@ public interface OWLHTMLKit {
     String getCurrentLabel();
 
     void dispose();
+
+    /**
+     * Is the kit currently in use?
+     * @return true if there are ontologies to browse
+     */
+    boolean isActive();
 }

@@ -2,14 +2,9 @@ package org.coode.www.page;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.doclet.MenuBarDoclet;
-import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.page.DefaultHTMLPage;
-import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.mngr.ServerProperty;
 import org.coode.www.OntologyBrowserConstants;
-import org.coode.www.doclet.AutocompleteDoclet;
-import org.coode.www.doclet.OptionSelectorDoclet;
+import org.coode.www.doclet.MenuBarDoclet;
 import org.coode.www.doclet.TitleDoclet;
 
 import java.io.PrintWriter;
@@ -33,27 +28,10 @@ public class BrowserPageAdapter<O> implements HTMLDoclet<O> {
     public BrowserPageAdapter(DefaultHTMLPage<O> delegate, OWLHTMLKit kit, URL pageURL) {
         this.delegate = delegate;
         delegate.addDoclet(new TitleDoclet(), 0);
-        delegate.addOnLoad("optionsURL=\"" + kit.getURLScheme().getURLForRelativePage(OntologyBrowserConstants.OPTIONS_HTML) + "\";");
-        prepareMenuBar(kit, pageURL);
-    }
-
-
-    private void prepareMenuBar(OWLHTMLKit kit, URL pageURL) {
-        MenuBarDoclet menuDoclet = (MenuBarDoclet)delegate.getDoclet(MenuBarDoclet.ID);
-        if (menuDoclet != null){
-
-            OptionSelectorDoclet activeOntDoclet = new OptionSelectorDoclet(kit, ServerProperty.optionActiveOnt.name(),
-                                                                            kit.getOWLServer().getProperties().get(ServerProperty.optionActiveOnt),
-                                                                            kit.getOWLServer().getProperties().getAllowedValues(ServerProperty.optionActiveOnt));
-            menuDoclet.addDoclet(activeOntDoclet, 0);
-
-            AutocompleteDoclet searchboxDoclet = new AutocompleteDoclet(kit, "find", true);
-            searchboxDoclet.setParamName("name");
-            searchboxDoclet.setSubmitName("find");
-            searchboxDoclet.setSubmitURL(kit.getURLScheme().getURLForIndex(NamedObjectType.entities)); // could be more direct
-            searchboxDoclet.setTarget(OWLHTMLConstants.LinkTarget.content);
-            menuDoclet.addDoclet(searchboxDoclet, 1);
+        if (kit.isActive()){
+            delegate.addDoclet(new MenuBarDoclet(kit), 1);
         }
+        delegate.addOnLoad("optionsURL=\"" + kit.getURLScheme().getURLForRelativePage(OntologyBrowserConstants.OPTIONS_HTML) + "\";");
     }
 
     public String getID() {
@@ -61,7 +39,8 @@ public class BrowserPageAdapter<O> implements HTMLDoclet<O> {
     }
 
     public void renderContent(URL pageURL, PrintWriter out) {
-        delegate.renderContent(pageURL, out);    }
+        delegate.renderContent(pageURL, out);
+    }
 
     public void renderAll(URL pageURL, PrintWriter out) {
         delegate.renderAll(pageURL, out);

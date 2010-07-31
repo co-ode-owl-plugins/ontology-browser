@@ -44,7 +44,7 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
             renderContent(pageURL, out);
             renderFooter(pageURL, out);
         }
-        catch (Error e) {
+        catch (Throwable e) {
             e.printStackTrace();
             out.println("<p>" + e.getMessage() + "</p>");
         }

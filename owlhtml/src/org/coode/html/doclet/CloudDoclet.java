@@ -61,7 +61,7 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
 
-        renderBoxStart(getTitle(), out);
+        renderBoxStart(null, out);
 
         out.println("<div style='width: 100%; text-align: center'>");
 

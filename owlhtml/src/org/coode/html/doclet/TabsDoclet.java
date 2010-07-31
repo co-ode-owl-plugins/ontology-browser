@@ -5,8 +5,8 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.owl.mngr.NamedObjectType;
+import org.coode.owl.mngr.ServerProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.PrintWriter;
@@ -66,7 +66,7 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
 
 
         // add the DL Query tab if the reasoner is enabled
-        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionReasonerEnabled)){
+        if (kit.getOWLServer().getProperties().isSet(ServerProperty.optionReasonerEnabled)){
             renderLink(OWLHTMLConstants.DL_QUERY_LABEL,
                        kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML),
                        OWLHTMLConstants.LinkTarget.subnav,

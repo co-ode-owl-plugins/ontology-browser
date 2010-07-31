@@ -38,6 +38,7 @@ public class OWLServerImpl implements OWLServer {
     private OWLOntology activeOntology;
 
     private OWLReasoner reasoner;
+    private Set<OWLReasonerFactory> reasonerFactories = new HashSet<OWLReasonerFactory>();
 
     private ShortFormProvider shortFormProvider;
 
@@ -97,8 +98,17 @@ public class OWLServerImpl implements OWLServer {
         }
     };
 
+    private String[] reasonerFactoryNames = {
+            "org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory",
+            "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory",
+            "org.semanticweb.HermiT.Reasoner$ReasonerFactory"
+            // TODO pellet
+    };
+
     public OWLServerImpl(OWLOntologyManager mngr) {
         this.mngr = mngr;
+
+        loadReasonerFactories();
 
         mngr.addOntologyLoaderListener(ontLoadListener);
 
@@ -199,6 +209,11 @@ public class OWLServerImpl implements OWLServer {
 
             properties = new ServerPropertiesAdapterImpl<ServerProperty>(new ServerPropertiesImpl());
 
+            properties.setAllowedValues(ServerProperty.optionReasonerEnabled, Arrays.asList(Boolean.TRUE.toString(),
+                                                                                            Boolean.FALSE.toString()));
+            properties.setBoolean(ServerProperty.optionReasonerEnabled, false);
+
+
             // make sure the deprecated names are updated on a load
             properties.addDeprecatedNames(ServerProperty.generateDeprecatedNamesMap());
 
@@ -209,9 +224,7 @@ public class OWLServerImpl implements OWLServer {
 
             properties.set(ServerProperty.optionRenderer, ServerConstants.RENDERER_FRAG);
             properties.set(ServerProperty.optionLabelUri, OWLRDFVocabulary.RDFS_LABEL.getURI().toString());
-            properties.set(ServerProperty.optionReasoner, ServerConstants.FACTPLUSPLUS);
             properties.set(ServerProperty.optionLabelLang, "");
-
 
             properties.addPropertyChangeListener(propertyChangeListener);
         }
@@ -261,41 +274,21 @@ public class OWLServerImpl implements OWLServer {
 
     public synchronized OWLReasoner getOWLReasoner() {
         if (reasoner == null && !this.isDead()){
+
+            final String selectedReasoner = properties.get(ServerProperty.optionReasoner);
+
             try {
                 logger.debug("Creating reasoner");
-                OWLReasonerFactory fac = null;
 
-                final String selectedReasoner = properties.get(ServerProperty.optionReasoner);
 
-                if (ServerConstants.FACTPLUSPLUS.equals(selectedReasoner)){
-                    logger.debug("  FaCT++");
-                    Class cls = Class.forName(ServerConstants.FACTPP_FACTORY_CLASS);
-                    fac = (OWLReasonerFactory) cls.newInstance();
-                }
-                else{
-                    logger.warn("Using a structural reasoner - couldn't find an appropriate factory for " + selectedReasoner);
-                    fac = new StructuralReasonerFactory();
-                }
+                OWLReasonerFactory fac = getReasonerFactory(selectedReasoner);
 
                 OWLReasoner r = fac.createReasoner(getActiveOntology());
-                reasoner = new SynchronizedOWLReasoner(r);
-//                reasoner.prepareReasoner();
 
-//                else if (ServerConstants.PELLET.equals(selectedReasoner)){
-//                    logger.debug("  pellet");
-////                    Class cls = Class.forName("org.mindswap.pellet.owlapi.Reasoner");
-////                    Constructor constructor = cls.getConstructor(OWLOntologyManager.class);
-////                    reasoner = (OWLReasoner) constructor.newInstance(mngr);
-//                }
-//                else//                else if (ServerConstants.DIG.equals(selectedReasoner)){
-//                    throw new RuntimeException("DIG not supported");
-////                    logger.debug("  DIG");
-////                    DIGReasonerPreferences.getInstance().setReasonerURL(new URL(properties.get(ServerProperty.optionReasonerUrl)));
-////                    reasoner = new DIGReasoner(mngr);
-//                }
+                reasoner = new SynchronizedOWLReasoner(r);
             }
             catch (Throwable e) {
-                logger.error("Error trying to get reasoner", e);
+                throw new RuntimeException(selectedReasoner + ": " + e.getMessage(), e);
             }
         }
         return reasoner;
@@ -396,7 +389,7 @@ public class OWLServerImpl implements OWLServer {
                 else{
                     langMap = Collections.singletonMap(prop, Collections.singletonList(lang));
                 }
-                
+
                 shortFormProvider = new AnnotationValueShortFormProvider(Collections.singletonList(prop),
                                                                          langMap,
                                                                          activeOntologiesSetProvider,
@@ -553,6 +546,38 @@ public class OWLServerImpl implements OWLServer {
         }
     }
 
+    private OWLReasonerFactory getReasonerFactory(String name) {
+        for (OWLReasonerFactory fac : reasonerFactories){
+            if (fac.getReasonerName().equals(name)){
+                return fac;
+            }
+        }
+
+        logger.warn("Couldn't find a reasoner factory for " + name + ". Using structural reasoner.");
+        return new StructuralReasonerFactory(); //
+    }
+
+    // TODO: error handling should be better
+    private void loadReasonerFactories() {
+        List<String> reasonerNames = new ArrayList<String>();
+        for (String reasonerFactoryName : reasonerFactoryNames){
+            try {
+                final OWLReasonerFactory fac = (OWLReasonerFactory) Class.forName(reasonerFactoryName).newInstance();
+                reasonerNames.add(fac.getReasonerName());
+                reasonerFactories.add(fac);
+            }
+            catch (InstantiationException e) {
+                e.printStackTrace();
+            }
+            catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        getProperties().setAllowedValues(ServerProperty.optionReasoner, reasonerNames);
+    }
 
     private void handlePropertyChange(ServerProperty p, Object newValue) {
 

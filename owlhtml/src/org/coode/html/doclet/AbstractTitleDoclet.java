@@ -34,7 +34,7 @@ public abstract class AbstractTitleDoclet<O extends OWLObject> extends AbstractO
         final OWLHTMLKit kit = getOWLHTMLKit();
         final boolean permalink = kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderPermalink);
 
-            out.print("<h2>");
+        out.print("<h2>");
         out.print(getTitle());
         out.println("</h2>");
 
