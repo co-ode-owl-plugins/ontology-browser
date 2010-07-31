@@ -2,12 +2,10 @@ package org.coode.html.page;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.doclet.MenuBarDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.renderer.OWLHTMLRenderer;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
@@ -46,7 +44,6 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
         if (isSingleFrameNavigation()){
             addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
             if (!kit.getOWLServer().getOntologies().isEmpty()){
-                addDoclet(new MenuBarDoclet(kit));
                 addDoclet(new TabsDoclet(kit));
             }
         }
@@ -115,15 +112,7 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
         return kit;
     }
 
-    protected final OWLHTMLRenderer getHTMLRenderer() {
-        return new OWLHTMLRenderer(kit);
-    }
-
     protected final boolean isSingleFrameNavigation() {
         return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
-    }
-
-    protected final boolean isReasonerEnabled() {
-        return kit.getHTMLProperties().isSet(OWLHTMLProperty.optionReasonerEnabled);
     }
 }

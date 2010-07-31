@@ -5,9 +5,10 @@ import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.OWLServerListener;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.*;
-import org.semanticweb.owlapi.reasoner.structural.StructuralReasoner;
-import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerRuntimeException;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -72,7 +73,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     public Set<OWLClass> getChildren(OWLClass node) {
         logger.debug("getChildren(" + node + ")");
         try {
-            if (node.equals(getOWLThing()) && getReasoner() instanceof StructuralReasoner){
+            if (node.equals(getOWLThing())){// && getReasoner() instanceof StructuralReasoner){
                 // fix orphans - they don't show up when Thing asserted as supercls
                 return getImplicitRoots();
             }
@@ -150,14 +151,15 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     protected OWLReasoner getReasoner() {
         if (r == null){
-            OWLReasonerFactory factory = new StructuralReasonerFactory();
-            r = factory.createReasoner(getServer().getActiveOntology());
-
-            // OWLAPI v3.1
-            r.precomputeInferences(InferenceType.CLASS_HIERARCHY,
-                                   InferenceType.OBJECT_PROPERTY_HIERARCHY,
-                                   InferenceType.DATA_PROPERTY_HIERARCHY,
-                                   InferenceType.SAME_INDIVIDUAL);
+            r = getServer().getOWLReasoner();
+//            OWLReasonerFactory factory = new StructuralReasonerFactory();
+//            r = factory.createReasoner(getServer().getActiveOntology());
+//
+//            // OWLAPI v3.1
+//            r.precomputeInferences(InferenceType.CLASS_HIERARCHY,
+//                                   InferenceType.OBJECT_PROPERTY_HIERARCHY,
+//                                   InferenceType.DATA_PROPERTY_HIERARCHY,
+//                                   InferenceType.SAME_INDIVIDUAL);
 
             // OWLAPI v3.0
 //            r.prepareReasoner();

@@ -5,12 +5,12 @@ package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.doclet.MenuBarDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.OWLDocPage;
 import org.coode.owl.mngr.OWLServer;
+import org.coode.www.doclet.MenuBarDoclet;
 import org.coode.www.exception.OntServerException;
 
 import java.io.PrintWriter;

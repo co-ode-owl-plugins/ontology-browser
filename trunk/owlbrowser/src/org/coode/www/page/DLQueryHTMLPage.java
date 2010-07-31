@@ -71,12 +71,13 @@ public class DLQueryHTMLPage extends OWLDocPage {
         final URL servletURL = getHTMLGenerator().getURLScheme().getBaseURL();
 
         String jsAction = "sendQuery(getValueOfElementByID(\"" + DL_QUERY_AC_ID +
-                "\"), getValueOfElementByID(\"dlQuerySyntax\"), \"" + servletURL + "\")";
+                "\"), getValueOfElementByID(\"dlQuerySyntax\"), \"" + servletURL + "\");";
+
         if (query != null && query.length() > 0){
             addOnLoad(jsAction);
         }
         acDoclet.setInitialValue(query);
-//        acDoclet.setJsAction(jsAction);
+        acDoclet.setJsAction(jsAction);
     }
 
     public Set<URL> getRequiredJS() {

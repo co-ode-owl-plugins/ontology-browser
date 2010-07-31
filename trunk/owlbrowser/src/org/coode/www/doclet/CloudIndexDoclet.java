@@ -28,7 +28,7 @@ public class CloudIndexDoclet extends AbstractOWLDocDoclet {
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        renderBoxStart("Clouds", out);
+        renderBoxStart(null, out);
         for (CloudType cloud : CloudType.values()){
             out.print("<li>");
             renderLink(cloud.getRendering(), getOWLHTMLKit().getURLScheme().getURLForRelativePage("cloud/?type=" + cloud), OWLHTMLConstants.LinkTarget.subnav, "", isSingleFrameNavigation(), pageURL, out);

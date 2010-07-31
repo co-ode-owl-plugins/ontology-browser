@@ -39,7 +39,6 @@ public enum OWLHTMLProperty {
     optionIndexAllURL("Index all URL", "index-all-url"),
     optionDefaultCSS("CSS file", "css"),
     optionUseFrames("Use frames", "frames"),
-    optionReasonerEnabled("Reasoner enabled", "reasoner.enabled"),
     optionShowMiniHierarchies("Show hierarchies", "option_show_mini_hierarchies"),
     optionShowInferredHierarchies("Show inferred hierarchies", "option_show_inferred_hierarchies"),
     optionRenderPermalink("Render permalinks", "option_render_permalink"),

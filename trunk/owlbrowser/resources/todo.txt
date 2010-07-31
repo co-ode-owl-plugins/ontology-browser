@@ -1,20 +1,24 @@
 TODO
+----
 - cross browser check
-- does MenuBarDoclet need to be in OWLHTML?
 - revert hack in ClassHierarchyProvider when OWL API fixed (check implicit roots in wine ontology)
   see bug at https://sourceforge.net/tracker/?func=detail&aid=3037035&group_id=90989&atid=595534
 
 Bugs
+----
 
 - layout of Model options
-- reasoner enabled link in "look & feel"
-- DL query - hook up to reasoner
+- no permalink on DL Query page
+- no permalink on All individuals page
 - individuals summary - how do we get to other types?
 - reload ontology that is imported breaks the import closure (not related to version IRIs)
   OWL API bug - mngr.getImportsClosure() does not return the reloaded ontology
   see bug at https://sourceforge.net/tracker/?func=detail&aid=3037128&group_id=90989&atid=595534
+- if FaCT++ fails to work, it silently switches to the structural reasoner (which fails to classify class expressions)
+
 
 Features
+--------
 
 - Axiom annotations in non-axiom views (ie other than usage)
 - scrolling of hierachies when selection changes
@@ -25,3 +29,4 @@ Features
     - indivs - property assertions
 - Add email or reporting link with permalink on error pages (permalink works nicely for reproduceability)
 - Axiom pages (axiom by type)
+- DLQuery should state if the class expression is unsatisfiable instead of bringing back all superclasses/ancestors

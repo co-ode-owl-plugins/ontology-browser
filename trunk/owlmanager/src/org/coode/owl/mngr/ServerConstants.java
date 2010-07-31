@@ -33,13 +33,6 @@ package org.coode.owl.mngr;
  */
 public class ServerConstants {
 
-    // supported reasoners
-    public static final String PELLET = "pellet";
-    public static final String FACTPLUSPLUS = "factPlusPlus";
-    public static final String DIG = "DIG";
-
-    public static final String FACTPP_FACTORY_CLASS = "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory";
-
     public static enum Syntax {man, simple, qd}
 
     // supported renderers
