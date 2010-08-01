@@ -174,6 +174,12 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
     }
 
     protected final void renderBoxEnd(String name, PrintWriter out) {
-        out.println("</div><!-- " + name.toLowerCase() + " -->\n\n");
+        out.print("</div>");
+        if (name != null){
+            out.print("<!-- ");
+            out.print(name.toLowerCase());
+            out.print(" -->");
+        }
+        out.println("\n\n");
     }
 }

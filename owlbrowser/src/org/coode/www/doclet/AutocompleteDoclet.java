@@ -92,10 +92,10 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
         out.print("\n<form class='autocomplete' method='");
         out.print(method);
-        out.print("' id='chooser");
+//        out.print("' id='chooser");
 //        out.print("' accept-charset='");
 //        out.print(OWLHTMLConstants.DEFAULT_ENCODING);
-        out.print("' name='");
+        out.print("' id='");
         out.print(id);
         out.print("Form' action='");
         out.print(actionStr);

@@ -20,6 +20,8 @@ var NAME = 0;
 var XML_OBJ = 1;
 var CALLBACK = 2;
 
+var queryURL;
+
 var queryArray = [
     ["equivalents", null, inferredEquivalentsReceived],
     ["subclasses", null, inferredSubclassesReceived],
@@ -32,25 +34,29 @@ var queryArray = [
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 // have to pass the servlet base in dynamically
-function sendQuery(expression, syntax, servletBase){
+function sendQuery(){
+    var expression = getValueOfElementByID("dlQuery");
+
     if (expression != ""){
-        alert(expression);
+
+        var syntax = getValueOfElementByID("dlQuerySyntax");
+
         document.getElementById("resultsForm").innerHTML="";
 
         for (var i=0; i<QUERY_COUNT; i++){
             queryArray[i][XML_OBJ]=getXmlHttpObject(queryArray[i][CALLBACK]);
-            sendSubQuery(expression, syntax, queryArray[i][NAME], servletBase, queryArray[i][XML_OBJ]);
+            sendSubQuery(expression, syntax, queryArray[i][NAME], queryArray[i][XML_OBJ]);
         }
     }
 }
 
-function sendSubQuery(expression, syntax, querytype, servletBase, xmlHttpReq){
+function sendSubQuery(expression, syntax, querytype, xmlHttpReq){
 
     if (xmlHttpReq==null) {
         alert ("Browser does not support HTTP Request");
     }
     else{
-        xmlHttpReq.open("POST", servletBase + "query/",true);
+        xmlHttpReq.open("POST", queryURL, true);
 
         xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
@@ -62,18 +68,21 @@ function sendSubQuery(expression, syntax, querytype, servletBase, xmlHttpReq){
         var busy = document.createElement('div');
         busy.setAttribute('id', querytype);
         busy.innerHTML = "<h2 style='display: inline;'>" + querytype +
-                         "</h2><img src='" + servletBase + BUSY_IMAGE + "' width='18px' height='18px' />";
+                         "</h2><img src='../" + BUSY_IMAGE + "' width='18px' height='18px' />";
         document.getElementById("resultsForm").appendChild(busy);
     }
 }
 
 function receivedResults(i) {
     if (queryArray[i][XML_OBJ].readyState==4){
-        if (queryArray[i][XML_OBJ].status==200) {
-            document.getElementById(queryArray[i][NAME]).innerHTML=queryArray[i][XML_OBJ].responseText;
+        var resultElement = document.getElementById(queryArray[i][NAME]);
+        var response = queryArray[i][XML_OBJ].responseText;
+
+        if (queryArray[i][XML_OBJ].status==200) { //OK
+            resultElement.innerHTML=response;
         }
         else{
-            document.getElementById(queryArray[i][NAME]).innerHTML="<h2>" + queryArray[i][NAME] + " (0)</h2>"
+            resultElement.innerHTML="<h2>" + queryArray[i][NAME] + " (0)</h2>"
         }
     }
 }

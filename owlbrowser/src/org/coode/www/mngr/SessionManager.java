@@ -316,9 +316,6 @@ public class SessionManager {
         // by default, do not use frames navigation
         properties.set(OWLHTMLProperty.optionContentWindow, null);
 
-//        // a top ontology is created (with a top level property etc)
-//        properties.set(ServerConstants.OPTION_CREATE_TOP_ONTOLOGY, ServerConstants.TRUE);
-
         // the default entities index is at the location "entities/"
         properties.set(OWLHTMLProperty.optionIndexAllURL, "entities/");
 

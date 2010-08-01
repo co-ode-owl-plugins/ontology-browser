@@ -14,6 +14,8 @@ import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.ParseException;
@@ -57,10 +59,10 @@ public class QueryReasoner extends AbstractOntologyServerServlet {
                                     PrintWriter out) throws OntServerException {
 
         final String query = params.get(OWLHTMLParam.query);
+        final String expression = params.get(OWLHTMLParam.expression);
+        final String syntax = params.get(OWLHTMLParam.syntax);
 
-        OWLClassExpression classDescription = parse(params.get(OWLHTMLParam.expression),
-                                                    params.get(OWLHTMLParam.syntax),
-                                                    kit);
+        OWLClassExpression classDescription = parse(expression, syntax, kit);
 
         final Set<OWLEntity> results = new HashSet<OWLEntity>(QueryType.valueOf(query).getResults(classDescription, kit));
 
@@ -73,10 +75,9 @@ public class QueryReasoner extends AbstractOntologyServerServlet {
 
         final String query = params.get(OWLHTMLParam.query);
         final String expression = params.get(OWLHTMLParam.expression);
+        final String syntax = params.get(OWLHTMLParam.syntax);
 
-        final OWLClassExpression classDescription = parse(expression,
-                                                          params.get(OWLHTMLParam.syntax),
-                                                          kit);
+        final OWLClassExpression classDescription = parse(expression, syntax, kit);
 
         if (OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(getReturnFormat())){
             return new ReasonerResultsDoclet(QueryType.valueOf(query), classDescription, kit);
@@ -127,6 +128,20 @@ public class QueryReasoner extends AbstractOntologyServerServlet {
         }
         catch (ParseException e1) {
             throw new OntServerException(e1);
+        }
+    }
+
+    @Override
+    protected void handleError(Throwable e, OWLHTMLKit kit, URL pageURL, HttpServletResponse response) throws IOException {
+        final Throwable cause = e.getCause();
+        if (cause != null && cause instanceof ParseException &&
+            OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(getReturnFormat())){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("error=" + cause.getMessage());
+            response.getWriter().println("offset=" + ((ParseException)cause).getErrorOffset());
+        }
+        else{
+            super.handleError(e, kit, pageURL, response);
         }
     }
 }
