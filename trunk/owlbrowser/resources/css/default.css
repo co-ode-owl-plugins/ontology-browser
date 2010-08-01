@@ -1,7 +1,10 @@
 @import url("owl.css");
 
-body {
+html {
     font-family: Verdana, Arial, sans-serif;
+}
+
+body {
     background-color: #f1f5f9;
     font-size: 9pt;
     padding: 5px;
@@ -19,22 +22,35 @@ img.button {
 
 div {
     margin-top: 0;
+    -moz-border-radius: 5px; -webkit-border-radius: 5px;    
 }
 
 div.codebox {
     border: solid 1px #c7cfd5;
-    overflow: hidden;
     background: #ffffff;
+    overflow: hidden;
     padding: 5px;
 }
 
 div.message {
-    overflow: hidden;
-    background: #f9f944; width: 95%; padding: 5px;
     border: solid 1px #c7cfd5;
+    background: #f9f9bb;
+    overflow: hidden;
+    padding-left: 5px; padding-right: 5px; padding-top: 0; padding-bottom: 0;
+    margin-bottom: 30px;
 }
 
-div.error {overflow: hidden;
+div.message p{
+    margin-bottom: 0;
+}
+
+div.message a{
+    font-weight: bolder;
+    color: blue;
+}
+
+div.error {
+    overflow: hidden;
     background: #f94444; width: 95%; padding: 5px;
     border: solid 1px #c7cfd5;
 }
@@ -186,6 +202,10 @@ input.location{
 
 form.autocomplete {display: inline;}
 
-form#chooser {
+form.autocomplete {
     float: right;
+}
+
+pre {
+    font-family: Verdana, Arial, sans-serif;
 }

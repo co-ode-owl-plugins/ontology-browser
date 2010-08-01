@@ -45,8 +45,9 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
         out.println("<meta http-equiv='content-type' content='text/html;charset=" + getEncoding() + "'>");
 
         for (URL cssURL : getRequiredCSS()){
-            out.println("<link rel='stylesheet' href='" + URLUtils.createRelativeURL(pageURL, cssURL) +
-                        "' type='text/css' />");
+            out.print("<link rel='stylesheet' href='");
+            out.print(URLUtils.createRelativeURL(pageURL, cssURL));
+            out.print("' type='text/css' />");
         }
 
         for (URL jsURL : getRequiredJS()){
@@ -59,9 +60,9 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
         out.print("<body");
 
         String onloadJS = onload;
-        if (onloadJS.length() > 0){
-            onloadJS += ";";
-        }
+//        if (onloadJS.length() > 0){
+//            onloadJS += ";";
+//        }
         if (focusedComponent != null){
             onloadJS += "document.getElementById(\"" + focusedComponent + "\").focus();";
         }

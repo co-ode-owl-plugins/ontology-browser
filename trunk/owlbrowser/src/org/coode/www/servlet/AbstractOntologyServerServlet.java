@@ -104,7 +104,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                     ren.renderAll(pageURL, response.getWriter());
                 }
                 else{
-                    renderError("Could not get renderer for request", null, kit, pageURL, format, response);
+                    throw new OntServerException("Could not get renderer for request");
                 }
             }
         }
@@ -114,11 +114,30 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             response.sendRedirect(redir);
         }
         catch (Throwable e) {
-            e.printStackTrace();
-            renderError(null, e, kit, pageURL, format, response);
+            handleError(e, kit, pageURL, response);
         }
         finally{
             response.getWriter().flush();
+        }
+    }
+
+    protected void handleError(Throwable e, OWLHTMLKit kit, URL pageURL, HttpServletResponse response) throws IOException {
+        e.printStackTrace();
+        if (OntologyBrowserConstants.FORMAT_XML.equals(format)){
+            response.setContentType(OntologyBrowserConstants.MIME_XML);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println();
+        }
+        else if (OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(format)){
+            DefaultHTMLPage errorRenderer = createHTMLError(e.getMessage(), e, kit, response);
+            errorRenderer.removeDoclet(errorRenderer.getDoclet(MenuBarDoclet.ID));
+            errorRenderer.removeDoclet(errorRenderer.getDoclet(TabsDoclet.ID));
+            errorRenderer.renderContent(pageURL, response.getWriter());
+        }
+        else { // default to full page HTML
+            OWLDocPage errorRenderer = createHTMLError(e.getMessage(), e, kit, response);
+            errorRenderer.addMessage("Error rendering page: " + pageURL);
+            errorRenderer.renderAll(pageURL, response.getWriter());
         }
     }
 
@@ -203,30 +222,6 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             }
         }
         return params;
-    }
-
-
-//    protected final SuggestorManager getSuggestorManager(OWLHTMLKit kit) throws OntServerException {
-//        return SessionManager.getSuggestorManager(kit);
-//    }
-
-    private void renderError(String message, Throwable e, OWLHTMLKit kit, URL servletURL, String format, HttpServletResponse response) throws IOException {
-        if (OntologyBrowserConstants.FORMAT_XML.equals(format)){
-            response.setContentType(OntologyBrowserConstants.MIME_XML);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println();
-        }
-        else if (OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(format)){
-            DefaultHTMLPage errorRenderer = createHTMLError(message, e, kit, response);
-            errorRenderer.removeDoclet(errorRenderer.getDoclet(MenuBarDoclet.ID));
-            errorRenderer.removeDoclet(errorRenderer.getDoclet(TabsDoclet.ID));
-            errorRenderer.renderContent(servletURL, response.getWriter());
-        }
-        else { // default to full page HTML
-            OWLDocPage errorRenderer = createHTMLError(message, e, kit, response);
-            errorRenderer.addMessage("Error rendering page: " + servletURL);
-            errorRenderer.renderAll(servletURL, response.getWriter());
-        }
     }
 
     private OWLDocPage createHTMLError(String message, Throwable e, OWLHTMLKit kit, HttpServletResponse response) {

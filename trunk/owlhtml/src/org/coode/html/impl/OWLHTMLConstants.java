@@ -39,14 +39,22 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static final String DEFAULT_ENCODING = "utf8";
 
+    private static final String JS_ROOT = "js/";
+    private static final String CSS_BASE= "css/";
+    private static final String IMAGES_BASE = "images/";
 
-    public static final String JS_DEFAULT = "default.js";
-    public static final String JS_FORM = "form.js";
-    public static final String JS_DL_QUERY = "dlquery.js";
-    public static final String JS_TREE = "tree.js";
-    public static final String IMAGES_REMOVE_PNG = "images/remove.png";
-    public static final String AUTO_SUGGEST_JS = "bsn.AutoSuggest_2.1_multiword.js";
-    public static final String AUTO_SUGGEST_CSS = "css/autosuggest_inquisitor.css";
+    public static final String JS_DEFAULT = JS_ROOT + "default.js";
+    public static final String JS_DL_QUERY = JS_ROOT + "dlquery.js";
+    public static final String JS_TREE = JS_ROOT + "tree.js";
+    public static final String AUTO_SUGGEST_JS = JS_ROOT + "bsn.AutoSuggest_2.1_multiword.js";
+    public static final String JS_FORM = JS_ROOT + "form.js";
+
+    public static final String CSS_DEFAULT = CSS_BASE + "default.css";
+    public static final String AUTO_SUGGEST_CSS = CSS_BASE + "autosuggest_inquisitor.css";
+
+
+    public static final String IMAGES_REMOVE_PNG = IMAGES_BASE + "remove.png";
+
 
     // used to find the base URL of the servlets - will hunt in request URL for this string
     public static final String ONTOLOGY_SERVER = "/browser/";
@@ -55,10 +63,9 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static final String INDEX_HTML = "index" + DEFAULT_EXTENSION;
 
-    public static final String ONTOLOGY_HTML = "ontology" + DEFAULT_EXTENSION;
     public static final String CONTENTS_HTML = "contents" + DEFAULT_EXTENSION;
     public static final String DL_QUERY_HTML = "dlquery/";
-    public static final String MANAGE_HTML = "manage/";
+    public static final String QUERY_HTML = "query/";
     public static final String OPTIONS_HTML = "options/";
     public static final String HEADER_HTML = "header" + DEFAULT_EXTENSION;
     public static final String SIGNOUT_HTML = "signout" + DEFAULT_EXTENSION;
@@ -111,5 +118,4 @@ public class OWLHTMLConstants extends ServerConstants {
 
     // non-external values
     public static final String DEFAULT_INDEX_ALL_URL = "index-all" + DEFAULT_EXTENSION;
-    public static final String CSS_DEFAULT = "default.css";
 }
