@@ -42,10 +42,10 @@ public class DLQuery extends AbstractOntologyServerServlet {
         acRenderer.setQuery(q);
 
         if (q != null){
-            String syntax = params.get(OWLHTMLParam.syntax);
-            OWLClassExpressionParser parse = kit.getOWLServer().getClassExpressionParser(syntax);
+            String syntax = params.get(OWLHTMLParam.syntax);    
+            OWLClassExpressionParser parser = kit.getOWLServer().getClassExpressionParser(syntax);
             try {
-                OWLClassExpression descr = parse.parse(q);
+                OWLClassExpression descr = parser.parse(q);
             }
             catch (ParseException e) {
                 acRenderer.addError(e);
