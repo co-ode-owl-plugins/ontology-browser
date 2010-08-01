@@ -15,7 +15,7 @@ Bugs
   OWL API bug - mngr.getImportsClosure() does not return the reloaded ontology
   see bug at https://sourceforge.net/tracker/?func=detail&aid=3037128&group_id=90989&atid=595534
 - if FaCT++ fails to work, it silently switches to the structural reasoner (which fails to classify class expressions)
-
+- DLQuery permalinks
 
 Features
 --------

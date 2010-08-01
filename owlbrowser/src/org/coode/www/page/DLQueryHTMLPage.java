@@ -38,7 +38,7 @@ public class DLQueryHTMLPage extends OWLDocPage {
         addOnLoad("queryURL=\"" + kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.QUERY_HTML) + "\";");
 
         acDoclet = new AutocompleteDoclet(kit, DL_QUERY_AC_ID, false);
-        acDoclet.setSubmitURL(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.QUERY_HTML));
+        acDoclet.setSubmitURL(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
         acDoclet.setSubmitName("query");
         acDoclet.setMultiword(true);
         acDoclet.setWidth("400px");
@@ -86,7 +86,7 @@ public class DLQueryHTMLPage extends OWLDocPage {
             addOnLoad(jsAction);
         }
         acDoclet.setInitialValue(query);
-        acDoclet.setJsAction(jsAction);
+//        acDoclet.setJsAction(jsAction);
     }
 
     public Set<URL> getRequiredJS() {
