@@ -93,27 +93,33 @@ public enum NamedObjectType {
 
 
     public static NamedObjectType getType(OWLObject object){
-        if (object instanceof OWLClass){
+        return getType(object.getClass());
+    }
+
+    
+    public static NamedObjectType getType(Class<? extends OWLObject> cls){
+        if (OWLClass.class.isAssignableFrom(cls)){
             return NamedObjectType.classes;
         }
-        else if (object instanceof OWLObjectProperty){
+        else if (OWLObjectProperty.class.isAssignableFrom(cls)){
             return NamedObjectType.objectproperties;
         }
-        else if (object instanceof OWLDataProperty){
+        else if (OWLDataProperty.class.isAssignableFrom(cls)){
             return NamedObjectType.dataproperties;
         }
-        else if (object instanceof OWLAnnotationProperty){
+        else if (OWLAnnotationProperty.class.isAssignableFrom(cls)){
             return NamedObjectType.annotationproperties;
         }
-        else if (object instanceof OWLIndividual){
+        else if (OWLIndividual.class.isAssignableFrom(cls)){
             return NamedObjectType.individuals;
         }
-        else if (object instanceof OWLDatatype){
+        else if (OWLDatatype.class.isAssignableFrom(cls)){
             return NamedObjectType.datatypes;
         }
-        else if (object instanceof OWLOntology){
+        else if (OWLOntology.class.isAssignableFrom(cls)){
             return NamedObjectType.ontologies;
         }
-        throw new RuntimeException("Object type not known: " + object);
+        throw new RuntimeException("Object type not known: " + cls);
     }
+
 }

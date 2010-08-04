@@ -1,26 +1,25 @@
-package org.coode.html.summary;
+package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.doclet.*;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
+import java.io.PrintWriter;
+import java.net.URL;
+
 /**
- * Author: Nick Drummond<br>
- * nick.drummond@cs.manchester.ac.uk<br>
- * http://www.cs.man.ac.uk/~drummond<br><br>
+ * Author: drummond<br>
+ * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jun 7, 2007<br><br>
- * <p/>
- * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
- * copyright 2006, The University of Manchester<br>
+ * Date: Aug 4, 2010<br><br>
  */
-public class OWLObjectPropertySummaryHTMLPage extends AbstractOWLEntitySummaryHTMLPage<OWLObjectProperty> {
+public class OWLObjectPropertySummaryDoclet extends AbstractOWLDocDoclet<OWLObjectProperty> {
 
-    public OWLObjectPropertySummaryHTMLPage(OWLHTMLKit kit) {
+    public OWLObjectPropertySummaryDoclet(OWLHTMLKit kit) {
         super(kit);
 
+        addDoclet(new OWLEntityTitleDoclet<OWLObjectProperty>(kit));
         addDoclet(new AnnotationsDoclet<OWLObjectProperty>(kit));
         addDoclet(new PropertyCharacteristicsDoclet<OWLObjectProperty>(kit));
         addDoclet(new DomainsDoclet<OWLObjectProperty>(kit));
@@ -30,5 +29,19 @@ public class OWLObjectPropertySummaryHTMLPage extends AbstractOWLEntitySummaryHT
         addDoclet(new AssertedEquivpropertiesDoclet<OWLObjectProperty>(kit));
         addDoclet(new DisjointPropertiesDoclet<OWLObjectProperty>(kit));
         addDoclet(new UsageDoclet<OWLObjectProperty>(kit));
+    }
+
+    @Override
+    protected void renderHeader(URL pageURL, PrintWriter out) {
+        out.write("<div class='summary'>");
+    }
+
+    @Override
+    protected void renderFooter(URL pageURL, PrintWriter out) {
+        out.write("</div> <!-- summary -->");
+    }
+
+    public String getID() {
+        return "doclet.summary.objectproperty";
     }
 }

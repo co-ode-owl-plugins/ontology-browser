@@ -127,6 +127,10 @@ div.owlselector {
     padding: 0;
 }
 
+div.summary {
+    width: 100%; clear: right;
+}
+
 .owlselector .codebox {
     height: 500px;
     overflow: auto;
