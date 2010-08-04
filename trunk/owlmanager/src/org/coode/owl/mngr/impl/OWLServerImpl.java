@@ -54,13 +54,15 @@ public class OWLServerImpl implements OWLServer {
 
     private Map<String, OWLClassExpressionParser> parsers = new HashMap<String, OWLClassExpressionParser>();
 
-    private HierarchyProvider<OWLOntology> ontologyHierarchyProvider;
-    private HierarchyProvider<OWLClass> classHierarchyProvider;
-    private HierarchyProvider<OWLObjectProperty> objectPropertyHierarchyProvider;
-    private HierarchyProvider<OWLDataProperty> dataPropertyHierarchyProvider;
-    private HierarchyProvider<OWLAnnotationProperty> annotationPropertyHierarchyProvider;
-    private HierarchyProvider<OWLDatatype> datatypeHierarchyProvider;
-    private HierarchyProvider<OWLObject> individualsHierarchyProvider;
+    private Map<Class<? extends OWLObject>, HierarchyProvider> hps = new HashMap<Class<? extends OWLObject>, HierarchyProvider>();
+
+//    private HierarchyProvider<OWLOntology> ontologyHierarchyProvider;
+//    private HierarchyProvider<OWLClass> classHierarchyProvider;
+//    private HierarchyProvider<OWLObjectProperty> objectPropertyHierarchyProvider;
+//    private HierarchyProvider<OWLDataProperty> dataPropertyHierarchyProvider;
+//    private HierarchyProvider<OWLAnnotationProperty> annotationPropertyHierarchyProvider;
+//    private HierarchyProvider<OWLDatatype> datatypeHierarchyProvider;
+//    private HierarchyProvider<OWLObject> individualsHierarchyProvider;
 
     private Map<URI, OWLOntologyIRIMapper> baseMapper = new HashMap<URI, OWLOntologyIRIMapper>();
 
@@ -294,54 +296,81 @@ public class OWLServerImpl implements OWLServer {
         return reasoner;
     }
 
-    public HierarchyProvider<OWLOntology> getOntologyHierarchyProvider() {
-        if (ontologyHierarchyProvider == null && !this.isDead()){
-            ontologyHierarchyProvider = new OntologyHierarchyProvider(this);
+    @SuppressWarnings("unchecked")
+    public <N extends OWLObject> HierarchyProvider<N> getHierarchyProvider(Class<N> cls) {
+        HierarchyProvider<N> hp = (HierarchyProvider<N>)hps.get(cls);
+        if (hp == null){
+            if (OWLClass.class.isAssignableFrom(cls)){
+                hp = (HierarchyProvider<N>)new ClassHierarchyProvider(this);
+            }
+            else if (OWLObjectProperty.class.isAssignableFrom(cls)){
+                hp = (HierarchyProvider<N>)new OWLObjectPropertyHierarchyProvider(this);
+            }
+            else if (OWLDataProperty.class.isAssignableFrom(cls)){
+                hp = (HierarchyProvider<N>)new OWLDataPropertyHierarchyProvider(this);
+            }
+            else if (OWLAnnotationProperty.class.isAssignableFrom(cls)){
+                hp = (HierarchyProvider<N>)new OWLAnnotationPropertyHierarchyProvider(this);
+            }
+            else if (OWLNamedIndividual.class.isAssignableFrom(cls)){
+                hp = (HierarchyProvider<N>)new OWLIndividualByClassHierarchyProvider(this);
+            }
+            else if (OWLDatatype.class.isAssignableFrom(cls)){
+                hp = (HierarchyProvider<N>)new OWLDatatypeHierarchyProvider(this);
+            }
+            else if (OWLOntology.class.isAssignableFrom(cls)){
+                hp = (HierarchyProvider<N>)new OntologyHierarchyProvider(this);
+            }
         }
-        return ontologyHierarchyProvider;
+        return hp;
     }
-
-    public HierarchyProvider<OWLClass> getClassHierarchyProvider() {
-        if (classHierarchyProvider == null && !this.isDead()){
-            classHierarchyProvider = new ClassHierarchyProvider(this);
-        }
-        return classHierarchyProvider;
-    }
-
-    public HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider() {
-        if (objectPropertyHierarchyProvider == null && !this.isDead()){
-            objectPropertyHierarchyProvider = new OWLObjectPropertyHierarchyProvider(this);
-        }
-        return objectPropertyHierarchyProvider;
-    }
-
-    public HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider() {
-        if (dataPropertyHierarchyProvider == null && !this.isDead()){
-            dataPropertyHierarchyProvider = new OWLDataPropertyHierarchyProvider(this);
-        }
-        return dataPropertyHierarchyProvider;
-    }
-
-    public HierarchyProvider<OWLAnnotationProperty> getOWLAnnotationPropertyHierarchyProvider() {
-        if (annotationPropertyHierarchyProvider == null && !this.isDead()){
-            annotationPropertyHierarchyProvider = new OWLAnnotationPropertyHierarchyProvider(this);
-        }
-        return annotationPropertyHierarchyProvider;
-    }
-
-    public HierarchyProvider<OWLObject> getOWLIndividualsHierarchyProvider() {
-        if (individualsHierarchyProvider == null && !this.isDead()){
-            individualsHierarchyProvider = new OWLIndividualByClassHierarchyProvider(this);
-        }
-        return individualsHierarchyProvider;
-    }
-
-    public HierarchyProvider<OWLDatatype> getOWLDatatypeHierarchyProvider() {
-        if (datatypeHierarchyProvider == null && !this.isDead()){
-            datatypeHierarchyProvider = new OWLDatatypeHierarchyProvider(this);
-        }
-        return datatypeHierarchyProvider;
-    }
+//
+//    @SuppressWarnings("unchecked")
+//    public HierarchyProvider<OWLOntology> getOntologyHierarchyProvider() {
+//        return getHierarchyProvider(OWLOntology.class);
+//    }
+//
+//    public HierarchyProvider<OWLClass> getClassHierarchyProvider() {
+//        if (classHierarchyProvider == null && !this.isDead()){
+//            classHierarchyProvider = new ClassHierarchyProvider(this);
+//        }
+//        return classHierarchyProvider;
+//    }
+//
+//    public HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider() {
+//        if (objectPropertyHierarchyProvider == null && !this.isDead()){
+//            objectPropertyHierarchyProvider = new OWLObjectPropertyHierarchyProvider(this);
+//        }
+//        return objectPropertyHierarchyProvider;
+//    }
+//
+//    public HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider() {
+//        if (dataPropertyHierarchyProvider == null && !this.isDead()){
+//            dataPropertyHierarchyProvider = new OWLDataPropertyHierarchyProvider(this);
+//        }
+//        return dataPropertyHierarchyProvider;
+//    }
+//
+//    public HierarchyProvider<OWLAnnotationProperty> getOWLAnnotationPropertyHierarchyProvider() {
+//        if (annotationPropertyHierarchyProvider == null && !this.isDead()){
+//            annotationPropertyHierarchyProvider = new OWLAnnotationPropertyHierarchyProvider(this);
+//        }
+//        return annotationPropertyHierarchyProvider;
+//    }
+//
+//    public HierarchyProvider<OWLObject> getOWLIndividualsHierarchyProvider() {
+//        if (individualsHierarchyProvider == null && !this.isDead()){
+//            individualsHierarchyProvider = new OWLIndividualByClassHierarchyProvider(this);
+//        }
+//        return individualsHierarchyProvider;
+//    }
+//
+//    public HierarchyProvider<OWLDatatype> getOWLDatatypeHierarchyProvider() {
+//        if (datatypeHierarchyProvider == null && !this.isDead()){
+//            datatypeHierarchyProvider = new OWLDatatypeHierarchyProvider(this);
+//        }
+//        return datatypeHierarchyProvider;
+//    }
 
     public Comparator<OWLObject> getComparator() {
         if (comparator == null && !this.isDead()){
@@ -459,12 +488,13 @@ public class OWLServerImpl implements OWLServer {
     }
 
     private void resetHierarchies() {
-        ontologyHierarchyProvider = null;
-        classHierarchyProvider = null;
-        objectPropertyHierarchyProvider = null;
-        dataPropertyHierarchyProvider = null;
-        individualsHierarchyProvider = null;
-        datatypeHierarchyProvider = null;
+        hps.clear();
+//        ontologyHierarchyProvider = null;
+//        classHierarchyProvider = null;
+//        objectPropertyHierarchyProvider = null;
+//        dataPropertyHierarchyProvider = null;
+//        individualsHierarchyProvider = null;
+//        datatypeHierarchyProvider = null;
     }
 
 

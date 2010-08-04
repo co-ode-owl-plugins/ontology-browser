@@ -2,14 +2,13 @@ package org.coode.html;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.coode.html.doclet.HierarchyDoclet;
+import org.coode.html.doclet.OWLOntologySummaryDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLContentsHTMLPage;
 import org.coode.html.index.OWLObjectIndexHTMLPage;
 import org.coode.html.page.OWLDocPage;
-import org.coode.html.summary.*;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.FileUtils;
 import org.coode.html.util.URLUtils;
@@ -180,9 +179,9 @@ public class OntologyExporter {
 
 
     private void exportOntology(OWLOntology ont) throws IOException {
-
         // export the ontology summary
-        OWLOntologySummaryHTMLPage ontologySummary = new OWLOntologySummaryHTMLPage(kit);
+        OWLDocPage<OWLOntology> ontologySummary = new OWLDocPage<OWLOntology>(kit);
+        ontologySummary.addDoclet(new OWLOntologySummaryDoclet(kit));
         logger.debug("exporting ontology: " + ont);
         ontologySummary.setUserObject(ont);
 
@@ -205,24 +204,15 @@ public class OntologyExporter {
 
     private void exportReferencedEntities(OWLOntology ont) throws IOException {
 
-        final OWLClassSummaryHTMLPage clsSummary = new OWLClassSummaryHTMLPage(kit);
-        final OWLObjectPropertySummaryHTMLPage objPropSummary = new OWLObjectPropertySummaryHTMLPage(kit);
-        final OWLDataPropertySummaryHTMLPage dataPropSummary = new OWLDataPropertySummaryHTMLPage(kit);
-        final OWLAnnotationPropertySummaryHTMLPage annotationPropSummary = new OWLAnnotationPropertySummaryHTMLPage(kit);
-        final OWLIndividualSummaryHTMLPage indSummary = new OWLIndividualSummaryHTMLPage(kit);
-        final OWLDatatypeSummaryHTMLPage datatypeSummary = new OWLDatatypeSummaryHTMLPage(kit);
+        SummaryPageFactory fac = new SummaryPageFactory(kit);
 
-        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionShowMiniHierarchies)){
-            clsSummary.setNavigationRenderer(new HierarchyDoclet<OWLClass>("Asserted Class Hierarchy", kit, kit.getOWLServer().getClassHierarchyProvider()));
 
-            objPropSummary.setNavigationRenderer(new HierarchyDoclet<OWLObjectProperty>("Object Properties", kit, kit.getOWLServer().getOWLObjectPropertyHierarchyProvider()));
-
-            dataPropSummary.setNavigationRenderer(new HierarchyDoclet<OWLDataProperty>("Data Properties", kit, kit.getOWLServer().getOWLDataPropertyHierarchyProvider()));
-
-            annotationPropSummary.setNavigationRenderer(new HierarchyDoclet<OWLAnnotationProperty>("Annotation Properties", kit, kit.getOWLServer().getOWLAnnotationPropertyHierarchyProvider()));
-
-            datatypeSummary.setNavigationRenderer(new HierarchyDoclet<OWLDatatype>("Datatypes", kit, kit.getOWLServer().getOWLDatatypeHierarchyProvider()));
-        }
+        final OWLDocPage<OWLClass> clsSummary = fac.getSummaryPage(OWLClass.class);
+        final OWLDocPage<OWLObjectProperty> objPropSummary = fac.getSummaryPage(OWLObjectProperty.class);
+        final OWLDocPage<OWLDataProperty> dataPropSummary = fac.getSummaryPage(OWLDataProperty.class);
+        final OWLDocPage<OWLAnnotationProperty> annotationPropSummary = fac.getSummaryPage(OWLAnnotationProperty.class);
+        final OWLDocPage<OWLIndividual> indSummary = fac.getSummaryPage(OWLIndividual.class);
+        final OWLDocPage<OWLDatatype> datatypeSummary = fac.getSummaryPage(OWLDatatype.class);
 
         // export classes
         exportReferencedEntities(NamedObjectType.classes,
@@ -253,7 +243,6 @@ public class OntologyExporter {
                                  indSummary,
                                  ont.getIndividualsInSignature(),
                                  ont);
-
 
         // export datatypes
         exportReferencedEntities(NamedObjectType.datatypes,

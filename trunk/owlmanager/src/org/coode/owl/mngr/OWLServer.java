@@ -60,13 +60,15 @@ public interface OWLServer {
 
     OWLReasoner getOWLReasoner();
 
-    HierarchyProvider<OWLOntology> getOntologyHierarchyProvider();
-    HierarchyProvider<OWLClass> getClassHierarchyProvider();
-    HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider();
-    HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider();
-    HierarchyProvider<OWLAnnotationProperty> getOWLAnnotationPropertyHierarchyProvider();
-    HierarchyProvider<OWLObject> getOWLIndividualsHierarchyProvider();    
-    HierarchyProvider<OWLDatatype> getOWLDatatypeHierarchyProvider();
+    <N extends OWLObject> HierarchyProvider<N> getHierarchyProvider(Class<N> cls);
+//
+//    HierarchyProvider<OWLOntology> getOntologyHierarchyProvider();
+//    HierarchyProvider<OWLClass> getClassHierarchyProvider();
+//    HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider();
+//    HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider();
+//    HierarchyProvider<OWLAnnotationProperty> getOWLAnnotationPropertyHierarchyProvider();
+//    HierarchyProvider<OWLObject> getOWLIndividualsHierarchyProvider();
+//    HierarchyProvider<OWLDatatype> getOWLDatatypeHierarchyProvider();
 
     Comparator<OWLObject> getComparator();
 
