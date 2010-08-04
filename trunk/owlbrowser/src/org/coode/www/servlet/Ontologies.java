@@ -136,7 +136,6 @@ public class Ontologies extends AbstractOntologyServerServlet {
         if (!success.isEmpty()){
             SessionManager.labelServerState(kit);
             message += "<p>loaded " + success.size() + " ontologies</p>";
-            message += "<p>saved session: [" + kit.getCurrentLabel() + "]</p>";
         }
 
         Map<OWLOntologyID, URI> map = server.getLocationsMap();
