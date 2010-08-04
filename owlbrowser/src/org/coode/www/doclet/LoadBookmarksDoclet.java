@@ -44,7 +44,7 @@ public class LoadBookmarksDoclet extends AbstractHTMLDoclet {
 
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.println("    <form style='float: right;  width: 50%;' method='POST' action='.' target='_top' >\n" +
+        out.println("    <form id='bookmarks' method='POST' action='.' target='_top' >\n" +
         "        <label for='uri-bookmark'><h3 style='margin-bottom: 0;'>" + label + "</h3></label><br />\n" +
         "        <select id='uri-bookmark' name='uri' style='width:80%; margin-top: 0;'>");
     }

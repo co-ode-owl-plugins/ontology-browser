@@ -27,7 +27,11 @@ public class LoadFormDoclet extends AbstractHTMLDoclet {
     protected void renderHeader(URL pageURL, PrintWriter out) {
         renderBoxStart("Load Ontologies", out);
 
-        out.println("    <form style='float: left;  width: 50%;' id='specify' method='POST' action='.' target='_top' >");
+    }
+
+    protected void renderFooter(URL pageURL, PrintWriter out) {
+
+        out.println("    <form id='load' method='POST' action='.' target='_top' >");
         out.println("        <label for='uri-spec'><h3 style='margin-bottom: 0;'>Specify the physical location of your ontology:</h3></label><br />");
         out.print("        <input id='");
         out.print(OntologyBrowserConstants.LOAD_ONTOLOGIES_INPUT_ID);
@@ -42,9 +46,7 @@ public class LoadFormDoclet extends AbstractHTMLDoclet {
         out.println("        <input type='file' id='uploaded_file' name='uploaded_file' size='30' /></p>");
         out.println("        <input name='action' type='submit' value='load' />");
         out.println("    </form-->");
-    }
-
-    protected void renderFooter(URL pageURL, PrintWriter out) {
+        
         renderBoxEnd("Load Ontologies", out);
     }
 

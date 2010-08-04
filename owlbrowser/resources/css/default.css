@@ -128,7 +128,9 @@ div.owlselector {
 }
 
 div.summary {
-    width: 100%; clear: right;
+    width: 100%;
+    clear: right;
+    overflow-x: hidden;
 }
 
 .owlselector .codebox {
@@ -203,6 +205,15 @@ input.location{
 form.autocomplete {
     display: inline;
     float: right;
+}
+
+form#load {
+    width: 100%;
+}
+
+form#bookmarks{
+    float: right;
+    width: 50%;
 }
 
 pre {

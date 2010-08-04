@@ -40,11 +40,12 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
     public MenuBarDoclet(OWLHTMLKit kit) {
         super(kit);
-        addDoclet(createActiveOntDoclet(kit), 0);
-        addDoclet(createSearch(kit), 1);
+        addDoclet(createSearch(kit));
+        addDoclet(new SignoutDoclet(kit));
+        addDoclet(createActiveOntDoclet(kit));
     }
 
-    private HTMLDoclet createSearch(OWLHTMLKit kit) {
+    private HTMLDoclet  createSearch(OWLHTMLKit kit) {
         AutocompleteDoclet searchboxDoclet = new AutocompleteDoclet(kit, "find", true);
         searchboxDoclet.setParamName("name");
         searchboxDoclet.setSubmitName("find");
@@ -69,16 +70,6 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
         out.println("\n\n<div id='menu'>");
 
         out.println("<a style='display: none;' href='#content'>skip to content</a> ");
-
-        out.print("<a id='signout' href='");
-        out.print(urlScheme.getURLForRelativePage(OWLHTMLConstants.SIGNOUT_HTML));
-        out.print("' target='");
-        out.print(OWLHTMLConstants.LinkTarget._top);
-        out.print("'>");
-        out.print("<img src='");
-        out.print(urlScheme.getURLForRelativePage("images/close.png"));
-        out.print("' width='16' height='16' title='close' />");
-        out.println("</a>");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {

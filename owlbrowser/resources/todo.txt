@@ -16,8 +16,8 @@ Bugs
 - if FaCT++ fails to work, it silently switches to the structural reasoner (which fails to classify class expressions)
 - DL query "[" causes ajax error messages
 - Cross browser bugs
-  - Find box rendering too low
-  - load box, bookmarks rendered too low
+  - IE6 load box, bookmarks rendered too low
+- IE6 find does not work
 
 Features
 --------
