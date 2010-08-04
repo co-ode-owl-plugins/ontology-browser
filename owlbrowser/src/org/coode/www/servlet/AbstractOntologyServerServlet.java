@@ -10,6 +10,7 @@ import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLObjectIndexHTMLPage;
 import org.coode.html.page.DefaultHTMLPage;
 import org.coode.html.page.OWLDocPage;
+import org.coode.html.url.PermalinkURLScheme;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.ServletUtils;
@@ -136,8 +137,12 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         }
         else { // default to full page HTML
             OWLDocPage errorRenderer = createHTMLError(e.getMessage(), e, kit, response);
-            errorRenderer.addMessage("Error rendering page: " + pageURL);
-            errorRenderer.renderAll(pageURL, response.getWriter());
+            final PermalinkURLScheme permalinkScheme = new PermalinkURLScheme(kit.getURLScheme(), kit);
+            errorRenderer.addMessage("<p>Error rendering page</p>" +
+                                     "<p>Please send the following address to the developers</p><pre>" +
+                                     permalinkScheme.getURLForAbsolutePage(pageURL) + "</pre>");
+            final BrowserPageAdapter browserPage = new BrowserPageAdapter(errorRenderer, kit, pageURL);
+            browserPage.renderAll(pageURL, response.getWriter());
         }
     }
 

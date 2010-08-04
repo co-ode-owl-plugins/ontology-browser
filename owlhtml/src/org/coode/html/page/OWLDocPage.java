@@ -89,7 +89,7 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
     }
 
     public void addError(String error) {
-        addMessage("Error", error, "error");
+        addMessage("Detailed error", error, "error");
     }
 
     public void addError(Throwable error){

@@ -42,10 +42,4 @@ public abstract class AbstractOWLEntitySummaryHTMLPage<O extends OWLEntity> exte
     protected String getTitle() {
         return titleDoclet.getTitle();
     }
-
-
-//    public void renderContent(URL pageURL, PrintWriter out) {
-//        // @@TODO temp fix, as pageURL does not currently contain all of the params when using a servlet URL scheme
-//        super.renderContent(getServer().getURLScheme().getURLForNamedObject(getUserObject()), out);
-//    }
 }
