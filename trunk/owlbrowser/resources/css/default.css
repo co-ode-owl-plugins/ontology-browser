@@ -88,7 +88,7 @@ h2, h3, h4 {font-weight: normal;}
 h2 {font-size: 16pt; margin-top: 0; margin-bottom: 12px; margin-right: 8px; display: inline;}
 h3 {font-size: 10pt; color: #444444;
     margin-left: 12px; margin-top: 6px; margin-bottom: 12px;}
-h4 {font-size: 10pt; margin-top: 12px; margin-bottom: 3px;}
+h4 {font-size: 10pt; margin-top: 12px; margin-bottom: 6px; margin-left: 5px;}
 
 
 #menu{
@@ -123,13 +123,14 @@ h4 {font-size: 10pt; margin-top: 12px; margin-bottom: 3px;}
 div.owlselector {
     float: left;
     width: 30%;
-    margin-right: 32px;
+    margin-right: 5%;
     padding: 0;
 }
 
 div.summary {
-    width: 100%;
+    width: 65%;
     clear: right;
+    float: right;
     overflow-x: hidden;
 }
 
