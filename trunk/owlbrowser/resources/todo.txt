@@ -7,7 +7,6 @@ TODO
 Bugs
 ----
 
-- layout of Model options
 - no permalink on All individuals page
 - individuals summary - how do we get to other types?
 - reload ontology that is imported breaks the import closure (not related to version IRIs)
