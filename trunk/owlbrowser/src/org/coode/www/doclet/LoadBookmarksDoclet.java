@@ -59,7 +59,7 @@ public class LoadBookmarksDoclet extends AbstractHTMLDoclet {
     public void add(final String name, final URI location){
         addDoclet(new AbstractHTMLDoclet(){
             protected void renderHeader(URL pageURL, PrintWriter out) {
-                out.println("<option value='" + location + "'>" + name + " (" + location + ")");
+                out.print("<option value='" + location + "'>" + name + " (" + location + ")");
             }
             protected void renderFooter(URL pageURL, PrintWriter out) {
                 out.println("</option>");

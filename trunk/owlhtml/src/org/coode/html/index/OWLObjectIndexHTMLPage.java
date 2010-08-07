@@ -2,6 +2,7 @@ package org.coode.html.index;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLElementsDoclet;
+import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.ElementsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLProperty;
@@ -36,12 +37,27 @@ public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLO
 
     public OWLObjectIndexHTMLPage(OWLHTMLKit kit) {
         super(kit);
+
+        addDoclet(new AbstractTitleDoclet<OWLOntology>(kit){
+
+            @Override
+            public String getTitle() {
+                return id + " (" + index.size() + ")";
+            }
+
+            @Override
+            public String getSubtitle() {
+                return null;
+            }
+
+        });
+
         indexDoclet = new AbstractOWLElementsDoclet<OWLOntology, O>(id, ElementsDoclet.Format.list, kit) {
             protected Collection<O> getElements(Set<OWLOntology> onts) {
                 return index;
             }
             public String getID() {
-                return id + " (" + index.size() + ")";
+                return null;//return id + " (" + index.size() + ")";
             }
         };
         String contentWindow = getHTMLGenerator().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);

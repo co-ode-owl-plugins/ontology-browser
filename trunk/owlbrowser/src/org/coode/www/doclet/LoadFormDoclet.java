@@ -8,9 +8,7 @@ import org.coode.html.impl.OWLHTMLParam;
 import org.coode.www.OntologyBrowserConstants;
 
 import java.io.PrintWriter;
-import java.net.URI;
 import java.net.URL;
-import java.util.Map;
 
 /**
  * Author: Nick Drummond<br>
@@ -22,14 +20,9 @@ import java.util.Map;
  */
 public class LoadFormDoclet extends AbstractHTMLDoclet {
 
-    private static final String ID = "doclet.load";
+    private static final String ID = "doclet.loadform";
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        renderBoxStart("Load Ontologies", out);
-
-    }
-
-    protected void renderFooter(URL pageURL, PrintWriter out) {
 
         out.println("    <form id='load' method='POST' action='.' target='_top' >");
         out.println("        <label for='uri-spec'><h3 style='margin-bottom: 0;'>Specify the physical location of your ontology:</h3></label><br />");
@@ -45,16 +38,10 @@ public class LoadFormDoclet extends AbstractHTMLDoclet {
         out.println("      <p><label title='Choose a Local File to Upload and Validate' for='uploaded_file'>File:</label>");
         out.println("        <input type='file' id='uploaded_file' name='uploaded_file' size='30' /></p>");
         out.println("        <input name='action' type='submit' value='load' />");
-        out.println("    </form-->");
-        
-        renderBoxEnd("Load Ontologies", out);
-    }
+        out.println("    </form-->");    }
 
-    public void addBookmarkSet(String name, Map<String, URI> bookmarkMap){
-        LoadBookmarksDoclet bookmarks = new LoadBookmarksDoclet();
-        bookmarks.setLabel(name);
-        bookmarks.addAll(bookmarkMap);
-        addDoclet(bookmarks);
+    protected void renderFooter(URL pageURL, PrintWriter out) {
+
     }
 
     public String getID() {

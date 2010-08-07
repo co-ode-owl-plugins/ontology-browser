@@ -22,7 +22,7 @@ img.button {
 
 div {
     margin-top: 0;
-    -moz-border-radius: 5px; -webkit-border-radius: 5px;    
+    -moz-border-radius: 6px; -webkit-border-radius: 6px;
 }
 
 div.codebox, div.error, div.message {
@@ -34,8 +34,8 @@ div.codebox, div.error, div.message {
 
 div.message {
     background: #f9f9bb;
-    margin-bottom: 30px;
-     padding-top: 0; padding-bottom: 0;
+    margin-bottom: 32px;
+    padding-top: 0; padding-bottom: 0;
 }
 
 div.error {
@@ -83,12 +83,30 @@ td.key{
 #queryform {background: #ddddff; padding: 5px;}
 #most_used_classes {text-align: center;}
 
-h1 {font-size: 16pt; font-weight: bold; margin-top: 0; margin-bottom: 12px;}
-h2, h3, h4 {font-weight: normal;}
-h2 {font-size: 16pt; margin-top: 0; margin-bottom: 12px; margin-right: 8px; display: inline;}
-h3 {font-size: 10pt; color: #444444;
-    margin-left: 12px; margin-top: 6px; margin-bottom: 12px;}
-h4 {font-size: 10pt; margin-top: 12px; margin-bottom: 6px; margin-left: 5px;}
+h1 {font-size: 16pt;
+    font-weight: bold;
+    margin-top: 0; margin-bottom: 12px;
+}
+
+h2, h3, h4 {
+    font-weight: normal;
+}
+
+h3 {font-size: 10pt;
+    color: #444444;
+    margin-left: 12px; margin-top: 6px; margin-bottom: 12px;
+}
+
+h4 {font-size: 10pt;
+    margin-top: 12px; margin-bottom: 6px; margin-left: 6px;
+}
+
+h2, .owlselector h4 {
+    font-size: 16pt;
+    display: inline;
+    margin-top: 0; margin-bottom: 12px; margin-left: 6px; margin-right: 6px;
+}
+
 
 
 #menu{
@@ -137,10 +155,6 @@ div.summary {
 .owlselector .codebox {
     height: 500px;
     overflow: auto;
-}
-
-.owlselector h4 {
-    font-size: 16pt; margin-top: 0; margin-bottom: 12px;
 }
 
 a {
@@ -208,13 +222,19 @@ form.autocomplete {
     float: right;
 }
 
+#load_ontologies div.codebox{
+    height: 90px; /*easy way to force floating contents to fit */
+}
+
 form#load {
-    width: 100%;
+    float: left;
+    margin-left: 5%;
+    width: 45%;
 }
 
 form#bookmarks{
     float: right;
-    width: 50%;
+    width: 45%;
 }
 
 pre {
