@@ -3,12 +3,9 @@ package org.coode.www.servlet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.SummaryPageFactory;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.doclet.OntologyTitleDoclet;
-import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.index.OWLObjectIndexHTMLPage;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
@@ -150,20 +147,13 @@ public class Summary extends AbstractOntologyServerServlet {
     }
 
     private HTMLDoclet getIndexRenderer(NamedObjectType type, OWLHTMLKit kit, OWLOntology ont) throws OntServerException {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(type.getPluralRendering());
         if (ont != null){
-            sb.append(type.getPluralRendering());
             sb.append(" referenced in ");
             sb.append(kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont));
         }
-        else{
-            sb.append("All ");
-            sb.append(type.getPluralRendering());
-        }
         Set<OWLObject> results = getIndexResults(ont, kit, type);
-        OWLObjectIndexHTMLPage ren = createIndexRenderer(sb.toString(), results, kit);
-        prepareIndex(ren, ont, type, kit);
-        return ren;
+        return createIndexRenderer(sb.toString(), results, kit);
     }
 
 
@@ -194,19 +184,6 @@ public class Summary extends AbstractOntologyServerServlet {
         }
 
         return results;
-    }
-
-    private void prepareIndex(OWLObjectIndexHTMLPage ren, final OWLOntology ont, NamedObjectType type, OWLHTMLKit kit) {
-
-        int position = ren.indexOf(ren.getDoclet(TabsDoclet.ID))+1;
-
-        // put in the title of the ontology, if specified
-        if (ont != null){
-            final OntologyTitleDoclet titleDoclet = new OntologyTitleDoclet(kit);
-            titleDoclet.setUserObject(ont);
-            titleDoclet.setPinned(true);
-            ren.addDoclet(titleDoclet, position++);
-        }
     }
 
     private OWLOntology getOntology(String ontStr, OWLHTMLKit kit) throws OntServerException {

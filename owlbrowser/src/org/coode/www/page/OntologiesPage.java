@@ -6,10 +6,9 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.page.OWLDocPage;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.www.Bookmarks;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.doclet.BlurbDoclet;
-import org.coode.www.doclet.LoadFormDoclet;
+import org.coode.www.doclet.LoadDoclet;
 import org.coode.www.doclet.OntologyMappingsTableDoclet;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
@@ -39,27 +38,27 @@ public class OntologiesPage extends OWLDocPage {
         if (locationsMap.isEmpty()){
             addDoclet(new BlurbDoclet());
 
-            final LoadFormDoclet loadDoclet = new LoadFormDoclet();
-            loadDoclet.addBookmarkSet("or Select a bookmark from below:", Bookmarks.getBookmarks());
+            final LoadDoclet loadDoclet = new LoadDoclet();
+
             addDoclet(loadDoclet);
         }
         else{
 
-        AbstractTitleDoclet titleDoclet = new AbstractTitleDoclet(kit){
+            AbstractTitleDoclet titleDoclet = new AbstractTitleDoclet(kit){
 
-            @Override
-            public String getTitle() {
-                return NamedObjectType.ontologies.getPluralRendering();
-            }
+                @Override
+                public String getTitle() {
+                    return NamedObjectType.ontologies.getPluralRendering();
+                }
 
-            @Override
-            public String getSubtitle() {
-                return null;
-            }
-        };
+                @Override
+                public String getSubtitle() {
+                    return null;
+                }
+            };
 
             addDoclet(titleDoclet);
-            
+
             if (locationsMap.containsValue(null)){
                 if (message == null){
                     message = "";
