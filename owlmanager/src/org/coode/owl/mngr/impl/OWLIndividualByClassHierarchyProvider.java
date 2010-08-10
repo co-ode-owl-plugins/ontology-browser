@@ -118,21 +118,34 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
 
 
     private void reset() {
+
+        OWLClass owlThing = server.getOWLOntologyManager().getOWLDataFactory().getOWLThing();
+
         cache = new HashMap<OWLClassExpression, Set<OWLIndividual>>();
+
         Set<OWLIndividual> allIndividuals = new HashSet<OWLIndividual>();
+
         for (OWLOntology ont : getOntologies()){
             allIndividuals.addAll(ont.getIndividualsInSignature());
         }
+
         for (OWLOntology ont : getOntologies()){
             for (OWLClassAssertionAxiom ax : ont.getAxioms(AxiomType.CLASS_ASSERTION)){
-                Set<OWLIndividual> inds = cache.get(ax.getClassExpression());
-                if (inds == null){
-                    inds = new HashSet<OWLIndividual>();
-                    cache.put(ax.getClassExpression(), inds);
+                if (!ax.getClassExpression().equals(owlThing)){
+                    Set<OWLIndividual> inds = cache.get(ax.getClassExpression());
+                    if (inds == null){
+                        inds = new HashSet<OWLIndividual>();
+                        cache.put(ax.getClassExpression(), inds);
+                    }
+
+                    inds.add(ax.getIndividual());
+
+                    allIndividuals.remove(ax.getIndividual());
                 }
-                inds.add(ax.getIndividual());
             }
         }
-        cache.put(server.getOWLOntologyManager().getOWLDataFactory().getOWLThing(), allIndividuals);
+
+        // any individuals left with no asserted type are added to owl:Thing
+        cache.put(owlThing, allIndividuals);
     }
 }
