@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Author: Nick Drummond<br>
@@ -165,16 +166,21 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
     }
 
     private <T extends OWLEntity> void getMatches(String str, Set<T> results, NamedObjectType type){
-        Pattern pattern = Pattern.compile(str.toLowerCase());
-        for (String rendering : cache.getShortForms()) { // not very efficient looking at all entity types
-            Matcher m = pattern.matcher(rendering.toLowerCase());
-            if (m.matches()) {
-                for (OWLEntity entity : cache.getEntities(rendering)){
-                    if (type.getCls().isAssignableFrom(entity.getClass())){
-                        results.add((T)entity);
+        try{
+            Pattern pattern = Pattern.compile(str.toLowerCase());
+            for (String rendering : cache.getShortForms()) { // not very efficient looking at all entity types
+                Matcher m = pattern.matcher(rendering.toLowerCase());
+                if (m.matches()) {
+                    for (OWLEntity entity : cache.getEntities(rendering)){
+                        if (type.getCls().isAssignableFrom(entity.getClass())){
+                            results.add((T)entity);
+                        }
                     }
                 }
             }
+        }
+        catch(PatternSyntaxException e){
+            e.printStackTrace();
         }
     }
 }
