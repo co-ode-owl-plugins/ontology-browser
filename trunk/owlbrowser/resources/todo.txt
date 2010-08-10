@@ -13,7 +13,7 @@ Bugs
   see bug at https://sourceforge.net/tracker/?func=detail&aid=3037128&group_id=90989&atid=595534
 - if FaCT++ fails to work, it silently switches to the structural reasoner (which fails to classify class expressions)
 - DL query "[" causes ajax error messages
-- IE6/7 find does not work (cryptic line 296 char 9 object required)
+- IE6 find does not work IE7 fixed - UTF-8 recognized as encoding (cryptic line 296 char 9 object required)
 
 Features
 --------

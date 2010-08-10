@@ -37,7 +37,7 @@ import java.net.URL;
  */
 public class OWLHTMLConstants extends ServerConstants {
 
-    public static final String DEFAULT_ENCODING = "utf8";
+    public static final String DEFAULT_ENCODING = "UTF-8";
 
     private static final String JS_ROOT = "js/";
     private static final String CSS_BASE= "css/";
