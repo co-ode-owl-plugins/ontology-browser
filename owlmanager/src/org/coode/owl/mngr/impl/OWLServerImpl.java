@@ -56,14 +56,6 @@ public class OWLServerImpl implements OWLServer {
 
     private Map<Class<? extends OWLObject>, HierarchyProvider> hps = new HashMap<Class<? extends OWLObject>, HierarchyProvider>();
 
-//    private HierarchyProvider<OWLOntology> ontologyHierarchyProvider;
-//    private HierarchyProvider<OWLClass> classHierarchyProvider;
-//    private HierarchyProvider<OWLObjectProperty> objectPropertyHierarchyProvider;
-//    private HierarchyProvider<OWLDataProperty> dataPropertyHierarchyProvider;
-//    private HierarchyProvider<OWLAnnotationProperty> annotationPropertyHierarchyProvider;
-//    private HierarchyProvider<OWLDatatype> datatypeHierarchyProvider;
-//    private HierarchyProvider<OWLObject> individualsHierarchyProvider;
-
     private Map<URI, OWLOntologyIRIMapper> baseMapper = new HashMap<URI, OWLOntologyIRIMapper>();
 
     private ServerPropertiesAdapter<ServerProperty> properties;
@@ -98,13 +90,6 @@ public class OWLServerImpl implements OWLServer {
                 loadedOntology(ont);
             }
         }
-    };
-
-    private String[] reasonerFactoryNames = {
-            "org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory",
-            "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory",
-            "org.semanticweb.HermiT.Reasoner$ReasonerFactory"
-            // TODO pellet
     };
 
     public OWLServerImpl(OWLOntologyManager mngr) {
@@ -324,53 +309,6 @@ public class OWLServerImpl implements OWLServer {
         }
         return hp;
     }
-//
-//    @SuppressWarnings("unchecked")
-//    public HierarchyProvider<OWLOntology> getOntologyHierarchyProvider() {
-//        return getHierarchyProvider(OWLOntology.class);
-//    }
-//
-//    public HierarchyProvider<OWLClass> getClassHierarchyProvider() {
-//        if (classHierarchyProvider == null && !this.isDead()){
-//            classHierarchyProvider = new ClassHierarchyProvider(this);
-//        }
-//        return classHierarchyProvider;
-//    }
-//
-//    public HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider() {
-//        if (objectPropertyHierarchyProvider == null && !this.isDead()){
-//            objectPropertyHierarchyProvider = new OWLObjectPropertyHierarchyProvider(this);
-//        }
-//        return objectPropertyHierarchyProvider;
-//    }
-//
-//    public HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider() {
-//        if (dataPropertyHierarchyProvider == null && !this.isDead()){
-//            dataPropertyHierarchyProvider = new OWLDataPropertyHierarchyProvider(this);
-//        }
-//        return dataPropertyHierarchyProvider;
-//    }
-//
-//    public HierarchyProvider<OWLAnnotationProperty> getOWLAnnotationPropertyHierarchyProvider() {
-//        if (annotationPropertyHierarchyProvider == null && !this.isDead()){
-//            annotationPropertyHierarchyProvider = new OWLAnnotationPropertyHierarchyProvider(this);
-//        }
-//        return annotationPropertyHierarchyProvider;
-//    }
-//
-//    public HierarchyProvider<OWLObject> getOWLIndividualsHierarchyProvider() {
-//        if (individualsHierarchyProvider == null && !this.isDead()){
-//            individualsHierarchyProvider = new OWLIndividualByClassHierarchyProvider(this);
-//        }
-//        return individualsHierarchyProvider;
-//    }
-//
-//    public HierarchyProvider<OWLDatatype> getOWLDatatypeHierarchyProvider() {
-//        if (datatypeHierarchyProvider == null && !this.isDead()){
-//            datatypeHierarchyProvider = new OWLDatatypeHierarchyProvider(this);
-//        }
-//        return datatypeHierarchyProvider;
-//    }
 
     public Comparator<OWLObject> getComparator() {
         if (comparator == null && !this.isDead()){
@@ -489,14 +427,7 @@ public class OWLServerImpl implements OWLServer {
 
     private void resetHierarchies() {
         hps.clear();
-//        ontologyHierarchyProvider = null;
-//        classHierarchyProvider = null;
-//        objectPropertyHierarchyProvider = null;
-//        dataPropertyHierarchyProvider = null;
-//        individualsHierarchyProvider = null;
-//        datatypeHierarchyProvider = null;
     }
-
 
     private void resetRendererCache() {
         if (shortFormProvider != null){
@@ -553,7 +484,7 @@ public class OWLServerImpl implements OWLServer {
 
 
     private OWLOntology getTopOfImportsTree() {
-        return getOntologies().iterator().next();
+        return getOntologies().iterator().next(); // TODO: fix
 //        return getOntologyHierarchyProvider().getRoots().iterator().next();
     }
 
@@ -586,6 +517,14 @@ public class OWLServerImpl implements OWLServer {
         logger.warn("Couldn't find a reasoner factory for " + name + ". Using structural reasoner.");
         return new StructuralReasonerFactory(); //
     }
+
+
+    private String[] reasonerFactoryNames = {
+            "org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory",
+//            "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory",
+            "org.semanticweb.HermiT.Reasoner$ReasonerFactory"
+            // TODO pellet, etc
+    };
 
     // TODO: error handling should be better
     private void loadReasonerFactories() {
