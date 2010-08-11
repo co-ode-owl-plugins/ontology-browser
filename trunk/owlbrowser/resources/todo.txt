@@ -12,6 +12,9 @@ Bugs
   OWL API bug - mngr.getImportsClosure() does not return the reloaded ontology
   see bug at https://sourceforge.net/tracker/?func=detail&aid=3037128&group_id=90989&atid=595534
 - if FaCT++ fails to work, it silently switches to the structural reasoner (which fails to classify class expressions)
+- DLQuery photography.owl hasMinimumFocalDistance some int[>5]
+  see http://localhost:8080/browser/dlquery/?expression=hasMinimumFocalDistance+some+int%5B%3E5%5D&syntax=man&session=12a5e4e71e5-2-12a5e4e9c31
+  can't get any trace out of owlapi even rebuilding everything - god knows if tomcat is caching something
 
 Features
 --------
