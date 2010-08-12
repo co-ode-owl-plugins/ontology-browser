@@ -82,7 +82,7 @@ public class OntologyBookmarks {
         changes.addAll(clear());
 
         if (annotationValue.length() > 0){
-            OWLLiteral value = mngr.getOWLDataFactory().getOWLStringLiteral(annotationValue);
+            OWLLiteral value = mngr.getOWLDataFactory().getOWLLiteral(annotationValue);
             OWLAnnotation annot = mngr.getOWLDataFactory().getOWLAnnotation(property, value);
             changes.add(new AddOntologyAnnotation(ont, annot));
         }

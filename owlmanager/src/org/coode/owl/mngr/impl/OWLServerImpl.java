@@ -196,21 +196,18 @@ public class OWLServerImpl implements OWLServer {
 
             properties = new ServerPropertiesAdapterImpl<ServerProperty>(new ServerPropertiesImpl());
 
+            properties.setBoolean(ServerProperty.optionReasonerEnabled, false);
             properties.setAllowedValues(ServerProperty.optionReasonerEnabled, Arrays.asList(Boolean.TRUE.toString(),
                                                                                             Boolean.FALSE.toString()));
-            properties.setBoolean(ServerProperty.optionReasonerEnabled, false);
-
 
             // make sure the deprecated names are updated on a load
             properties.addDeprecatedNames(ServerProperty.generateDeprecatedNamesMap());
 
-            List<String> renderers = new ArrayList<String>();
-            renderers.add(ServerConstants.RENDERER_FRAG);
-            renderers.add(ServerConstants.RENDERER_LABEL);
-            properties.setAllowedValues(ServerProperty.optionRenderer, renderers);
-
             properties.set(ServerProperty.optionRenderer, ServerConstants.RENDERER_FRAG);
-            properties.set(ServerProperty.optionLabelUri, OWLRDFVocabulary.RDFS_LABEL.getURI().toString());
+            properties.setAllowedValues(ServerProperty.optionRenderer, Arrays.asList(ServerConstants.RENDERER_FRAG,
+                                                                                     ServerConstants.RENDERER_LABEL));
+
+            properties.set(ServerProperty.optionLabelUri, OWLRDFVocabulary.RDFS_LABEL.getIRI().toString());
             properties.set(ServerProperty.optionLabelLang, "");
 
             properties.addPropertyChangeListener(propertyChangeListener);
@@ -252,7 +249,13 @@ public class OWLServerImpl implements OWLServer {
     }
 
     public Set<OWLOntology> getActiveOntologies() {
-        return getActiveOntology() != null ? mngr.getImportsClosure(getActiveOntology()) : Collections.<OWLOntology>emptySet();
+        final OWLOntology activeOnt = getActiveOntology();
+
+        if (activeOnt == null){
+            return Collections.emptySet();
+        }
+
+        return mngr.getImportsClosure(activeOnt);
     }
 
     public OWLOntologyManager getOWLOntologyManager() {
@@ -262,11 +265,10 @@ public class OWLServerImpl implements OWLServer {
     public synchronized OWLReasoner getOWLReasoner() {
         if (reasoner == null && !this.isDead()){
 
-            final String selectedReasoner = properties.get(ServerProperty.optionReasoner);
+            final String selectedReasoner = getProperties().get(ServerProperty.optionReasoner);
 
             try {
                 logger.debug("Creating reasoner");
-
 
                 OWLReasonerFactory fac = getReasonerFactory(selectedReasoner);
 
@@ -334,12 +336,12 @@ public class OWLServerImpl implements OWLServer {
 
     public ShortFormProvider getShortFormProvider() {
         if (shortFormProvider == null && !this.isDead()){
-            String ren = properties.get(ServerProperty.optionRenderer);
+            String ren = getProperties().get(ServerProperty.optionRenderer);
             if (ren.equals(ServerConstants.RENDERER_FRAG)){
                 shortFormProvider = new MySimpleShortFormProvider();
             }
             else if (ren.equals(ServerConstants.RENDERER_LABEL)){
-                OWLAnnotationProperty prop = mngr.getOWLDataFactory().getOWLAnnotationProperty(IRI.create(properties.get(ServerProperty.optionLabelUri)));
+                OWLAnnotationProperty prop = mngr.getOWLDataFactory().getOWLAnnotationProperty(IRI.create(getProperties().get(ServerProperty.optionLabelUri)));
 
                 final OWLOntologySetProvider activeOntologiesSetProvider = new OWLOntologySetProvider() {
                     public Set<OWLOntology> getOntologies() {
@@ -347,7 +349,7 @@ public class OWLServerImpl implements OWLServer {
                     }
                 };
 
-                String lang = properties.get(ServerProperty.optionLabelLang);
+                String lang = getProperties().get(ServerProperty.optionLabelLang);
 
                 final Map<OWLAnnotationProperty, List<String>> langMap;
                 if (lang.length() == 0){
@@ -399,7 +401,10 @@ public class OWLServerImpl implements OWLServer {
 
         parsers.clear();
 
-        properties.removePropertyChangeListener(propertyChangeListener);
+        if (properties != null){
+            properties.removePropertyChangeListener(propertyChangeListener);
+            properties = null;
+        }
 
         serverIsDead = true;
     }
@@ -528,12 +533,21 @@ public class OWLServerImpl implements OWLServer {
 
     // TODO: error handling should be better
     private void loadReasonerFactories() {
+
+        String selectedReasoner = null;
+
         List<String> reasonerNames = new ArrayList<String>();
         for (String reasonerFactoryName : reasonerFactoryNames){
             try {
                 final OWLReasonerFactory fac = (OWLReasonerFactory) Class.forName(reasonerFactoryName).newInstance();
                 reasonerNames.add(fac.getReasonerName());
                 reasonerFactories.add(fac);
+
+                // set the first reasoner factory as default
+                if (selectedReasoner == null){
+                    selectedReasoner = fac.getReasonerName();
+                    getProperties().set(ServerProperty.optionReasoner, selectedReasoner);
+                }
             }
             catch (InstantiationException e) {
                 e.printStackTrace();

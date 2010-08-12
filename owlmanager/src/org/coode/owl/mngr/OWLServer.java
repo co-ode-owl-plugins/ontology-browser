@@ -40,8 +40,6 @@ public interface OWLServer {
 
     void removeOntology(OWLOntology ont);
 
-    void clearOntologies();
-
     Map<OWLOntologyID, URI> getLocationsMap();
 
     /**
@@ -61,14 +59,6 @@ public interface OWLServer {
     OWLReasoner getOWLReasoner();
 
     <N extends OWLObject> HierarchyProvider<N> getHierarchyProvider(Class<N> cls);
-//
-//    HierarchyProvider<OWLOntology> getOntologyHierarchyProvider();
-//    HierarchyProvider<OWLClass> getClassHierarchyProvider();
-//    HierarchyProvider<OWLObjectProperty> getOWLObjectPropertyHierarchyProvider();
-//    HierarchyProvider<OWLDataProperty> getOWLDataPropertyHierarchyProvider();
-//    HierarchyProvider<OWLAnnotationProperty> getOWLAnnotationPropertyHierarchyProvider();
-//    HierarchyProvider<OWLObject> getOWLIndividualsHierarchyProvider();
-//    HierarchyProvider<OWLDatatype> getOWLDatatypeHierarchyProvider();
 
     Comparator<OWLObject> getComparator();
 
@@ -80,12 +70,6 @@ public interface OWLServer {
 
     OntologyIRIShortFormProvider getOntologyShortFormProvider();
 
-
-    /**
-     *
-     * @param type one of
-     * @return
-     */
     OWLClassExpressionParser getClassExpressionParser(String type);
 
     void registerDescriptionParser(String syntax, OWLClassExpressionParser parser);
@@ -101,6 +85,8 @@ public interface OWLServer {
      */
     void clear();
 
+    void clearOntologies();
+    
     void dispose();
 
     boolean isDead();

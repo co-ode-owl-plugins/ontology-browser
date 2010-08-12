@@ -181,18 +181,20 @@ public class Ontologies extends AbstractOntologyServerServlet {
 
         OWLServer server = kit.getOWLServer();
 
+        final String ontName = server.getOntologyShortFormProvider().getShortForm(ontology);
+
         try {
             URI physicalLocation = server.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI();
 
             server.removeOntology(ontology);
             server.loadOntology(physicalLocation);
 
-            sb.append("<p>Reloaded ").append(server.getOntologyShortFormProvider().getShortForm(ontology)).append("</p>");
+            sb.append("<p>Reloaded ").append(ontName).append("</p>");
 
         }
         catch (Exception e) {
             sb.append("Could not reload ontology: ");
-            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
+            sb.append(ontName);
             sb.append("<p>").append(e.getMessage()).append("</p>");
         }
 
