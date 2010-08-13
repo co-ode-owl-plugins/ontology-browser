@@ -81,6 +81,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     private void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+
         final String sessionLabel = getParameter(request, OWLHTMLParam.session);
         format = getParameter(request, OWLHTMLParam.format);
         session = request.getSession(false);

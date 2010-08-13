@@ -2,7 +2,6 @@ package org.coode.www.mngr;
 
 import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.url.RestURLScheme;
@@ -239,9 +238,15 @@ public class SessionManager {
 
     private synchronized static void create(HttpSession mySession, HttpServletRequest request) {
         try{
-            StringBuffer fullURL = request.getRequestURL();
-            int ontServerIndex = fullURL.indexOf(OWLHTMLConstants.ONTOLOGY_SERVER);
-            URL basePath = new URL(fullURL.substring(0, ontServerIndex + OWLHTMLConstants.ONTOLOGY_SERVER.length()));
+            String url = request.getRequestURL().toString();
+            
+            int index = url.indexOf(request.getServletPath());
+
+            if (index != -1){
+                url = url.substring(0, index+1);
+            }
+
+            URL basePath = new URL(url);
 
             SessionID id = new SessionID();
 
