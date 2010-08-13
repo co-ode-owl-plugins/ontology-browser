@@ -4,7 +4,6 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.semanticweb.owlapi.model.OWLObject;
 
 /**
@@ -31,6 +30,7 @@ public abstract class AbstractOWLDocDoclet<O extends OWLObject> extends Abstract
     }
 
     protected boolean isSingleFrameNavigation() {
-        return getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
+        return true;
+//        return getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 }

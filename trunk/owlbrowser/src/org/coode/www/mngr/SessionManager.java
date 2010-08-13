@@ -2,6 +2,7 @@ package org.coode.www.mngr;
 
 import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.url.RestURLScheme;
@@ -151,6 +152,7 @@ public class SessionManager {
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
             kit.getHTMLProperties().load(in);
             in.close();
+            cleanupProperties(kit);
 
             // pass 2 to get the ontology mappings
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -181,6 +183,14 @@ public class SessionManager {
         }
         catch (Exception e) {
             throw new OntServerException(e);
+        }
+    }
+
+    private static void cleanupProperties(OWLHTMLKit kit) {
+        // fix the default css that was in the root
+        String css = kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS);
+        if (!css.startsWith("http") && !css.startsWith(OWLHTMLConstants.CSS_BASE)){
+            kit.getHTMLProperties().set(OWLHTMLProperty.optionDefaultCSS, OWLHTMLConstants.CSS_BASE + css);
         }
     }
 

@@ -113,6 +113,7 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
     }
 
     protected final boolean isSingleFrameNavigation() {
-        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
+        return true;
+//        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 }
