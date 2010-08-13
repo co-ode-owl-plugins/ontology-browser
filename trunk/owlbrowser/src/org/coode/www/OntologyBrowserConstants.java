@@ -24,14 +24,7 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
     public static final String BOOKMARKS_XML = "custom.bookmarks.xml";
     public static final String DEFAULT_BOOKMARKS_XML = "default.bookmarks.xml";
 
-    // debugging flags
-    public static final boolean SIMULATE_SERVER_LATENCY = false;
-    public static final boolean SHOW_MEMORY = false;
-    public static final boolean LOGGING = true;
-
     public static final String LOAD_ONTOLOGIES_INPUT_ID = "uri-spec";
-
-    public static final String DOCS_HTML = "docs/index.html";
 
     public static final String DL_QUERY_LABEL = "DL Query";
 
@@ -39,7 +32,6 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
     public static final String FORMAT_XML = "xml";
     public static final String FORMAT_HTML = "html";
     public static final String FORMAT_HTML_FRAGMENT = "html-frag";
-
 
     // and their mime types
     public static final String MIME_XML = "text/xml;charset=" + OWLHTMLConstants.DEFAULT_ENCODING;

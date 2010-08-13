@@ -77,26 +77,6 @@
         <servlet-class>org.coode.www.test.TestServlet</servlet-class>
     </servlet>
 
-    <!--servlet>
-        <servlet-name>QueryExtend</servlet-name>
-        <display-name>Query Extend</display-name>
-        <description>Adds a conjunct to the form</description>
-        <servlet-class>org.coode.www.servlet.QueryExtend</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>QueryConstrain</servlet-name>
-        <display-name>Query Constrain</display-name>
-        <description>Get a set of fillers</description>
-        <servlet-class>org.coode.www.servlet.QueryConstrain</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>QueryCreateForm</servlet-name>
-        <display-name>Query Create Form</display-name>
-        <description>Creates a form for the given description</description>
-        <servlet-class>org.coode.www.servlet.QueryCreateForm</servlet-class>
-    </servlet-->
-
-
     <servlet-mapping>
         <servlet-name>StartPage</servlet-name>
         <url-pattern>/index.html</url-pattern>

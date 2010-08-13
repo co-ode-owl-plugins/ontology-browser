@@ -47,17 +47,9 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String JS_DL_QUERY = JS_ROOT + "dlquery.js";
     public static final String JS_TREE = JS_ROOT + "tree.js";
     public static final String AUTO_SUGGEST_JS = JS_ROOT + "bsn.AutoSuggest_2.1_multiword.js";
-    public static final String JS_FORM = JS_ROOT + "form.js";
 
     public static final String CSS_DEFAULT = CSS_BASE + "default.css";
     public static final String AUTO_SUGGEST_CSS = CSS_BASE + "autosuggest_inquisitor.css";
-
-
-    public static final String IMAGES_REMOVE_PNG = IMAGES_BASE + "remove.png";
-
-
-    // used to find the base URL of the servlets - will hunt in request URL for this string
-    public static final String ONTOLOGY_SERVER = "/browser/";
 
     public static final String DEFAULT_EXTENSION = ".html";
 
