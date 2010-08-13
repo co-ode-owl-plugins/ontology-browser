@@ -279,7 +279,9 @@ public class SessionManager {
 
         boolean defaultsLoaded = false;
 
-        File file = getFile("default" + OntologyBrowserConstants.SERVER_STATES_EXT);
+        // we will likely want different defaults for different versions (or run versions on the same server)
+        File file = getFile("default" + OntologyBrowserConstants.VERSION + OntologyBrowserConstants.SERVER_STATES_EXT);
+        
         if (file.exists()){
             try {
                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
