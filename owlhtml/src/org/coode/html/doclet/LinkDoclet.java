@@ -5,7 +5,6 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.util.URLUtils;
 import org.semanticweb.owlapi.model.OWLEntity;
 
@@ -96,7 +95,8 @@ public class LinkDoclet<O extends OWLEntity> implements HTMLDoclet<O>{
     }
 
     private boolean isSingleFrameNavigation() {
-        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
+        return true;
+//        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 
     public void addAttribute(String attr, String value) {

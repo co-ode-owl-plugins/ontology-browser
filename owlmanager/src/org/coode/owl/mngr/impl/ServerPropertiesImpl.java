@@ -100,8 +100,7 @@ public class ServerPropertiesImpl implements ServerProperties {
         properties.load(in);
 
         cleanupDeprecatedNames();
-    }
-
+            }
 
     public void addDeprecatedNames(Map<String, String> names){
         this.deprecatedNamesMap.putAll(names);

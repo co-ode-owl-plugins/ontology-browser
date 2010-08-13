@@ -6,7 +6,6 @@ import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLObjectIndexHTMLPage;
 import org.coode.html.page.DefaultHTMLPage;
 import org.coode.html.page.OWLDocPage;
@@ -287,7 +286,8 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     // @@TODO this is a duplicate of the method in AbstractHTMLPageRenderer
     protected boolean isSingleFrameNavigation(OWLHTMLKit kit) {
-        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
+        return true;
+//        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 
 

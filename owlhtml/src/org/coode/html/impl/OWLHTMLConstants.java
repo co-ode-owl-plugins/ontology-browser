@@ -39,9 +39,9 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    private static final String JS_ROOT = "js/";
-    private static final String CSS_BASE= "css/";
-    private static final String IMAGES_BASE = "images/";
+    public static final String JS_ROOT = "js/";
+    public static final String CSS_BASE= "css/";
+    public static final String IMAGES_BASE = "images/";
 
     public static final String JS_DEFAULT = JS_ROOT + "default.js";
     public static final String JS_DL_QUERY = JS_ROOT + "dlquery.js";
