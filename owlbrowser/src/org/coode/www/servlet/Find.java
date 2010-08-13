@@ -17,7 +17,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -64,15 +63,6 @@ public class Find extends AbstractOntologyServerServlet {
             return createIndexRenderer("Find Results", results, kit);
         }
     }
-
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
-//        required.put(PARAM_TYPE, NamedObjectType.getRenderings()); // should this be optional and default to entities
-//        required.put(PARAM_INPUT, Collections.singleton("<partial name>"));
-        return required;
-    }
-
 
     private Set<OWLEntity> getResults(Map<OWLHTMLParam, String> params, OWLServer server) throws OntServerException {
 

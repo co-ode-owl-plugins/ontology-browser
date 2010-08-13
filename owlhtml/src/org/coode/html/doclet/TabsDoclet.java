@@ -52,7 +52,7 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
                     out.print(type.getPluralRendering());
                 }
 
-                out.print(" ");
+                out.println();
             }
         }
 
@@ -63,6 +63,7 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
                    singleFrame,
                    pageURL,
                    out);
+        out.println();
 
 
         // add the DL Query tab if the reasoner is enabled
@@ -74,6 +75,7 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
                        singleFrame,
                        pageURL,
                        out);
+            out.println();            
         }
 
     }

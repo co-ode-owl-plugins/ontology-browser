@@ -7,8 +7,6 @@ import org.coode.html.page.OWLDocPage;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.www.OntologyBrowserConstants;
-import org.coode.www.doclet.BlurbDoclet;
-import org.coode.www.doclet.LoadDoclet;
 import org.coode.www.doclet.OntologyMappingsTableDoclet;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
@@ -35,14 +33,6 @@ public class OntologiesPage extends OWLDocPage {
 
         final Map<OWLOntologyID, URI> locationsMap = kit.getOWLServer().getLocationsMap();
 
-        if (locationsMap.isEmpty()){
-            addDoclet(new BlurbDoclet());
-
-            final LoadDoclet loadDoclet = new LoadDoclet();
-
-            addDoclet(loadDoclet);
-        }
-        else{
 
             AbstractTitleDoclet titleDoclet = new AbstractTitleDoclet(kit){
 
@@ -70,12 +60,9 @@ public class OntologiesPage extends OWLDocPage {
                             "'>continue to browse</a> your ontology without loading the imports.</p>");
             }
 
-//            addDoclet(loadDoclet);
-
             OntologyMappingsTableDoclet table = new OntologyMappingsTableDoclet(kit);
             table.setMap(locationsMap);
             addDoclet(table);
-        }
 
         if (message != null){
             addMessage(message);

@@ -6,7 +6,6 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.page.OWLDocPage;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.www.doclet.OptionsTableDoclet;
@@ -16,9 +15,7 @@ import org.coode.www.mngr.SessionManager;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -122,9 +119,5 @@ public class ServerOptions extends AbstractOntologyServerServlet {
             }
         }
         return success;
-    }
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        return Collections.emptyMap();
     }
 }

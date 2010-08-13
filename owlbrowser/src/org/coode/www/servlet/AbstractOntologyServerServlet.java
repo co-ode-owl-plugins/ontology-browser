@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,9 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         doRequest(request, response);
     }
 
-    protected abstract Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server);
+    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server){
+        return Collections.emptyMap();
+    }
 
     private void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

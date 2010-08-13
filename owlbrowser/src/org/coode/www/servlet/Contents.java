@@ -5,16 +5,13 @@ import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.index.OWLContentsHTMLPage;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.www.doclet.CloudIndexDoclet;
 import org.coode.www.doclet.SearchOntologiesDoclet;
 import org.coode.www.exception.OntServerException;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -56,9 +53,5 @@ public class Contents extends AbstractOntologyServerServlet {
         catch (Exception e) {
             throw new OntServerException(e);
         }
-    }
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        return Collections.emptyMap(); // no params
     }
 }

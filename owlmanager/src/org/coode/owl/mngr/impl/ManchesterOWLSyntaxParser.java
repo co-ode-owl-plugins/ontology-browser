@@ -55,7 +55,7 @@ public class ManchesterOWLSyntaxParser implements OWLClassExpressionParser {
         final OWLDataFactory df = ontMngr.getOWLDataFactory();
 
         ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(df, expression);
-
+        parser.setDefaultOntology(server.getActiveOntology());
         parser.setOWLEntityChecker(checker);
 
         return parser;

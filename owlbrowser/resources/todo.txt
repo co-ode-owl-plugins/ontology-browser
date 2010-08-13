@@ -1,29 +1,46 @@
 TODO
 ----
 - cross browser check
+
 - revert hack in ClassHierarchyProvider when OWL API fixed (check implicit roots in wine ontology)
   see bug at https://sourceforge.net/tracker/?func=detail&aid=3037035&group_id=90989&atid=595534
+
 
 Bugs
 ----
 
 - individuals summary - how do we get to other types?
+
 - if FaCT++ fails to work, it silently switches to the structural reasoner (which fails to classify class expressions)
-- DLQuery photography.owl hasMinimumFocalDistance some int[>5]
-  see http://localhost:8080/browser/dlquery/?expression=hasMinimumFocalDistance+some+int%5B%3E5%5D&syntax=man&session=12a5e4e71e5-2-12a5e4e9c31
-  can't get any trace out of owlapi even rebuilding everything - god knows if tomcat is caching something
+
+- DLQuery photography.owl hasMinimumFocalDistance some integer[> 5]
+  cannot use int as this is not known in the ontology.
+  either way we get errors - maybe add xsd datatypes in OWLServerImpl.getNameCache()
+
+- reload photography/index.owl - cannot select another active ontology without reloading again
+  the url contains action=reload
+  the action pages should probably redirect (but how do we provide a message?)
+
 
 Features
 --------
 
 - ontologies by syntax (RDFXML, Man syntax etc) ontologies/1234567/rdfxml/ etc
+
 - Axiom annotations in non-axiom views (ie other than usage)
+
 - scrolling of hierachies when selection changes
+
 - clouds for annotation properties, datatypes
+
 - extra boxes needed on
     - property
     - annotation prop
     - indivs - property assertions
     - puns
+
 - Axiom pages (axiom by type)
+
 - DLQuery should state if the class expression is unsatisfiable instead of bringing back all superclasses/ancestors
+
+- DLQuery add list of past queries to the left pane

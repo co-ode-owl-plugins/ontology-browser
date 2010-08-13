@@ -9,13 +9,11 @@ import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.OWLDocPage;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.www.doclet.MenuBarDoclet;
 import org.coode.www.exception.OntServerException;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,9 +54,5 @@ public class FramesHeader extends AbstractOntologyServerServlet {
         ren.addDoclet(new MenuBarDoclet(kit));
         ren.addDoclet(new TabsDoclet(kit));
         return ren;
-    }
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        return Collections.emptyMap();
     }
 }

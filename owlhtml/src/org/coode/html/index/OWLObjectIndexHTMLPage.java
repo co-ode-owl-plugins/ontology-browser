@@ -4,6 +4,7 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLElementsDoclet;
 import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.ElementsDoclet;
+import org.coode.html.doclet.OWLSelectorDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.page.OWLDocPage;
@@ -38,7 +39,9 @@ public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLO
     public OWLObjectIndexHTMLPage(OWLHTMLKit kit) {
         super(kit);
 
-        addDoclet(new AbstractTitleDoclet<OWLOntology>(kit){
+        OWLSelectorDoclet<OWLOntology> selector = new OWLSelectorDoclet<OWLOntology>(kit);
+
+        selector.addDoclet(new AbstractTitleDoclet<OWLOntology>(kit){
 
             @Override
             public String getTitle() {
@@ -67,7 +70,9 @@ public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLO
         else{
             indexDoclet.setTarget(null);
         }
-        addDoclet(indexDoclet);
+        selector.addDoclet(indexDoclet);
+
+        addDoclet(selector);
     }
 
 

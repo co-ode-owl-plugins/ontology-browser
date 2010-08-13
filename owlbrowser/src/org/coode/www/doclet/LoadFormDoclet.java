@@ -3,8 +3,10 @@
 */
 package org.coode.www.doclet;
 
-import org.coode.html.doclet.AbstractHTMLDoclet;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.owl.mngr.NamedObjectType;
 import org.coode.www.OntologyBrowserConstants;
 
 import java.io.PrintWriter;
@@ -18,13 +20,19 @@ import java.net.URL;
  * Bio Health Informatics Group<br>
  * Date: Jan 25, 2008<br><br>
  */
-public class LoadFormDoclet extends AbstractHTMLDoclet {
+public class LoadFormDoclet extends AbstractOWLDocDoclet {
 
     private static final String ID = "doclet.loadform";
 
+    public LoadFormDoclet(OWLHTMLKit kit) {
+        super(kit);
+    }
+
     protected void renderHeader(URL pageURL, PrintWriter out) {
 
-        out.println("    <form id='load' method='POST' action='.' target='_top' >");
+        out.print("    <form id='load' method='POST' action='");
+        out.print(getOWLHTMLKit().getURLScheme().getURLForIndex(NamedObjectType.ontologies));
+        out.println("' target='_top' >");
         out.println("        <label for='uri-spec'><h3 style='margin-bottom: 0;'>Specify the physical location of your ontology:</h3></label><br />");
         out.print("        <input id='");
         out.print(OntologyBrowserConstants.LOAD_ONTOLOGIES_INPUT_ID);

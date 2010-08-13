@@ -17,6 +17,11 @@
         <servlet-class>org.coode.www.servlet.SignOut</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>StartPage</servlet-name>
+        <display-name>Start page</display-name>
+        <servlet-class>org.coode.www.servlet.StartPage</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>Index</servlet-name>
         <display-name>OWLDoc Frames</display-name>
         <servlet-class>org.coode.www.servlet.Index</servlet-class>
@@ -92,7 +97,14 @@
     </servlet-->
 
 
-
+    <servlet-mapping>
+        <servlet-name>StartPage</servlet-name>
+        <url-pattern>/index.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SignOut</servlet-name>
+        <url-pattern>/signout.html</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Ontologies</servlet-name>
         <url-pattern>/ontologies/</url-pattern>
@@ -102,16 +114,8 @@
         <url-pattern>/find/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SignOut</servlet-name>
-        <url-pattern>/signout.html</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>Contents</servlet-name>
         <url-pattern>/contents.html</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Ontologies</servlet-name>
-        <url-pattern>/index.html</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Summary</servlet-name>
@@ -169,18 +173,6 @@
         <servlet-name>Summary</servlet-name>
         <url-pattern>/datatypes/*</url-pattern>
     </servlet-mapping>
-    <!--servlet-mapping>
-        <servlet-name>QueryExtend</servlet-name>
-        <url-pattern>/QueryExtend/</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>QueryConstrain</servlet-name>
-        <url-pattern>/QueryConstrain/</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>QueryCreateForm</servlet-name>
-        <url-pattern>/QueryCreateForm/</url-pattern>
-    </servlet-mapping-->
     <session-config>
         <session-timeout>20</session-timeout>
     </session-config>
