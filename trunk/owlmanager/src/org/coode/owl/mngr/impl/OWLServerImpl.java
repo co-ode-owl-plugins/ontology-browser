@@ -107,18 +107,34 @@ public class OWLServerImpl implements OWLServer {
         }
     }
 
-    public void loadOntology(URI physicalURI) throws OWLOntologyCreationException {
-        if (!getLocationsMap().containsValue(physicalURI)){
-
-            handleCommonBaseMappers(physicalURI);
-
-            OWLOntology ont = mngr.loadOntologyFromOntologyDocument(IRI.create(physicalURI));
-
-            if (getActiveOntology() == null){
-                // the active ontology is always the first one that was requested
-                setActiveOntology(ont);
+    public OWLOntology loadOntology(URI physicalURI) throws OWLOntologyCreationException {
+        for (OWLOntologyID id : getLocationsMap().keySet()){
+            if (getLocationsMap().get(id).equals(physicalURI)){
+                return getOntologyForIRI(id.getDefaultDocumentIRI());
             }
         }
+
+        handleCommonBaseMappers(physicalURI);
+
+        OWLOntology ont = mngr.loadOntologyFromOntologyDocument(IRI.create(physicalURI));
+
+        if (getActiveOntology() == null){
+            // the active ontology is always the first one that was requested
+            setActiveOntology(ont);
+        }
+        return ont;
+    }
+
+    public OWLOntology reloadOntology(OWLOntology ontology) throws OWLOntologyCreationException {
+        URI physicalLocation = getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI();
+
+        mngr.removeOntology(ontology);
+
+        OWLOntology ont = mngr.loadOntologyFromOntologyDocument(IRI.create(physicalLocation));
+
+        clear();
+
+        return ont;
     }
 
     /**
@@ -414,7 +430,6 @@ public class OWLServerImpl implements OWLServer {
         return serverIsDead;
     }
 
-
     public void clear() {
         resetReasoner();
         resetRendererCache();
@@ -468,6 +483,7 @@ public class OWLServerImpl implements OWLServer {
                     return getShortFormProvider().getShortForm(owlEntity);
                 }
             };
+            // TODO: should names also include all standard xsd datatypes - not just the ones referenced?
             nameCache.rebuild(new ReferencedEntitySetProvider(getActiveOntologies()));
         }
         return nameCache;

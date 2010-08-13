@@ -67,8 +67,8 @@ function sendSubQuery(expression, syntax, querytype, xmlHttpReq){
 
         var busy = document.createElement('div');
         busy.setAttribute('id', querytype);
-        busy.innerHTML = "<h2 style='display: inline;'>" + querytype +
-                         "</h2><img src='../" + BUSY_IMAGE + "' width='18px' height='18px' />";
+        busy.innerHTML = "<h4 style='display: inline;'>" + querytype +
+                         "</h4><img src='../" + BUSY_IMAGE + "' width='18px' height='18px' />";
         document.getElementById("resultsForm").appendChild(busy);
     }
 }
@@ -82,7 +82,7 @@ function receivedResults(i) {
             resultElement.innerHTML=response;
         }
         else{
-            resultElement.innerHTML="<h2>" + queryArray[i][NAME] + " (0)</h2>"
+            resultElement.innerHTML="<h4>" + queryArray[i][NAME] + " (0)</h4>"
         }
     }
 }

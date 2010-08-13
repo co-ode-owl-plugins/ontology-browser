@@ -4,7 +4,6 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.NestedHTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
-import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.OntologyAction;
 import org.coode.www.exception.OntServerException;
@@ -45,17 +44,17 @@ public class Ontologies extends AbstractOntologyServerServlet {
 
         final String actionValue = params.get(OWLHTMLParam.action);
 
-        if (actionValue != null){
-            try{
-                OntologyAction action = OntologyAction.valueOf(actionValue);
-                return handleAction(action, params, kit, pageURL);
-            }
-            catch(IllegalArgumentException e){
-                throw new OntServerException("Unknown action: " + actionValue);
-            }
+        if (actionValue == null){
+            throw new RedirectException(kit.getURLScheme().getURLForOWLObject(kit.getOWLServer().getActiveOntology()));
         }
 
-        return new OntologiesPage(kit, pageURL, null);
+        try{
+            OntologyAction action = OntologyAction.valueOf(actionValue);
+            return handleAction(action, params, kit, pageURL);
+        }
+        catch(IllegalArgumentException e){
+            throw new OntServerException("Unknown action: " + actionValue);
+        }
     }
 
     private NestedHTMLDoclet handleAction(OntologyAction action, Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
@@ -82,14 +81,6 @@ public class Ontologies extends AbstractOntologyServerServlet {
             throw new OntServerException(e);
         }
         throw new RuntimeException("Missing action handler!!");
-    }
-
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
-//        required.put(PARAM_URI, Collections.singleton("<ontology uri>")); optional
-//        required.put(PARAM_ACTION, getActionRenderings());
-        return required;
     }
 
     private NestedHTMLDoclet handleLoad(URI uri, boolean clear, OWLHTMLKit kit, URL pageURL) throws OntServerException {
@@ -140,15 +131,15 @@ public class Ontologies extends AbstractOntologyServerServlet {
 
         Map<OWLOntologyID, URI> map = server.getLocationsMap();
 
-        if (map.isEmpty() || map.containsValue(null)){ // empty or missing value in map
+        if (map.isEmpty()){
+            throw new RedirectException(kit.getURLScheme().getBaseURL());
+        }
+
+        if (map.containsValue(null)){ // missing value in map
             return new OntologiesPage(kit, pageURL, message);
         }
-        else if (map.size() == 1){
-            throw new RedirectException(kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
-        }
-        else{
-            throw new RedirectException(kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies));
-        }
+
+        throw new RedirectException(kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
     }
 
 
@@ -184,10 +175,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
         final String ontName = server.getOntologyShortFormProvider().getShortForm(ontology);
 
         try {
-            URI physicalLocation = server.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI();
-
-            server.removeOntology(ontology);
-            server.loadOntology(physicalLocation);
+            server.reloadOntology(ontology);
 
             sb.append("<p>Reloaded ").append(ontName).append("</p>");
 

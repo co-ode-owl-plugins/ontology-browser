@@ -36,7 +36,9 @@ public interface OWLServer {
 
     void setActiveOntology(OWLOntology ont);
 
-    void loadOntology(URI ontPhysicalURI) throws OWLOntologyCreationException;
+    OWLOntology loadOntology(URI ontPhysicalURI) throws OWLOntologyCreationException;
+
+    OWLOntology reloadOntology(OWLOntology ontology) throws OWLOntologyCreationException;
 
     void removeOntology(OWLOntology ont);
 

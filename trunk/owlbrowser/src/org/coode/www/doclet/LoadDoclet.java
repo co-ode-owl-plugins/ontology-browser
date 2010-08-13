@@ -3,7 +3,8 @@
 */
 package org.coode.www.doclet;
 
-import org.coode.html.doclet.AbstractHTMLDoclet;
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.www.Bookmarks;
 
 import java.io.PrintWriter;
@@ -17,17 +18,18 @@ import java.net.URL;
  * Bio Health Informatics Group<br>
  * Date: Jan 25, 2008<br><br>
  */
-public class LoadDoclet extends AbstractHTMLDoclet {
+public class LoadDoclet extends AbstractOWLDocDoclet {
 
     private static final String ID = "doclet.load";
 
-    public LoadDoclet() {
-        LoadBookmarksDoclet bookmarks = new LoadBookmarksDoclet();
+    public LoadDoclet(OWLHTMLKit kit) {
+        super(kit);
+        LoadBookmarksDoclet bookmarks = new LoadBookmarksDoclet(kit);
         bookmarks.setLabel("or Select a bookmark from below:");
         bookmarks.addAll(Bookmarks.getBookmarks());
         addDoclet(bookmarks);
 
-        addDoclet(new LoadFormDoclet());
+        addDoclet(new LoadFormDoclet(kit));
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {

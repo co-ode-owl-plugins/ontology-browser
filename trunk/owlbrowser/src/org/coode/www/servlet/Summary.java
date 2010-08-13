@@ -9,7 +9,6 @@ import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.util.ModelUtil;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
@@ -154,12 +153,6 @@ public class Summary extends AbstractOntologyServerServlet {
         }
         Set<OWLObject> results = getIndexResults(ont, kit, type);
         return createIndexRenderer(sb.toString(), results, kit);
-    }
-
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        // all optional
-        return new HashMap<OWLHTMLParam,  Set<String>>();
     }
 
     private Set<OWLObject> getIndexResults(OWLOntology ont, OWLHTMLKit kit, NamedObjectType type) throws OntServerException {

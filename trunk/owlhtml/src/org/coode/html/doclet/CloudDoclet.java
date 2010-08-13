@@ -63,7 +63,7 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
 
         renderBoxStart(null, out);
 
-        out.println("<div style='width: 100%; text-align: center'>");
+        out.println("<div class='cloud'>");
 
         model.reload();
 
@@ -78,7 +78,7 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
             out.print(" ");
         }
 
-        out.println("</div>");
+        out.println("</div><!-- cloud -->");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {

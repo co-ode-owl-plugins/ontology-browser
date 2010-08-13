@@ -4,7 +4,6 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.OWLDocPage;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.mngr.SessionManager;
@@ -12,9 +11,7 @@ import org.coode.www.mngr.SessionManager;
 import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -64,10 +61,5 @@ public class SignOut extends AbstractOntologyServerServlet {
             }
             throw new RedirectException(baseURL);
         }
-    }
-
-    @Override
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        return Collections.emptyMap();
     }
 }

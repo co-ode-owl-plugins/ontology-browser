@@ -7,7 +7,6 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.owl.mngr.OWLClassExpressionParser;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.page.DLQueryHTMLPage;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -15,9 +14,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -53,11 +50,5 @@ public class DLQuery extends AbstractOntologyServerServlet {
         }
 
         return acRenderer;
-    }
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
-//        required.put(PARAM_EXPRESSION, Collections.singleton("<owl description>"));
-        return required;
     }
 }

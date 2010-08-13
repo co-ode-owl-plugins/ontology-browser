@@ -1,6 +1,9 @@
 package org.coode.www.doclet;
 
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractHTMLDoclet;
+import org.coode.html.doclet.AbstractOWLDocDoclet;
+import org.coode.owl.mngr.NamedObjectType;
 
 import java.io.PrintWriter;
 import java.net.URI;
@@ -36,24 +39,29 @@ import java.util.Map;/*
  * Bio Health Informatics Group<br>
  * Date: May 9, 2008<br><br>
  */
-public class LoadBookmarksDoclet extends AbstractHTMLDoclet {
+public class LoadBookmarksDoclet extends AbstractOWLDocDoclet {
 
     private static final String ID = "doclet.ontologies.locations.bookmark";
 
     private String label = "Bookmarks:";
 
+    public LoadBookmarksDoclet(OWLHTMLKit kit) {
+        super(kit);
+    }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.println("    <form id='bookmarks' method='POST' action='.' target='_top' >\n" +
-        "        <label for='uri-bookmark'><h3 style='margin-bottom: 0;'>" + label + "</h3></label><br />\n" +
-        "        <select id='uri-bookmark' name='uri' style='width:80%; margin-top: 0;'>");
+        out.print("    <form id='bookmarks' method='POST' action='");
+        out.print(getOWLHTMLKit().getURLScheme().getURLForIndex(NamedObjectType.ontologies));
+        out.println("' target='_top' >");
+        out.println("        <label for='uri-bookmark'><h3 style='margin-bottom: 0;'>" + label + "</h3></label><br />");
+        out.println("        <select id='uri-bookmark' name='uri' style='width:80%; margin-top: 0;'>");
     }
 
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        out.println("        </select>\n" +
-        "        <input name='action' type='submit' value='load' />\n" +
-        "    </form>");
+        out.println("        </select>");
+        out.println("        <input name='action' type='submit' value='load' />");
+        out.println("    </form>");
     }
 
     public void add(final String name, final URI location){

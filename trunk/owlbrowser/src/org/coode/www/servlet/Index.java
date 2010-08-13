@@ -4,16 +4,13 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.page.FramesHTMLPage;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -56,12 +53,5 @@ public class Index extends AbstractOntologyServerServlet {
                 return new FramesHTMLPage(kit.getURLScheme().getURLForRelativePage(page), kit);
             }
         }
-    }
-
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
-//        required.put(PARAM_CONTENT, Collections.singleton("<page url>")); optional
-        return required;
     }
 }

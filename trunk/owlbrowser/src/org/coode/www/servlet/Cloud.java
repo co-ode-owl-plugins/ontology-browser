@@ -8,7 +8,6 @@ import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.OWLDocPage;
-import org.coode.owl.mngr.OWLServer;
 import org.coode.www.doclet.CloudIndexDoclet;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
@@ -18,7 +17,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +65,11 @@ public class Cloud extends AbstractOntologyServerServlet {
 
         OWLDocPage page = new OWLDocPage(kit);
 
-        page.addDoclet(new AbstractTitleDoclet(kit){
+        page.addDoclet(new CloudIndexDoclet(kit));
+
+        if (cloudParam != null){
+
+            page.addDoclet(new AbstractTitleDoclet(kit){
 
                 @Override
                 public String getTitle() {
@@ -80,10 +82,6 @@ public class Cloud extends AbstractOntologyServerServlet {
                 }
             });
 
-        if (cloudParam == null){
-            page.addDoclet(new CloudIndexDoclet(kit));
-        }
-        else{
             CloudType cType = CloudType.valueOf(cloudParam);
 
             Set<OWLOntology> ontologies = kit.getVisibleOntologies();
@@ -117,17 +115,10 @@ public class Cloud extends AbstractOntologyServerServlet {
             cloudRenderer.setZoom(10);
 
             title = cloudModel.getTitle();
-            
+
             page.addDoclet(cloudRenderer);
         }
         return page;
-    }
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
-        Map<OWLHTMLParam, Set<String>> required = new HashMap<OWLHTMLParam, Set<String>>();
-//        required.put(PARAM_TYPE, getCloudTypeRenderings());
-//        required.put(PARAM_ONTOLOGY, Collections.singleton("<ontology uri>")); optional
-        return required;
     }
 
     private Set<String> getCloudTypeRenderings() {

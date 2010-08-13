@@ -142,18 +142,26 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
      * @param out printwriter to write to
      */
     protected final void renderLink(String name, URL href, OWLHTMLConstants.LinkTarget target, String cssClass, boolean singleFrame, URL pageURL, PrintWriter out) {
-        out.print("<a href='" + URLUtils.createRelativeURL(pageURL, href) + "'");
-
-        if (cssClass != null){
-            out.print(" class='" + cssClass + "'");
+        final String relURL = URLUtils.createRelativeURL(pageURL, href);
+        if (relURL.length() == 0){
+            out.print("<span class='currentpage'>");
+            out.print(name);
+            out.print("</span>");
         }
+        else{
+            out.print("<a href='" + relURL + "'");
 
-        // if the linktarget is another window or we are in a frames view add the target
-        if (target != null && (target == OWLHTMLConstants.LinkTarget._blank || !singleFrame)){
-            out.print(" target='" + target + "'");
+            if (cssClass != null){
+                out.print(" class='" + cssClass + "'");
+            }
+
+            // if the linktarget is another window or we are in a frames view add the target
+            if (target != null && (target == OWLHTMLConstants.LinkTarget._blank || !singleFrame)){
+                out.print(" target='" + target + "'");
+            }
+
+            out.print(" >" + name + "</a>");
         }
-
-        out.println(" >" + name + "</a>");
     }
 
     protected final void renderBoxStart(String name, PrintWriter out) {
@@ -181,13 +189,13 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
     }
 
     protected final void renderBoxEnd(String name, PrintWriter out) {
-        out.print("</div>");
+        out.println("</div>");
         if (name != null){
-            out.println("</div>");
+            out.print("</div>");
             out.print("<!-- ");
             out.print(name.toLowerCase());
-            out.print(" -->");
+            out.println(" -->");
         }
-        out.println("\n\n");
+        out.println();
     }
 }
