@@ -89,6 +89,10 @@
         <servlet-name>Ontologies</servlet-name>
         <url-pattern>/ontologies/</url-pattern>
     </servlet-mapping>
+    <servlet-mapping><!-- for backward compatibility -->
+        <servlet-name>Ontologies</servlet-name>
+        <url-pattern>/manage/</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Find</servlet-name>
         <url-pattern>/find/*</url-pattern>
