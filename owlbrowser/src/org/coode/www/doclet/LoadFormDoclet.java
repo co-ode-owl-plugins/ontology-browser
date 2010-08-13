@@ -6,6 +6,7 @@ package org.coode.www.doclet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.www.OntologyBrowserConstants;
 
@@ -29,9 +30,8 @@ public class LoadFormDoclet extends AbstractOWLDocDoclet {
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-
         out.print("    <form id='load' method='POST' action='");
-        out.print(getOWLHTMLKit().getURLScheme().getURLForIndex(NamedObjectType.ontologies));
+        out.print(URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForIndex(NamedObjectType.ontologies)));
         out.println("' target='_top' >");
         out.println("        <label for='uri-spec'><h3 style='margin-bottom: 0;'>Specify the physical location of your ontology:</h3></label><br />");
         out.print("        <input id='");

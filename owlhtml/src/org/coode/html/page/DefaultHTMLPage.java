@@ -42,17 +42,20 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
 
         out.println("<title>" + getTitle() + "</title>");
 
-        out.println("<meta http-equiv='content-type' content='text/html;charset=" + getEncoding() + "'>");
+        out.print("<meta http-equiv='content-type' content='text/html;charset=");
+        out.print(getEncoding());
+        out.println("'>");
 
         for (URL cssURL : getRequiredCSS()){
             out.print("<link rel='stylesheet' href='");
             out.print(URLUtils.createRelativeURL(pageURL, cssURL));
-            out.print("' type='text/css' />");
+            out.println("' type='text/css' />");
         }
 
         for (URL jsURL : getRequiredJS()){
-            out.println("<script src='" + URLUtils.createRelativeURL(pageURL, jsURL) +
-                        "' type='text/javascript'></script>");
+            out.print("<script src='");
+            out.print(URLUtils.createRelativeURL(pageURL, jsURL));
+            out.println("' type='text/javascript'></script>");
         }
 
         out.println("</head>\n\n");
