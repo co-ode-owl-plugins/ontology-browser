@@ -5,6 +5,7 @@ package org.coode.www.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.HTMLDoclet;
+import org.coode.html.page.HTMLPage;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLNamedObject;
@@ -98,6 +99,14 @@ public class SelectorContentsDoclet implements HTMLDoclet {
 
     public boolean isPinned() {
         return true;
+    }
+
+    public boolean isFullPage() {
+        return false;
+    }
+
+    public HTMLPage asPage() {
+        return null;
     }
 
     public Set getRequiredCSS() {

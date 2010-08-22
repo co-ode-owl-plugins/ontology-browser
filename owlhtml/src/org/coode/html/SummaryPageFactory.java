@@ -29,10 +29,11 @@ public class SummaryPageFactory {
         if (isShowMiniHierarchiesEnabled()){
             page.addDoclet(getHierarchy(cls));
         }
-        page.addDoclet(getSummary(cls));
+        page.addDoclet(getSummaryDoclet(cls));
         return page;
     }
 
+    @SuppressWarnings("unchecked")
     public <N extends OWLObject> OWLDocPage<N> getSummaryPage(N owlObject) {
         OWLDocPage<N> page = getSummaryPage((Class<N>)owlObject.getClass());
 
@@ -41,8 +42,16 @@ public class SummaryPageFactory {
         return page;
     }
 
+    @SuppressWarnings("unchecked")    
+    public <N extends OWLObject> HTMLDoclet<N> getSummaryDoclet(N owlObject) {
+        HTMLDoclet<N> doclet = getSummaryDoclet((Class<N>)owlObject.getClass());
+        doclet.setUserObject(owlObject);
+        return doclet;
+    }
+
+
     @SuppressWarnings("unchecked")
-    private <N extends OWLObject> HTMLDoclet<N> getSummary(Class<N> cls) {
+    public <N extends OWLObject> HTMLDoclet<N> getSummaryDoclet(Class<N> cls) {
         if (OWLClass.class.isAssignableFrom(cls)){
             return (HTMLDoclet<N>)new OWLClassSummaryDoclet(kit);
         }
@@ -68,8 +77,14 @@ public class SummaryPageFactory {
         throw new RuntimeException("Cannot find a summary for type: " + cls);
     }
 
+    public <N extends OWLObject> HierarchyDoclet<N> getHierarchy(N owlObject){
+        HierarchyDoclet<N> doclet = getHierarchy((Class<N>)owlObject.getClass());
+        doclet.setUserObject(owlObject);
+        return doclet;
+    }
+
     @SuppressWarnings("unchecked")
-    private <N extends OWLObject> HierarchyDoclet<N> getHierarchy(Class<N> cls){
+    public <N extends OWLObject> HierarchyDoclet<N> getHierarchy(Class<N> cls){
         HierarchyProvider<N> hp = kit.getOWLServer().getHierarchyProvider(cls);
         String title = NamedObjectType.getType(cls).getPluralRendering();
 

@@ -31,6 +31,5 @@ public abstract class AbstractOWLDocDoclet<O extends OWLObject> extends Abstract
 
     protected boolean isSingleFrameNavigation() {
         return true;
-//        return getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 }

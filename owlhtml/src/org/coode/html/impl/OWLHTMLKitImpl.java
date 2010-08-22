@@ -63,6 +63,8 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     private Comparator<OWLObject> comparator;
 
+//    private DocletFactory fac;
+
 
     public OWLHTMLKitImpl(String id, URL baseURL) {
         this(id, new OWLServerImpl(OWLManager.createOWLOntologyManager()), baseURL);
@@ -74,7 +76,15 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         this.owlServer = server;
         this.baseURL = baseURL;
         this.comparator = new OWLObjectComparator<OWLObject>(server);
+//        createDocletFactory();
     }
+
+//    private void createDocletFactory() {
+//        this.fac = new DocletFactory(this);
+//
+////        fac.registerDoclet("org.coode.html.AnnotationPropertyDomainsDoclet");
+////        fac.registerDoclet("org.coode.html.AnnotationPropertyDomainsDoclet");
+//    }
 
 
     public ServerPropertiesAdapter<OWLHTMLProperty> getHTMLProperties() {
@@ -126,6 +136,10 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
     public void setURLScheme(URLScheme urlScheme) {
         this.urlScheme = urlScheme;
     }
+//
+//    public DocletFactory getDocletFactory() {
+//        return fac;
+//    }
 
     public Comparator<OWLObject> getOWLObjectComparator() {
         return comparator;

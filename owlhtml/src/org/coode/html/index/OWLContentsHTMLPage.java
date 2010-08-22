@@ -2,7 +2,6 @@ package org.coode.html.index;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.BookmarksDoclet;
-import org.coode.html.doclet.ElementsDoclet;
 import org.coode.html.doclet.OntologyContentsDoclet;
 import org.coode.html.doclet.OverallContentsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
@@ -36,18 +35,18 @@ public class OWLContentsHTMLPage extends OWLDocPage<OWLOntology> {
 
         setTitle(OWLHTMLConstants.CONTENTS_LABEL);
 
-        final Set<OWLOntology> visibleOntologies = getHTMLGenerator().getVisibleOntologies();
+        final Set<OWLOntology> visibleOntologies = getOWLHTMLKit().getVisibleOntologies();
 
         if (visibleOntologies.size() > 1){
             for (OWLOntology ont : visibleOntologies){
-                OntologyContentsDoclet doclet = new OntologyContentsDoclet(getHTMLGenerator());
+                OntologyContentsDoclet doclet = new OntologyContentsDoclet(getOWLHTMLKit());
                 doclet.setPinned(true);
                 doclet.setUserObject(ont);
                 addDoclet(doclet);
             }
         }
 
-        addDoclet(new BookmarksDoclet(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, kit));
+        addDoclet(new BookmarksDoclet(kit));
     }
 
     public void setTitle(String title) {

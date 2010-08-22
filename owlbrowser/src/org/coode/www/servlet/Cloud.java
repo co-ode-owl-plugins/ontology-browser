@@ -4,16 +4,17 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.cloud.*;
 import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.CloudDoclet;
+import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
 import org.coode.www.doclet.CloudIndexDoclet;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -55,11 +56,11 @@ public class Cloud extends AbstractOntologyServerServlet {
 
     private String title = "Clouds";
 
-    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
-        // no implementation currently - could do an xml version though
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        return null; // TODO implement
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
         String cloudParam = params.get(OWLHTMLParam.type);
 
@@ -119,6 +120,11 @@ public class Cloud extends AbstractOntologyServerServlet {
             page.addDoclet(cloudRenderer);
         }
         return page;
+    }
+
+    @Override
+    protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        return null; // TODO implement
     }
 
     private Set<String> getCloudTypeRenderings() {

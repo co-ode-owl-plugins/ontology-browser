@@ -37,15 +37,16 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
     public OWLDocPage(OWLHTMLKit kit) {
         this.kit = kit;
+
         String css = kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS);
+
         if (css != null){
             addCSS(kit.getURLScheme().getURLForRelativePage(css));
         }
-        if (isSingleFrameNavigation()){
-            addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
-            if (!kit.getOWLServer().getOntologies().isEmpty()){
-                addDoclet(new TabsDoclet(kit));
-            }
+
+        addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
+        if (!kit.getOWLServer().getOntologies().isEmpty()){
+            addDoclet(new TabsDoclet(kit));
         }
     }
 
@@ -108,12 +109,7 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
         addError(msg);
     }
 
-    protected final OWLHTMLKit getHTMLGenerator() {
+    protected final OWLHTMLKit getOWLHTMLKit() {
         return kit;
-    }
-
-    protected final boolean isSingleFrameNavigation() {
-        return true;
-//        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 }

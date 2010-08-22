@@ -67,7 +67,7 @@ public class DLQueryHTMLPage extends OWLDocPage {
 
     public Set<URL> getRequiredJS() {
         Set<URL> js = super.getRequiredJS();
-        js.add(getHTMLGenerator().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DL_QUERY));
+        js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DL_QUERY));
         return js;
     }
 }

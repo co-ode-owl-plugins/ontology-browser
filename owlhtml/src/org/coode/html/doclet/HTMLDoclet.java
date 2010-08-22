@@ -3,6 +3,8 @@
 */
 package org.coode.html.doclet;
 
+import org.coode.html.page.HTMLPage;
+
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Set;
@@ -18,13 +20,11 @@ import java.util.Set;
  * A basic piece of HTML.
  * A doclet can specify if it is dependent on any particular CSS or JS
  */
-public interface HTMLDoclet<O> {
+public interface HTMLDoclet<O> extends Doclet{
 
     String getID();
 
     void renderContent(URL pageURL, PrintWriter out);
-
-    void renderAll(URL pageURL, PrintWriter out);
 
     /**
      * Implementations should make sure the user object is passed down through the doclet hierarchy
@@ -41,6 +41,17 @@ public interface HTMLDoclet<O> {
      * @return false if the doclet should follow its parent's selection
      */
     boolean isPinned();
+
+    /**
+     * @return true if this doclet implements HTMLPage
+     */
+    boolean isFullPage();
+
+    /**
+     * Gets this doclet as a page (if it is one).
+     * @return this HTMLDoclet as an HTMLPage or null if isFullPage returns false
+     */
+    HTMLPage asPage();
 
     Set<URL> getRequiredCSS();
 

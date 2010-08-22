@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * Also has convenience methods for adding JS and CSS imports, and an onLoad JS action.
  */
-public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
+public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPage<O> {
 
     private List<URL> cssImports = new ArrayList<URL>();
     private List<URL> jsImports = new ArrayList<URL>();
@@ -75,6 +75,10 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
         out.println(">");
     }
 
+    @Override
+    public boolean isFullPage() {
+        return true;
+    }
 
     protected String getEncoding() {
         return OWLHTMLConstants.DEFAULT_ENCODING;

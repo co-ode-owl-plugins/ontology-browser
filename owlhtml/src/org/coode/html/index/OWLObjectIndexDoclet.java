@@ -1,16 +1,14 @@
 package org.coode.html.index;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.doclet.AbstractOWLElementsDoclet;
-import org.coode.html.doclet.AbstractTitleDoclet;
-import org.coode.html.doclet.ElementsDoclet;
-import org.coode.html.doclet.OWLSelectorDoclet;
+import org.coode.html.doclet.*;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.page.OWLDocPage;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +25,7 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLOntology> {
+public class OWLObjectIndexDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<OWLOntology> {
 
     private Set<O> index = new HashSet<O>();
 
@@ -36,7 +34,7 @@ public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLO
     private String id = "Index";
 
 
-    public OWLObjectIndexHTMLPage(OWLHTMLKit kit) {
+    public OWLObjectIndexDoclet(OWLHTMLKit kit) {
         super(kit);
 
         OWLSelectorDoclet<OWLOntology> selector = new OWLSelectorDoclet<OWLOntology>(kit);
@@ -63,7 +61,7 @@ public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLO
                 return null;//return id + " (" + index.size() + ")";
             }
         };
-        String contentWindow = getHTMLGenerator().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
+        String contentWindow = getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
         if (contentWindow != null){
             indexDoclet.setTarget(OWLHTMLConstants.LinkTarget.valueOf(contentWindow));
         }
@@ -75,13 +73,6 @@ public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLO
         addDoclet(selector);
     }
 
-
-    public void setTitle(String title) {
-        this.id = title;
-        super.setTitle(title);
-    }
-
-
     public void add(O obj){
         index.add(obj);
     }
@@ -90,7 +81,21 @@ public class OWLObjectIndexHTMLPage<O extends OWLObject> extends OWLDocPage<OWLO
         index.addAll(objs);
     }
 
-    public String getTitle() {
-        return super.getTitle() + " (" + index.size() + ")";
+    @Override
+    protected void renderHeader(URL pageURL, PrintWriter out) {
+        // do nothing
+    }
+
+    @Override
+    protected void renderFooter(URL pageURL, PrintWriter out) {
+        // do nothing
+    }
+
+    public String getID() {
+        return id;
+    }
+
+    public void setTitle(String title) {
+        this.id = title;
     }
 }

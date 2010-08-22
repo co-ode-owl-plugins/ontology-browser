@@ -1,11 +1,16 @@
 package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.index.OWLObjectIndexDoclet;
+import org.coode.html.page.HTMLPage;
+import org.coode.html.page.OWLDocPage;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.OWLEntityFinder;
 import org.coode.owl.mngr.OWLServer;
+import org.coode.www.doclet.XMLResultsDoclet;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.semanticweb.owlapi.model.IRI;
@@ -13,7 +18,6 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -45,13 +49,13 @@ public class Find extends AbstractOntologyServerServlet {
     private static final String WILDCARD = "*";
 
 
-    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL) throws OntServerException {
         Set<OWLEntity> results = getResults(params, kit.getOWLServer());
-        renderXMLResults(results, kit.getOWLServer(), out);
+        return new XMLResultsDoclet(results, kit);
     }
 
 
-    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         Set<OWLEntity> results = getResults(params, kit.getOWLServer());
         if (results.size() == 1){
             // just go directly to that page
@@ -60,8 +64,23 @@ public class Find extends AbstractOntologyServerServlet {
         }
         else{
             // show a list of matches
-            return createIndexRenderer("Find Results", results, kit);
+            OWLObjectIndexDoclet ren = new OWLObjectIndexDoclet(kit);
+            ren.setTitle("Find Results");
+            ren.addAll(results);
+
+            OWLDocPage page = new OWLDocPage(kit);
+            page.addDoclet(ren);
+            return page;
         }
+    }
+
+    @Override
+    protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        Set<OWLEntity> results = getResults(params, kit.getOWLServer());
+        OWLObjectIndexDoclet ren = new OWLObjectIndexDoclet(kit);
+        ren.setTitle("Find Results");
+        ren.addAll(results);
+        return ren;
     }
 
     private Set<OWLEntity> getResults(Map<OWLHTMLParam, String> params, OWLServer server) throws OntServerException {

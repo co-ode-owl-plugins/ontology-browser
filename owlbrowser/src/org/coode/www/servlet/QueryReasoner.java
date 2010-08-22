@@ -2,20 +2,20 @@ package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
+import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
 import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.QueryType;
 import org.coode.www.doclet.ReasonerResultsDoclet;
+import org.coode.www.doclet.XMLResultsDoclet;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.ParseException;
@@ -53,59 +53,78 @@ import java.util.*;
  */
 public class QueryReasoner extends AbstractOntologyServerServlet {
 
-    protected void handleXMLRequest(Map<OWLHTMLParam, String> params,
-                                    OWLHTMLKit kit,
-                                    URL servletURL,
-                                    PrintWriter out) throws OntServerException {
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params,
+                                      OWLHTMLKit kit,
+                                      URL pageURL) throws OntServerException {
+
+        final Set<OWLEntity> results = getResults(params, kit);
+        return new XMLResultsDoclet(results, kit);
+    }
+
+    @Override
+    protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        final String query = params.get(OWLHTMLParam.query);
+//        try{
+            final Set<OWLEntity> results = getResults(params, kit);
+            return new ReasonerResultsDoclet(QueryType.valueOf(query), results, kit);
+//        }
+//        catch(OntServerException e){
+//            final Throwable cause = e.getCause();
+//            if (cause != null && cause instanceof ParseException){
+//                getresponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                response.getWriter().println("error=" + cause.getMessage());
+//                response.getWriter().println("offset=" + ((ParseException)cause).getErrorOffset());
+//            }
+//            else{
+//                super.handleError(e, kit, pageURL, response);
+//            }
+//        }
+    }
+
+    protected HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params,
+                                             OWLHTMLKit kit,
+                                             URL pageURL) throws OntServerException {
 
         final String query = params.get(OWLHTMLParam.query);
         final String expression = params.get(OWLHTMLParam.expression);
+
+        OWLDocPage page = new OWLDocPage(kit);
+        page.addDoclet(new AbstractOWLDocDoclet(kit){
+
+            protected void renderHeader(URL pageURL, PrintWriter out) {
+                out.println("<h1>");
+                out.println(expression);
+                out.println("</h1>");
+            }
+
+            protected void renderFooter(URL pageURL, PrintWriter out) {
+                // do nothing
+            }
+
+            public String getID() {
+                return "doclet.expression.header";
+            }
+        });
+
+        final Set<OWLEntity> results = getResults(params, kit);
+
+        page.addDoclet(new ReasonerResultsDoclet(QueryType.valueOf(query), results, kit));
+        return page;
+    }
+
+
+
+    private Set<OWLEntity> getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit) throws OntServerException {
+        final String expression = params.get(OWLHTMLParam.expression);
         final String syntax = params.get(OWLHTMLParam.syntax);
+        final String query = params.get(OWLHTMLParam.query);
 
         OWLClassExpression classDescription = parse(expression, syntax, kit);
 
-        final Set<OWLEntity> results = new HashSet<OWLEntity>(QueryType.valueOf(query).getResults(classDescription, kit));
-
-        renderXMLResults(results, kit.getOWLServer(), out);
+        return new HashSet<OWLEntity>(QueryType.valueOf(query).getResults(classDescription, kit));
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params,
-                                           OWLHTMLKit kit,
-                                           URL pageURL) throws OntServerException {
-
-        final String query = params.get(OWLHTMLParam.query);
-        final String expression = params.get(OWLHTMLParam.expression);
-        final String syntax = params.get(OWLHTMLParam.syntax);
-
-        final OWLClassExpression classDescription = parse(expression, syntax, kit);
-
-        if (OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(getReturnFormat())){
-            return new ReasonerResultsDoclet(QueryType.valueOf(query), classDescription, kit);
-        }
-        else{
-            OWLDocPage page = new OWLDocPage(kit);
-            page.addDoclet(new AbstractOWLDocDoclet(kit){
-
-                protected void renderHeader(URL pageURL, PrintWriter out) {
-                    out.println("<h1>");
-                    out.println(expression);
-                    out.println("</h1>");
-                }
-
-                protected void renderFooter(URL pageURL, PrintWriter out) {
-                    // do nothing
-                }
-
-                public String getID() {
-                    return "doclet.expression.header";
-                }
-            });
-            page.addDoclet(new ReasonerResultsDoclet(QueryType.valueOf(query), classDescription, kit));
-            return page;
-        }
-    }
-
-    protected Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
+    public Map<OWLHTMLParam, Set<String>> getRequiredParams(OWLServer server) {
         Map<OWLHTMLParam, Set<String>> params = new HashMap<OWLHTMLParam,  Set<String>>();
         params.put(OWLHTMLParam.query, getQueryTypes());
         params.put(OWLHTMLParam.expression, Collections.singleton("<class expression>"));
@@ -128,20 +147,6 @@ public class QueryReasoner extends AbstractOntologyServerServlet {
         }
         catch (ParseException e1) {
             throw new OntServerException(e1);
-        }
-    }
-
-    @Override
-    protected void handleError(Throwable e, OWLHTMLKit kit, URL pageURL, HttpServletResponse response) throws IOException {
-        final Throwable cause = e.getCause();
-        if (cause != null && cause instanceof ParseException &&
-            OntologyBrowserConstants.FORMAT_HTML_FRAGMENT.equals(getReturnFormat())){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("error=" + cause.getMessage());
-            response.getWriter().println("offset=" + ((ParseException)cause).getErrorOffset());
-        }
-        else{
-            super.handleError(e, kit, pageURL, response);
         }
     }
 }
