@@ -4,6 +4,7 @@
 package org.coode.html.doclet;
 
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.page.HTMLPage;
 import org.coode.html.util.URLUtils;
 
 import java.io.PrintWriter;
@@ -112,6 +113,14 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
 
     public boolean isPinned(){
         return pinned;
+    }
+
+    public boolean isFullPage() {
+        return false;
+    }
+
+    public HTMLPage asPage() {
+        return null; // not a page
     }
 
     public Set<URL> getRequiredCSS() {

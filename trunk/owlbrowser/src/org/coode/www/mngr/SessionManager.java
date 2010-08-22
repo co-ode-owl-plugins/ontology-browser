@@ -349,7 +349,6 @@ public class SessionManager {
         }
     }
 
-
     /**
      * The ID will get notified when a session expires and calls the session manager to cleanup
      */

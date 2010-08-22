@@ -24,15 +24,15 @@ import java.util.Set;
  */
 public class BookmarksDoclet extends AbstractOWLElementsDoclet<OWLOntology, OWLEntity>{
 
-    public BookmarksDoclet(String name, Format format, OWLHTMLKit kit) {
-        super(name, format, kit);
+    public BookmarksDoclet(OWLHTMLKit kit) {
+        super(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, kit);
         setTarget(OWLHTMLConstants.LinkTarget.content);
     }
 
     protected Collection<OWLEntity> getElements(Set<OWLOntology> onts) {
         Set<OWLEntity> bookmarks = new HashSet<OWLEntity>();
         for (OWLOntology ont : onts){
-            bookmarks.addAll(new OntologyBookmarks(getHTMLGenerator().getOWLServer().getOWLOntologyManager(), ont).getBookmarks());
+            bookmarks.addAll(new OntologyBookmarks(getOWLHTMLKit().getOWLServer().getOWLOntologyManager(), ont).getBookmarks());
         }
         return bookmarks;
     }

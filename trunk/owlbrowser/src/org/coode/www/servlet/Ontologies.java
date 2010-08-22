@@ -1,9 +1,10 @@
 package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.doclet.NestedHTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.page.HTMLPage;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.OntologyAction;
 import org.coode.www.exception.OntServerException;
@@ -14,7 +15,6 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -36,11 +36,11 @@ import java.util.Set;
  */
 public class Ontologies extends AbstractOntologyServerServlet {
 
-    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
-        // no implementation
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL) throws OntServerException {
+        return null; //@@TODO implement
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
         final String actionValue = params.get(OWLHTMLParam.action);
 
@@ -57,7 +57,12 @@ public class Ontologies extends AbstractOntologyServerServlet {
         }
     }
 
-    private NestedHTMLDoclet handleAction(OntologyAction action, Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    @Override
+    protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        return null; //@@TODO implement
+    }
+
+    private HTMLPage handleAction(OntologyAction action, Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
         OWLServer server = kit.getOWLServer();
         try {
@@ -83,7 +88,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
         throw new RuntimeException("Missing action handler!!");
     }
 
-    private NestedHTMLDoclet handleLoad(URI uri, boolean clear, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    private HTMLPage handleLoad(URI uri, boolean clear, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         Set<URI> success = new HashSet<URI>();
         Map<URI, Throwable> fail = new HashMap<URI, Throwable>();
 
@@ -143,7 +148,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
     }
 
 
-    private NestedHTMLDoclet handleRemove(OWLOntology ontology, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    private HTMLPage handleRemove(OWLOntology ontology, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         StringBuilder sb = new StringBuilder();
 
         OWLServer server = kit.getOWLServer();
@@ -167,7 +172,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
     }
 
 
-    private NestedHTMLDoclet handleReload(OWLOntology ontology, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    private HTMLPage handleReload(OWLOntology ontology, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         StringBuilder sb = new StringBuilder();
 
         OWLServer server = kit.getOWLServer();
@@ -187,14 +192,6 @@ public class Ontologies extends AbstractOntologyServerServlet {
         }
 
         return new OntologiesPage(kit, pageURL, sb.toString());
-    }
-
-    private boolean handleSetVisibility(OWLOntology ontology, boolean visible, OWLHTMLKit kit) {
-        if (ontology != null){
-            kit.setOntologyVisible(ontology, visible);
-            return true;
-        }
-        return false;
     }
 
     private URI getURIFromParam(String param) throws URISyntaxException {

@@ -24,20 +24,14 @@ import java.util.Set;
  */
 public class ReasonerResultsDoclet<O extends OWLClassExpression> extends AbstractOWLElementsDoclet<O, OWLEntity> {
 
-    private QueryType type;
-    private OWLClassExpression descr;
-
     Set<OWLEntity> results;
 
-    public ReasonerResultsDoclet (QueryType type, OWLClassExpression descr, OWLHTMLKit kit) throws OntServerException {
+    public ReasonerResultsDoclet (QueryType type, Set<OWLEntity> results, OWLHTMLKit kit) throws OntServerException {
         super(type.toString(), Format.list, kit);
-        this.type = type;
-        this.descr = descr;
+        this.results = results;
     }
 
     protected Collection<OWLEntity> getElements(Set<OWLOntology> onts) {
-        // @@TODO take onts into account
-        results = type.getResults(descr, getHTMLGenerator());
         return results;
     }
 }

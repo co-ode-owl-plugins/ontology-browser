@@ -1,10 +1,12 @@
 package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
@@ -49,18 +51,28 @@ import java.util.Map;
  */
 public class ServerOptions extends AbstractOntologyServerServlet {
 
-    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL) throws OntServerException {
         boolean success = handleOptionsSet(params, kit);
 
+        final String result;
         if (success){
             String propertyName = params.get(OWLHTMLParam.property);
             String value = params.get(OWLHTMLParam.value);
-
-            out.println("<options><" + propertyName + " value='" + value + "'/></options>");
+            result = "<optionset result=\"true\"><" + propertyName + " value='" + value + "'/></options>";
         }
+        else{
+            result = "<optionset result=\"false\"/>";
+        }
+
+        return new Doclet(){
+            public void renderAll(URL pageURL, PrintWriter out) {
+                out.println("<?xml version=\"1.0\" encoding=\"" + OWLHTMLConstants.DEFAULT_ENCODING + "\" ?>");
+                out.println(result);
+            }
+        };
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         boolean success = handleOptionsSet(params, kit);
 
         if (success){
@@ -72,6 +84,11 @@ public class ServerOptions extends AbstractOntologyServerServlet {
             page.addDoclet(new OptionsTableDoclet(params, kit));
             return page;
         }
+    }
+
+    @Override
+    protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        return null; //@@TODO implement
     }
 
     private boolean handleOptionsSet(Map<OWLHTMLParam, String> params, OWLHTMLKit kit) throws OntServerException {

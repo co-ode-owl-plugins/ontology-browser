@@ -2,20 +2,24 @@ package org.coode.www.servlet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.SummaryPageFactory;
+import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.index.OWLObjectIndexDoclet;
+import org.coode.html.page.HTMLPage;
+import org.coode.html.page.OWLDocPage;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.util.ModelUtil;
 import org.coode.www.OntologyBrowserConstants;
+import org.coode.www.doclet.XMLResultsDoclet;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.semanticweb.owlapi.model.*;
 
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -41,7 +45,7 @@ import java.util.*;
  */
 public class Summary extends AbstractOntologyServerServlet {
 
-    protected void handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL, PrintWriter out) throws OntServerException {
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL) throws OntServerException {
 
         String uri = params.get(OWLHTMLParam.uri);
         String entityName = params.get(OWLHTMLParam.name);
@@ -52,11 +56,12 @@ public class Summary extends AbstractOntologyServerServlet {
         if (uri == null && entityName == null){
             results = getIndexResults(getOntology(ontology, kit), kit, type);
         }
-        renderXMLResults(results, kit.getOWLServer(), out);
+
+        return new XMLResultsDoclet(results, kit);
         // not yet implemented for entities
     }
 
-    protected HTMLDoclet handleHTMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
         String uri = params.get(OWLHTMLParam.uri);
         String entityName = params.get(OWLHTMLParam.name);
@@ -80,13 +85,47 @@ public class Summary extends AbstractOntologyServerServlet {
             }
 
             if (object == null){
-                return getIndexRenderer(type, kit, getOntology(ontology, kit));
+                OWLObjectIndexDoclet index = getIndexRenderer(type, kit, getOntology(ontology, kit));
+                OWLDocPage page = new OWLDocPage(kit);
+                page.addDoclet(index);
+                return page;
             }
             else {
                 return new SummaryPageFactory(kit).getSummaryPage(object);
             }
         }
         throw new RuntimeException("Cannot get here");
+    }
+
+    @Override
+    protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+        String uri = params.get(OWLHTMLParam.uri);
+        String entityName = params.get(OWLHTMLParam.name);
+        String ontology = params.get(OWLHTMLParam.ontology);
+        String section = params.get(OWLHTMLParam.section);
+
+        final URLScheme urlScheme = kit.getURLScheme();
+
+        NamedObjectType type = urlScheme.getType(pageURL);
+
+        // if a name or uri is specified then redirect to search
+        if (uri != null || entityName != null){
+            throw new OntServerException("Find not implemented for HTML frgament");
+//            performSearch(type, uri, entityName, ontology, kit);
+        }
+        else{
+            OWLObject object = urlScheme.getOWLObjectForURL(pageURL);
+
+            if (object == null){
+                return getIndexRenderer(type, kit, getOntology(ontology, kit));
+            }
+            else {
+                if (section != null){
+
+                }
+                return new SummaryPageFactory(kit).getSummaryDoclet(object);
+            }
+        }
     }
 
     private void redirectIfNecessary(OWLHTMLKit kit, URL pageURL) throws RedirectException {
@@ -123,7 +162,7 @@ public class Summary extends AbstractOntologyServerServlet {
     private void performSearch(NamedObjectType type, String uri, String entityName, String ontology, OWLHTMLKit kit) throws OntServerException {
         try{
             Map<OWLHTMLParam, String> map = new HashMap<OWLHTMLParam, String>();
-            map.put(OWLHTMLParam.format, OntologyBrowserConstants.FORMAT_HTML);
+            map.put(OWLHTMLParam.format, OntologyBrowserConstants.RequestFormat.html.name());
             map.put(OWLHTMLParam.type, type.toString());
             if (uri != null){
                 map.put(OWLHTMLParam.uri, URLEncoder.encode(uri, OWLHTMLConstants.DEFAULT_ENCODING));
@@ -135,6 +174,7 @@ public class Summary extends AbstractOntologyServerServlet {
             if (ontology != null){
                 map.put(OWLHTMLParam.ontology, ontology);
             }
+
             StringBuilder sb = new StringBuilder("find/");
             sb.append(URLUtils.renderParams(map));
 
@@ -145,14 +185,17 @@ public class Summary extends AbstractOntologyServerServlet {
         }
     }
 
-    private HTMLDoclet getIndexRenderer(NamedObjectType type, OWLHTMLKit kit, OWLOntology ont) throws OntServerException {
+    private OWLObjectIndexDoclet getIndexRenderer(NamedObjectType type, OWLHTMLKit kit, OWLOntology ont) throws OntServerException {
         StringBuilder sb = new StringBuilder(type.getPluralRendering());
         if (ont != null){
             sb.append(" referenced in ");
             sb.append(kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont));
         }
         Set<OWLObject> results = getIndexResults(ont, kit, type);
-        return createIndexRenderer(sb.toString(), results, kit);
+        OWLObjectIndexDoclet ren = new OWLObjectIndexDoclet(kit);
+        ren.setTitle(sb.toString());
+        ren.addAll(results);
+        return ren;
     }
 
     private Set<OWLObject> getIndexResults(OWLOntology ont, OWLHTMLKit kit, NamedObjectType type) throws OntServerException {

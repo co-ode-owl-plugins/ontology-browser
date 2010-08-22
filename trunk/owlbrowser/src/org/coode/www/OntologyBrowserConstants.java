@@ -28,12 +28,25 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
 
     public static final String DL_QUERY_LABEL = "DL Query";
 
-        // supported formats
-    public static final String FORMAT_XML = "xml";
-    public static final String FORMAT_HTML = "html";
-    public static final String FORMAT_HTML_FRAGMENT = "html-frag";
+    // supported formats
+    public enum RequestFormat{
+        xml(MIME_XML),
+        html(MIME_HTML),
+        htmlfrag(MIME_HTML);
+
+        private String mimeType;
+
+        RequestFormat(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        public String getMimeType(){
+            return mimeType;
+        }
+    }
 
     // and their mime types
     public static final String MIME_XML = "text/xml;charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
     public static final String MIME_HTML = "text/html;charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
+
 }

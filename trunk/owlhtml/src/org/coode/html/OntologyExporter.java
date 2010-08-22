@@ -7,7 +7,7 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLContentsHTMLPage;
-import org.coode.html.index.OWLObjectIndexHTMLPage;
+import org.coode.html.index.OWLObjectIndexDoclet;
 import org.coode.html.page.OWLDocPage;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.FileUtils;
@@ -51,9 +51,9 @@ public class OntologyExporter {
 
     private File root;
 
-    private OWLObjectIndexHTMLPage indexAllResourcesRenderer;
+    private OWLObjectIndexDoclet indexAllResourcesRenderer;
 
-    private Map<NamedObjectType, OWLObjectIndexHTMLPage> typeIndices = new HashMap<NamedObjectType, OWLObjectIndexHTMLPage>();
+    private Map<NamedObjectType, OWLObjectIndexDoclet> typeIndices = new HashMap<NamedObjectType, OWLObjectIndexDoclet>();
 
     private final FileUtils fileUtils;
 
@@ -148,8 +148,10 @@ public class OntologyExporter {
             copyResource(OWLHTMLConstants.JS_TREE, root);
 
             // initialise the all resources index
-            indexAllResourcesRenderer = new OWLObjectIndexHTMLPage(kit);
+            indexAllResourcesRenderer = new OWLObjectIndexDoclet(kit);
             indexAllResourcesRenderer.setTitle(NamedObjectType.entities.getPluralRendering());
+
+            // TODO: the all resources renderer is no longer a full HTML page
 
             // step through the ontologies
             for (OWLOntology ont : kit.getVisibleOntologies()){
@@ -196,7 +198,7 @@ public class OntologyExporter {
         out.flush();
         out.close();
 
-        OWLObjectIndexHTMLPage ontologyIndexRenderer = getTypeIndexRenderer(NamedObjectType.ontologies);
+        OWLObjectIndexDoclet ontologyIndexRenderer = getTypeIndexRenderer(NamedObjectType.ontologies);
         ontologyIndexRenderer.add(ont);
 
         exportReferencedEntities(ont);
@@ -268,11 +270,11 @@ public class OntologyExporter {
             File ontologyEntityIndexFile = new File(root, localFilename);
             ensureExists(ontologyEntityIndexFile);
             PrintWriter indexWriter = fileUtils.open(ontologyEntityIndexFile);
-            OWLObjectIndexHTMLPage ontIndexRenderer = new OWLObjectIndexHTMLPage(kit);
+            OWLObjectIndexDoclet ontIndexRenderer = new OWLObjectIndexDoclet(kit);
             ontIndexRenderer.setTitle(kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont) + ": " + type);
 
             // index generation for all ontologies
-            OWLObjectIndexHTMLPage indexAllRenderer = getTypeIndexRenderer(type);
+            OWLObjectIndexDoclet indexAllRenderer = getTypeIndexRenderer(type);
 
             for (OWLEntity entity : entities){
 
@@ -293,7 +295,9 @@ public class OntologyExporter {
 
             logger.debug("Rendering index: " + type);
 
-            ontIndexRenderer.renderAll(indexBaseURL, indexWriter);
+            OWLDocPage page = new OWLDocPage(kit);
+            page.addDoclet(ontIndexRenderer);
+            page.renderAll(indexBaseURL, indexWriter);
             indexWriter.flush();
             indexWriter.close();
         }
@@ -329,10 +333,10 @@ public class OntologyExporter {
         }
     }
 
-    private OWLObjectIndexHTMLPage getTypeIndexRenderer(NamedObjectType type) throws MalformedURLException {
-        OWLObjectIndexHTMLPage indexAllRenderer = typeIndices.get(type);
+    private OWLObjectIndexDoclet getTypeIndexRenderer(NamedObjectType type) throws MalformedURLException {
+        OWLObjectIndexDoclet indexAllRenderer = typeIndices.get(type);
         if (indexAllRenderer == null){
-            indexAllRenderer = new OWLObjectIndexHTMLPage(kit);
+            indexAllRenderer = new OWLObjectIndexDoclet(kit);
             indexAllRenderer.setTitle("All " +
                                       type.toString().substring(0, 1).toUpperCase() +
                                       type.toString().substring(1).toLowerCase());
@@ -378,7 +382,10 @@ public class OntologyExporter {
         String indexFile = kit.getHTMLProperties().get(OWLHTMLProperty.optionIndexAllURL);
         PrintWriter indexAllWriter = fileUtils.open(new File(root, indexFile));
         URL pageURL = kit.getURLScheme().getURLForRelativePage(indexFile);
-        indexAllResourcesRenderer.renderAll(pageURL, indexAllWriter);
+
+        OWLDocPage page = new OWLDocPage(kit);
+        page.addDoclet(indexAllResourcesRenderer);
+        page.renderAll(pageURL, indexAllWriter);
         indexAllWriter.flush();
         indexAllWriter.close();
     }

@@ -55,6 +55,8 @@ public interface OWLHTMLKit {
 
     void setURLScheme(URLScheme urlScheme);
 
+//    DocletFactory getDocletFactory();
+
     Comparator<OWLObject> getOWLObjectComparator();
 
     /**
@@ -63,7 +65,7 @@ public interface OWLHTMLKit {
      */
     Set<OWLOntology> getVisibleOntologies();
 
-    void setOntologyVisible(OWLOntology ontology, boolean visible);
+//    void setOntologyVisible(OWLOntology ontology, boolean visible);
 
 
     /**
