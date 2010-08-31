@@ -53,9 +53,11 @@ public class SessionManager {
 
     private static final String ID = "ID";
 
-    private static Map<SessionID, OWLHTMLKit> activeServers = new HashMap<SessionID, OWLHTMLKit>();
-//    private static Map<String, SuggestorManager> activeSuggestorManagers = new HashMap<String, SuggestorManager>();
     private static final String URI_MAPPING_MARKER = "##";
+
+
+    private static Map<SessionID, OWLHTMLKit> activeServers = new HashMap<SessionID, OWLHTMLKit>();
+
 
 
     /**
@@ -203,21 +205,6 @@ public class SessionManager {
         return new File(OntologyBrowserConstants.SERVER_STATES_DIR + name);
     }
 
-//    /**
-//     * One suggestor per kit
-//     * @param kit
-//     * @return
-//     */
-//    public synchronized static SuggestorManager getSuggestorManager(OWLServer kit) {
-//        final String id = kit.getID();
-//        SuggestorManager sm = activeSuggestorManagers.get(id);
-//        if (sm == null){
-//            sm = new SuggestorManagerAdapter(kit);
-//            activeSuggestorManagers.put(id, sm);
-//        }
-//        return sm;
-//    }
-
     public synchronized static void closeSession(HttpSession mySession) {
         if (mySession != null){
             SessionID id = (SessionID) mySession.getAttribute(ID);
@@ -233,13 +220,7 @@ public class SessionManager {
             final String serverID = kit.getID();
             kit.dispose();
 
-//            SuggestorManager sm = activeSuggestorManagers.remove(serverID);
-//            if (sm != null){
-//                sm.dispose();
-//            }
-
-            logger.debug("(killed) active servers: " + activeServers.size());
-//            logger.debug("(killed) active suggestor managers: " + activeSuggestorManagers.size());
+            logger.debug("killed " +  serverID + " - active servers: " + activeServers.size());
 
             System.gc();
             System.gc();
@@ -264,12 +245,11 @@ public class SessionManager {
 
             activeServers.put(id, kit);
             mySession.setAttribute(ID, id);
+            logger.debug("started " + id + " - active servers: " + activeServers.size());
         }
         catch (MalformedURLException e) {
             logger.error(e);
         }
-        logger.debug("active servers: " + activeServers.size());
-//        logger.debug("active suggestor managers: " + activeSuggestorManagers.size());
     }
 
     private static OWLHTMLKit createServer(String id, URL basePath) {
@@ -284,8 +264,7 @@ public class SessionManager {
 
         // register parsers
         kit.getOWLServer().registerDescriptionParser(ServerConstants.Syntax.man.toString(),
-                                                           new ManchesterOWLSyntaxParser(kit.getOWLServer()));
-//        kit.registerDescriptionParser(ServerConstants.Syntax.qd.toString(), new QuickDescriptionParser(kit));
+                                                     new ManchesterOWLSyntaxParser(kit.getOWLServer()));
 
         boolean defaultsLoaded = false;
 
