@@ -85,6 +85,7 @@ public class OWLServerImpl implements OWLServer {
         }
 
         public void finishedLoadingOntology(LoadingFinishedEvent loadingFinishedEvent) {
+            logger.info("loaded " + loadingFinishedEvent.getOntologyID().getDefaultDocumentIRI());
             final OWLOntology ont = getOntologyForIRI(loadingFinishedEvent.getOntologyID().getDefaultDocumentIRI());
             if (ont != null){
                 loadedOntology(ont);
