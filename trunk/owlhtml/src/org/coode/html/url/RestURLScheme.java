@@ -55,40 +55,39 @@ public class RestURLScheme extends AbstractURLScheme {
 
 
     public URL getURLForOWLObject(OWLObject owlObject) {
+        if (owlObject == null){
+            throw new NullPointerException("OWLObject may not be null");
+        }
+
+        String type;
+        int code;
+
+        if (owlObject instanceof OWLEntity){
+            type = NamedObjectType.getType(owlObject).toString();
+            code = ((OWLEntity)owlObject).getIRI().hashCode();
+        }
+        else if (owlObject instanceof OWLOntology){
+            type = NamedObjectType.getType(owlObject).toString();
+            code = ((OWLOntology)owlObject).getOntologyID().hashCode();
+        }
+        else{
+            type = owlObject.getClass().getSimpleName();
+            code = owlObject.hashCode();
+        }
+
+        StringBuilder sb = new StringBuilder(type);
+        sb.append(OWLHTMLConstants.SLASH);
+        sb.append(code);
+        sb.append(OWLHTMLConstants.SLASH);
+
+        if (additionalLinkArguments != null){
+            sb.append(additionalLinkArguments);
+        }
+
         try {
-
-            String type;
-            int code;
-
-            if (owlObject == null){
-                System.out.println("Here");
-            }
-
-            if (owlObject instanceof OWLEntity){
-                type = NamedObjectType.getType(owlObject).toString();
-                code = ((OWLEntity)owlObject).getIRI().hashCode();
-            }
-            else if (owlObject instanceof OWLOntology){
-                type = NamedObjectType.getType(owlObject).toString();
-                code = ((OWLOntology)owlObject).getOntologyID().hashCode();
-            }
-            else{
-                type = owlObject.getClass().getSimpleName();
-                code = owlObject.hashCode();
-            }
-
-            StringBuilder sb = new StringBuilder(type);
-            sb.append(OWLHTMLConstants.SLASH);
-            sb.append(code);
-            sb.append(OWLHTMLConstants.SLASH);
-
-            if (additionalLinkArguments != null){
-                sb.append(additionalLinkArguments);
-            }
-
             return new URL(getBaseURL(), sb.toString());
         }
-        catch (Exception e) {
+        catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
