@@ -1,14 +1,10 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.cloud.ClassesByUsageCloud;
-import org.coode.html.impl.OWLHTMLProperty;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Collections;
 
 /**
  * Author: drummond<br>
@@ -19,8 +15,6 @@ import java.util.Collections;
  * Date: Aug 4, 2010<br><br>
  */
 public class OWLOntologySummaryDoclet extends AbstractOWLDocDoclet<OWLOntology> {
-
-    private ClassesByUsageCloud cloudModel;
 
     public OWLOntologySummaryDoclet(OWLHTMLKit kit) {
         super(kit);
@@ -33,24 +27,24 @@ public class OWLOntologySummaryDoclet extends AbstractOWLDocDoclet<OWLOntology> 
 
         addDoclet(new OntologyImportsDoclet(kit));
 
-        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
-            cloudModel = new ClassesByUsageCloud(kit);
-            CloudDoclet<OWLClass> cloudDoclet = new CloudDoclet<OWLClass>(cloudModel, kit);
-            cloudDoclet.setComparator(kit.getOWLServer().getComparator());
-            cloudDoclet.setThreshold(8);
-            cloudDoclet.setZoom(10);
-            addDoclet(cloudDoclet);
-        }
+        // @@TODO reenable clouds (maybe use links instead)
+//        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
+//            CloudDoclet<OWLClass> cloudDoclet = new CloudDoclet<OWLClass>(kit);
+//            cloudDoclet.setComparator(kit.getOWLServer().getComparator());
+//            cloudDoclet.setThreshold(8);
+//            cloudDoclet.setZoom(10);
+//            addDoclet(cloudDoclet);
+//        }
     }
 
 
     public void setUserObject(OWLOntology object) {
         super.setUserObject(object);
 
-        if (getOWLHTMLKit().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
-            // only show the classes in this ontology
-            cloudModel.setOntologies(Collections.singleton(getUserObject()));
-        }
+//        if (getOWLHTMLKit().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
+//            // only show the classes in this ontology
+//            cloudModel.setOntologies(Collections.singleton(getUserObject()));
+//        }
     }
 
     @Override

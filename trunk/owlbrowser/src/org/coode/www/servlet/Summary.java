@@ -102,7 +102,6 @@ public class Summary extends AbstractOntologyServerServlet {
         String uri = params.get(OWLHTMLParam.uri);
         String entityName = params.get(OWLHTMLParam.name);
         String ontology = params.get(OWLHTMLParam.ontology);
-        String section = params.get(OWLHTMLParam.section);
 
         final URLScheme urlScheme = kit.getURLScheme();
 
@@ -120,12 +119,28 @@ public class Summary extends AbstractOntologyServerServlet {
                 return getIndexRenderer(type, kit, getOntology(ontology, kit));
             }
             else {
+                String section = getSection(pageURL, kit);
+                
                 if (section != null){
-
+                    HTMLDoclet doclet = kit.getDocletFactory().getDoclet(section);
+                    if (doclet != null){
+                        doclet.setUserObject(object);
+                        return doclet;
+                    }
+                    throw new OntServerException("Cannot find section: " + section);
                 }
                 return new SummaryPageFactory(kit).getSummaryDoclet(object);
             }
         }
+    }
+
+    private String getSection(URL pageURL, OWLHTMLKit kit) {
+        String relativeURL = URLUtils.createRelativeURL(kit.getBaseURL(), pageURL);
+        String[] path = relativeURL.split(OWLHTMLConstants.SLASH);
+        if (path.length >= 3){
+            return path[2]; // always the 3rd element
+        }
+        return null;
     }
 
     private void redirectIfNecessary(OWLHTMLKit kit, URL pageURL) throws RedirectException {

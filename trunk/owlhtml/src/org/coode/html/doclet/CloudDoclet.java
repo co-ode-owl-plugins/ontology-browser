@@ -1,10 +1,9 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.cloud.CloudModel;
+import org.coode.html.cloud.*;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 
 import java.awt.*;
 import java.io.PrintWriter;
@@ -12,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 
 /**
@@ -26,7 +26,7 @@ import java.util.Comparator;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOntology> {
+public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<O> {
 
     private static final String ID = "doclet.cloud";
 
@@ -36,8 +36,6 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
     private static final int MAX_SIZE = 40;
 
     private Comparator<? super O> comparator;
-
-    private java.util.List<O> entities;
 
     private OWLHTMLKit kit;
 
@@ -54,9 +52,8 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
     private OWLHTMLConstants.LinkTarget target;
 
 
-    public CloudDoclet(CloudModel<O> model, OWLHTMLKit kit){
+    public CloudDoclet(OWLHTMLKit kit){
         this.kit = kit;
-        this.model = model;
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
@@ -67,7 +64,7 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
 
         model.reload();
 
-        entities = new ArrayList<O>(model.getEntities(threshold));
+        List<O> entities = new ArrayList<O>(model.getEntities(threshold));
 
         if (comparator != null){
             Collections.sort(entities, comparator);
@@ -85,6 +82,29 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
         renderBoxEnd(getTitle(), out);
     }
 
+    @Override
+    public void setUserObject(O object) {
+        if (model == null){
+            model = getModel(object);
+        }
+        super.setUserObject(object);
+    }
+
+    private CloudModel<O> getModel(O object) {
+        if (object instanceof OWLClass){
+            return (CloudModel<O>)new ClassesByUsageCloud(kit);
+        }
+        else if (object instanceof OWLObjectProperty){
+            return (CloudModel<O>)new ObjectPropsByUsageCloud(kit);
+        }
+        else if (object instanceof OWLDataProperty){
+            return (CloudModel<O>)new DataPropsByUsageCloud(kit);
+        }
+        else if (object instanceof OWLNamedIndividual){
+            return (CloudModel<O>)new IndividualsByUsageCloud(kit);
+        }
+        return null;
+    }
 
     public String getTitle() {
         return model.getTitle();
@@ -186,5 +206,9 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<OWLOnto
 
     public String getID() {
         return ID;
+    }
+
+    public void setModel(OWLCloudModel cloudModel) {
+        this.model = cloudModel;
     }
 }

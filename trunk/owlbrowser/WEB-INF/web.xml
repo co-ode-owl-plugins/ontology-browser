@@ -5,6 +5,7 @@
     <display-name>OWLDoc Server</display-name>
     <description>server for navigating through OWL ontologies</description>
     <distributable/>
+
     <servlet>
         <servlet-name>Ontologies</servlet-name>
         <display-name>Load Ontology</display-name>
@@ -157,7 +158,9 @@
         <servlet-name>Summary</servlet-name>
         <url-pattern>/datatypes/*</url-pattern>
     </servlet-mapping>
+
     <session-config>
-        <session-timeout>20</session-timeout>
+        <session-timeout>1</session-timeout>
     </session-config>
+
 </web-app>

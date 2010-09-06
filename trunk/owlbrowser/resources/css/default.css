@@ -85,6 +85,7 @@ td.key{
 
 h1 {font-size: 16pt;
     font-weight: bold;
+    display: inline;
     margin-top: 0; margin-bottom: 12px;
 }
 

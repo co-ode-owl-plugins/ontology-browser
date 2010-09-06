@@ -1,6 +1,7 @@
 package org.coode.html.impl;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.doclet.*;
 import org.coode.html.url.StaticFilesURLScheme;
 import org.coode.html.url.URLScheme;
 import org.coode.owl.mngr.OWLServer;
@@ -63,7 +64,7 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     private Comparator<OWLObject> comparator;
 
-//    private DocletFactory fac;
+    private HTMLDocletFactory fac;
 
 
     public OWLHTMLKitImpl(String id, URL baseURL) {
@@ -76,15 +77,48 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         this.owlServer = server;
         this.baseURL = baseURL;
         this.comparator = new OWLObjectComparator<OWLObject>(server);
-//        createDocletFactory();
+        createDocletFactory();
     }
 
-//    private void createDocletFactory() {
-//        this.fac = new DocletFactory(this);
-//
-////        fac.registerDoclet("org.coode.html.AnnotationPropertyDomainsDoclet");
-////        fac.registerDoclet("org.coode.html.AnnotationPropertyDomainsDoclet");
-//    }
+    private void createDocletFactory() {
+        this.fac = new HTMLDocletFactory(this);
+
+        fac.register("annotationproperty.domains", AnnotationPropertyDomainsDoclet.class);
+        fac.register("annotationproperty.ranges", AnnotationPropertyRangesDoclet.class);
+        fac.register("annotationproperty.supers", AnnotationPropertySuperPropertiesDoclet.class);
+
+        fac.register("class.supers.asserted", AssertedSuperclassesDoclet.class);
+        fac.register("class.equivalents.asserted", AssertedEquivalentsDoclet.class);
+        fac.register("class.disjoints.asserted", DisjointsDoclet.class);
+        fac.register("class.members.asserted", MembersDoclet.class);
+
+        fac.register("property.supers.asserted", AssertedSuperpropertiesDoclet.class);
+        fac.register("property.equivalents.asserted", AssertedEquivpropertiesDoclet.class);
+        fac.register("property.disjoints.asserted", DisjointPropertiesDoclet.class);
+        fac.register("property.domains.asserted", DomainsDoclet.class);
+        fac.register("property.ranges.asserted", RangesDoclet.class);
+        fac.register("property.inverses.asserted", InversesDoclet.class);
+        fac.register("property.characteristics.asserted", PropertyCharacteristicsDoclet.class);
+
+        fac.register("individual.different", DifferentFromDoclet.class);
+        fac.register("individual.same", SameAsDoclet.class);
+        fac.register("individual.types", TypesDoclet.class);
+
+        fac.register("datatype.definition", DatatypeDefinitionDoclet.class);
+
+        fac.register("ontology.annotations", OntologyAnnotationsDoclet.class);
+        fac.register("ontology.contents", OntologyContentsDoclet.class);
+        fac.register("ontology.imports", OntologyImportsDoclet.class);
+        fac.register("ontology.title", OntologyTitleDoclet.class);
+
+        // TODO add summaries?
+
+        fac.register("usage", UsageDoclet.class);
+// TODO tidy up so we can get this        fac.register("hierarchy", HierarchyDoclet.class);
+        fac.register("annotations", AnnotationsDoclet.class);
+        fac.register("bookmarks", BookmarksDoclet.class);
+        fac.register("cloud", CloudDoclet.class);
+    }
 
 
     public ServerPropertiesAdapter<OWLHTMLProperty> getHTMLProperties() {
@@ -136,10 +170,10 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
     public void setURLScheme(URLScheme urlScheme) {
         this.urlScheme = urlScheme;
     }
-//
-//    public DocletFactory getDocletFactory() {
-//        return fac;
-//    }
+
+    public HTMLDocletFactory getDocletFactory() {
+        return fac;
+    }
 
     public Comparator<OWLObject> getOWLObjectComparator() {
         return comparator;
