@@ -12,6 +12,7 @@ import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,12 +22,8 @@ import javax.servlet.http.HttpSessionBindingListener;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -143,13 +140,16 @@ public class SessionManager {
      */
     private synchronized static void loadServerState(OWLHTMLKit kit, String label) throws OntServerException {
 
+        File file = getFile(label + OntologyBrowserConstants.SERVER_STATES_EXT);
+
+        if (!file.exists()){
+            throw new OntServerException("Cannot find stored state for unknown session " + label);
+        }
+
         kit.getOWLServer().clearOntologies(); // dump all ontologies and caches
 
-        try {
-            File file = getFile(label + OntologyBrowserConstants.SERVER_STATES_EXT);
-
+        try{
             // we are currently reading the file twice - @@TODO make this much nicer
-
             // pass 1 to get the properties
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
             kit.getHTMLProperties().load(in);
@@ -159,31 +159,33 @@ public class SessionManager {
             // pass 2 to get the ontology mappings
             BufferedReader reader = new BufferedReader(new FileReader(file));
             int currentLine = 0;
-            try{
-                String line;
-                while ((line = reader.readLine()) != null){
+            String line;
+            List<Exception> exceptions = new ArrayList<Exception>();
+            while ((line = reader.readLine()) != null){
+                try{
                     if (line.startsWith(URI_MAPPING_MARKER)){
                         line = line.substring(URI_MAPPING_MARKER.length(), line.length());
                         String[] param = line.split("=");
-                        URI ontURI = new URI(param[0].trim());
-                        URI physicalURI = new URI(param[1].trim());
+                        URI ontURI = URI.create(param[0].trim());
+                        URI physicalURI = URI.create(param[1].trim());
                         if (ontURI.isAbsolute() && physicalURI.isAbsolute()){
                             kit.getOWLServer().loadOntology(physicalURI); // auto set active ont to the first
                         }
                     }
-                    currentLine++;
                 }
+                catch(OWLOntologyCreationException e){
+                    exceptions.add(e);
+                }
+                currentLine++;
+            }
 
-                kit.setCurrentLabel(label);
-            }
-            catch (URISyntaxException e) {
-                throw new ParseException("Invalid URI in content: " + e.getInput(), currentLine);
-            }
-            finally{
-                reader.close();
+            kit.setCurrentLabel(label);
+
+            if (!exceptions.isEmpty()){
+                throw new OntServerException("There were problems reloading all of your ontologies. Please check the ontologies page");
             }
         }
-        catch (Exception e) {
+        catch(IOException e){
             throw new OntServerException(e);
         }
     }
@@ -230,7 +232,7 @@ public class SessionManager {
     private synchronized static void create(HttpSession mySession, HttpServletRequest request) {
         try{
             String url = request.getRequestURL().toString();
-            
+
             int index = url.indexOf(request.getServletPath());
 
             if (index != -1){
@@ -270,7 +272,7 @@ public class SessionManager {
 
         // we will likely want different defaults for different versions (or run versions on the same server)
         File file = getFile("default" + OntologyBrowserConstants.VERSION + OntologyBrowserConstants.SERVER_STATES_EXT);
-        
+
         if (file.exists()){
             try {
                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
@@ -306,7 +308,7 @@ public class SessionManager {
         // make sure the reasoner is enabled to allow dl query etc
         kit.getOWLServer().getProperties().setBoolean(ServerProperty.optionReasonerEnabled, true);
 
-        
+
         ServerPropertiesAdapter<OWLHTMLProperty> properties = kit.getHTMLProperties();
 
         // by default, do not use frames navigation

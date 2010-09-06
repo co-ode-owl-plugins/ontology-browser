@@ -55,7 +55,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     }
 
     public Set<OWLClass> getChildren(OWLClass node) {
-        logger.debug("getChildren(" + node + ")");
+//        logger.debug("getChildren(" + node + ")");
         try {
             Set<OWLClass> children = new HashSet<OWLClass>();
 
@@ -74,7 +74,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     }
 
     public Set<OWLClass> getEquivalents(OWLClass node) {
-        logger.debug("getEquivalents(" + node + ")");
+//        logger.debug("getEquivalents(" + node + ")");
         try{
             return getReasoner().getEquivalentClasses(node).getEntitiesMinus(node);
         }
@@ -85,7 +85,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     }
 
     public Set<OWLClass> getDescendants(OWLClass node) {
-        logger.debug("getDescendants(" + node + ")");
+//        logger.debug("getDescendants(" + node + ")");
         try {
             return getReasoner().getSubClasses(node, false).getFlattened();
         }
