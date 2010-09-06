@@ -6,7 +6,6 @@ import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.CloudDoclet;
 import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
-import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
@@ -108,9 +107,9 @@ public class Cloud extends AbstractOntologyServerServlet {
             OWLCloudModel cloudModel = getModelFromType(cType, kit);
             cloudModel.setOntologies(ontologies);
 
-            CloudDoclet cloudRenderer = new CloudDoclet(cloudModel, kit);
-            cloudRenderer.setTarget(OWLHTMLConstants.LinkTarget.content);
+            CloudDoclet cloudRenderer = new CloudDoclet(kit);
 
+            cloudRenderer.setModel(cloudModel);
             cloudRenderer.setComparator(kit.getOWLServer().getComparator());
             cloudRenderer.setThreshold(8);
             cloudRenderer.setZoom(10);

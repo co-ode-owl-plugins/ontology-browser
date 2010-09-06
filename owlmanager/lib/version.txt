@@ -1,6 +1,6 @@
 OWL API
 -------
-pre-release 3.1.0 r1601
+release 3.1.0 21/08/2010
 
 Pellet
 ------

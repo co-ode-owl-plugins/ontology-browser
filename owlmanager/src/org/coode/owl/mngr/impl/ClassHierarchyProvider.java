@@ -3,7 +3,6 @@ package org.coode.owl.mngr.impl;
 import org.apache.log4j.Logger;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.OWLServerListener;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.Node;
@@ -29,20 +28,8 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     private OWLServer server;
 
-    private OWLReasoner r;
-
-    private OWLServerListener serverListener = new OWLServerListener(){
-
-        public void activeOntologyChanged(OWLOntology ont) {
-            reset();
-        }
-    };
-
-    // TODO: should we also reset on an ontology load/remove?
-
     public ClassHierarchyProvider(OWLServer server) {
         this.server = server;
-        server.addServerListener(serverListener);
     }
 
     public Set<OWLClass> getRoots() {
@@ -66,7 +53,6 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         }
         return Collections.emptySet();
     }
-
 
     public Set<OWLClass> getChildren(OWLClass node) {
         logger.debug("getChildren(" + node + ")");
@@ -98,7 +84,6 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         return Collections.emptySet();
     }
 
-
     public Set<OWLClass> getDescendants(OWLClass node) {
         logger.debug("getDescendants(" + node + ")");
         try {
@@ -109,7 +94,6 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         }
         return Collections.emptySet();
     }
-
 
     public Set<OWLClass> getAncestors(OWLClass node) {
         try{
@@ -125,40 +109,24 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         return getAncestors(node).contains(ancestor);
     }
 
-
     public void dispose() {
-        getServer().removeServerListener(serverListener);
     }
-
 
     protected final OWLServer getServer() {
         return server;
     }
 
-
     protected Set<OWLOntology> getOntologies() {
         return getServer().getActiveOntologies();
     }
 
-
     protected OWLReasoner getReasoner() {
-        if (r == null){
-            r = getServer().getOWLReasoner();
-        }
-        return r;
-    }
-
-    private void reset() {
-        if (r != null){
-            r.dispose();
-            r = null;
-        }
+        return getServer().getOWLReasoner();
     }
 
     private OWLClass getOWLThing() {
         return server.getOWLOntologyManager().getOWLDataFactory().getOWLThing();
     }
-
 
 //    // OWL API bug fixed
 //    // see https://sourceforge.net/tracker/?func=detail&aid=3037035&group_id=90989&atid=595534

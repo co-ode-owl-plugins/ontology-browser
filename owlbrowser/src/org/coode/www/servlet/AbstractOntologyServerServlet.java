@@ -64,10 +64,12 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                                                             URL pageURL) throws OntServerException;
 
     protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        System.out.println("AbstractOntologyServerServlet.doGet");
         doRequest(request, response);
     }
 
     protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        System.out.println("AbstractOntologyServerServlet.doPost");
         doRequest(request, response);
     }
 
@@ -79,11 +81,11 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
         handleRequestType(request, response);
 
-        final String sessionLabel = getParameter(request, OWLHTMLParam.session);
-
         session = request.getSession(false);
 
         final URL pageURL = ServletUtils.rebuildRequestURL(request);
+
+        final String sessionLabel = getParameter(request, OWLHTMLParam.session);
 
         final OWLHTMLKit kit = getOWLHTMLKit(request, sessionLabel, pageURL);
 

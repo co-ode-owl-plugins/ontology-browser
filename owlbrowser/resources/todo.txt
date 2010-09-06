@@ -22,6 +22,8 @@ Bugs
   the url contains action=reload
   the action pages should probably redirect (but how do we provide a message?)
 
+- when session timed out - redirect error
+
 
 Features
 --------

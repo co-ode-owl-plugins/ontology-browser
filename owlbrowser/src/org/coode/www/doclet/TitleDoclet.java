@@ -25,9 +25,9 @@ public class TitleDoclet extends AbstractHTMLDoclet {
 
                 out.print("<h1>");
                 out.print(OntologyBrowserConstants.ONTOLOGY_SERVER_NAME);
-                out.print(" ");
-                out.print(OntologyBrowserConstants.VERSION);
                 out.println("</h1>");
+                out.print(" v");
+                out.print(OntologyBrowserConstants.VERSION);
             }
 
             @Override
