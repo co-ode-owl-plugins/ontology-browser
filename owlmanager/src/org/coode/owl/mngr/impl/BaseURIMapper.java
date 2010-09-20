@@ -1,7 +1,7 @@
 package org.coode.owl.mngr.impl;
 
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.io.File;
 import java.io.IOException;

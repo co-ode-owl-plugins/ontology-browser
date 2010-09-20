@@ -24,9 +24,6 @@ public class OWLObjectComparator<E extends OWLObject> implements Comparator<E> {
     private OWLServer server;
 
     public OWLObjectComparator(OWLServer server) {
-        if (server == null){
-            throw new NullPointerException("Server may not be null");
-        }
         this.server = server;
     }
 

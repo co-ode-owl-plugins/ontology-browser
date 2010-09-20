@@ -1,8 +1,8 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.IRI;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -42,7 +42,7 @@ public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
 
 
     public String getTitle() {
-        return getOWLHTMLKit().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
+        return getHTMLGenerator().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
     }
 
 

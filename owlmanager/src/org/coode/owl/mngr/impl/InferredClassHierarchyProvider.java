@@ -1,7 +1,6 @@
 package org.coode.owl.mngr.impl;
 
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /**
@@ -19,11 +18,8 @@ public class InferredClassHierarchyProvider extends ClassHierarchyProvider{
         super(server);
     }
 
+
     protected OWLReasoner getReasoner() {
         return getServer().getOWLReasoner();
-    }
-
-    public boolean isRoot(OWLClass node) {
-        return super.isRoot(node);
     }
 }

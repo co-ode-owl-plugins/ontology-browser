@@ -20,14 +20,14 @@ import java.util.Set;
  */
 public enum NamedObjectType {
 
-    ontologies ("Ontologies", "Ontology"),
     entities ("Entities", "Entity"),
     classes ("Classes", "Class"),
     objectproperties ("Object Properties", "Object Property"),
     dataproperties ("Data Properties", "Data Property"),
     annotationproperties ("Annotation Properties", "Annotation Property"),
     individuals ("Individuals", "Individual"),
-    datatypes ("Datatypes", "Datatype");
+    datatypes ("Datatypes", "Datatype"),
+    ontologies ("Ontologies", "Ontology");
 
     private static NamedObjectType[] entitySubTypes = new NamedObjectType[]{classes, objectproperties, dataproperties, annotationproperties, individuals, datatypes};
 
@@ -93,33 +93,27 @@ public enum NamedObjectType {
 
 
     public static NamedObjectType getType(OWLObject object){
-        return getType(object.getClass());
-    }
-
-    
-    public static NamedObjectType getType(Class<? extends OWLObject> cls){
-        if (OWLClass.class.isAssignableFrom(cls)){
+        if (object instanceof OWLClass){
             return NamedObjectType.classes;
         }
-        else if (OWLObjectProperty.class.isAssignableFrom(cls)){
+        else if (object instanceof OWLObjectProperty){
             return NamedObjectType.objectproperties;
         }
-        else if (OWLDataProperty.class.isAssignableFrom(cls)){
+        else if (object instanceof OWLDataProperty){
             return NamedObjectType.dataproperties;
         }
-        else if (OWLAnnotationProperty.class.isAssignableFrom(cls)){
+        else if (object instanceof OWLAnnotationProperty){
             return NamedObjectType.annotationproperties;
         }
-        else if (OWLIndividual.class.isAssignableFrom(cls)){
+        else if (object instanceof OWLIndividual){
             return NamedObjectType.individuals;
         }
-        else if (OWLDatatype.class.isAssignableFrom(cls)){
+        else if (object instanceof OWLDatatype){
             return NamedObjectType.datatypes;
         }
-        else if (OWLOntology.class.isAssignableFrom(cls)){
+        else if (object instanceof OWLOntology){
             return NamedObjectType.ontologies;
         }
-        throw new RuntimeException("Object type not known: " + cls);
+        throw new RuntimeException("Object type not known: " + object);
     }
-
 }

@@ -32,8 +32,8 @@ public class MessageBoxDoclet extends AbstractHTMLDoclet {
         renderBoxStart(out);
         // print message if there is one
         if (message != null && message.length() > 0){
-            out.print("<pre>");
-            out.print(message);
+            out.println("<pre>");
+            out.println(message);
             out.println("</pre>");
         }
     }
@@ -47,15 +47,8 @@ public class MessageBoxDoclet extends AbstractHTMLDoclet {
     }
 
     protected final void renderBoxStart(PrintWriter out) {
-        if (title != null){
-            out.println("<h2>" + title + "</h2>");
-        }
-        out.print("<div class='");
-        out.print(cssClass);
-        if (title != null){
-            out.print("' id='" + title.toLowerCase().replace(" ", "_"));
-        }
-        out.println("'>");
+        out.println("<h2>" + title + "</h2>");
+        out.println("<div class='" + cssClass + "' id='" + title.toLowerCase().replace(" ", "_") + "'>");
     }
 
     public void setClass(String cssClass) {

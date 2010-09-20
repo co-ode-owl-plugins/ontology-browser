@@ -8,13 +8,13 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.URLScheme;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.util.ModelUtil;
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Author: Nick Drummond<br>
@@ -39,7 +39,7 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
 
-        OWLHTMLKit kit = getOWLHTMLKit();
+        OWLHTMLKit kit = getHTMLGenerator();
 
         final Set<OWLOntology> visibleOntologies = kit.getVisibleOntologies();
         final URLScheme urlScheme = kit.getURLScheme();
@@ -82,7 +82,7 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
 
     private void renderIndexLink(int count, NamedObjectType type, URL pageURL, PrintWriter out) {
         if (count > 0){
-            URL indexURL = getOWLHTMLKit().getURLScheme().getURLForIndex(type);
+            URL indexURL = getHTMLGenerator().getURLScheme().getURLForIndex(type);
             out.println("<li>");
             String label = type.getPluralRendering();
             renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);

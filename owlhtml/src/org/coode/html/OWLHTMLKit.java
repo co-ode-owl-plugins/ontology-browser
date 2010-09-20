@@ -1,15 +1,12 @@
 package org.coode.html;
 
-import org.coode.html.doclet.HTMLDocletFactory;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.url.URLScheme;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
-import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.net.URL;
-import java.util.Comparator;
 import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
@@ -56,9 +53,6 @@ public interface OWLHTMLKit {
 
     void setURLScheme(URLScheme urlScheme);
 
-    HTMLDocletFactory getDocletFactory();
-
-    Comparator<OWLObject> getOWLObjectComparator();
 
     /**
      * The ontologies that are visible in the browser (reasoner should always use getActiveOntologies)
@@ -66,7 +60,7 @@ public interface OWLHTMLKit {
      */
     Set<OWLOntology> getVisibleOntologies();
 
-//    void setOntologyVisible(OWLOntology ontology, boolean visible);
+    void setOntologyVisible(OWLOntology ontology, boolean visible);
 
 
     /**
@@ -77,10 +71,4 @@ public interface OWLHTMLKit {
     String getCurrentLabel();
 
     void dispose();
-
-    /**
-     * Is the kit currently in use?
-     * @return true if there are ontologies to browse
-     */
-    boolean isActive();
 }

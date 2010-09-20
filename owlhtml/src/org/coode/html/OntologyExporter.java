@@ -1,26 +1,29 @@
 package org.coode.html;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.coode.html.doclet.OWLOntologySummaryDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLContentsHTMLPage;
-import org.coode.html.index.OWLObjectIndexDoclet;
-import org.coode.html.page.OWLDocPage;
+import org.coode.html.index.OWLObjectIndexHTMLPage;
+import org.coode.html.page.EmptyOWLDocPage;
+import org.coode.html.summary.*;
 import org.coode.html.url.URLScheme;
-import org.coode.html.util.FileUtils;
 import org.coode.html.util.URLUtils;
+import org.coode.html.util.FileUtils;
+import org.coode.html.hierarchy.OWLClassHierarchyTreeFragment;
+import org.coode.html.hierarchy.OWLPropertyHierarchyTreeFragment;
+import org.coode.html.doclet.HierarchyRootDoclet;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerProperty;
 import org.semanticweb.owlapi.model.*;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,9 +54,9 @@ public class OntologyExporter {
 
     private File root;
 
-    private OWLObjectIndexDoclet indexAllResourcesRenderer;
+    private OWLObjectIndexHTMLPage indexAllResourcesRenderer;
 
-    private Map<NamedObjectType, OWLObjectIndexDoclet> typeIndices = new HashMap<NamedObjectType, OWLObjectIndexDoclet>();
+    private Map<NamedObjectType, OWLObjectIndexHTMLPage> typeIndices = new HashMap<NamedObjectType, OWLObjectIndexHTMLPage>();
 
     private final FileUtils fileUtils;
 
@@ -148,10 +151,8 @@ public class OntologyExporter {
             copyResource(OWLHTMLConstants.JS_TREE, root);
 
             // initialise the all resources index
-            indexAllResourcesRenderer = new OWLObjectIndexDoclet(kit);
+            indexAllResourcesRenderer = new OWLObjectIndexHTMLPage(kit);
             indexAllResourcesRenderer.setTitle(NamedObjectType.entities.getPluralRendering());
-
-            // TODO: the all resources renderer is no longer a full HTML page
 
             // step through the ontologies
             for (OWLOntology ont : kit.getVisibleOntologies()){
@@ -181,9 +182,9 @@ public class OntologyExporter {
 
 
     private void exportOntology(OWLOntology ont) throws IOException {
+
         // export the ontology summary
-        OWLDocPage<OWLOntology> ontologySummary = new OWLDocPage<OWLOntology>(kit);
-        ontologySummary.addDoclet(new OWLOntologySummaryDoclet(kit));
+        OWLOntologySummaryHTMLPage ontologySummary = new OWLOntologySummaryHTMLPage(kit);
         logger.debug("exporting ontology: " + ont);
         ontologySummary.setUserObject(ont);
 
@@ -198,7 +199,7 @@ public class OntologyExporter {
         out.flush();
         out.close();
 
-        OWLObjectIndexDoclet ontologyIndexRenderer = getTypeIndexRenderer(NamedObjectType.ontologies);
+        OWLObjectIndexHTMLPage ontologyIndexRenderer = getTypeIndexRenderer(NamedObjectType.ontologies);
         ontologyIndexRenderer.add(ont);
 
         exportReferencedEntities(ont);
@@ -206,15 +207,23 @@ public class OntologyExporter {
 
     private void exportReferencedEntities(OWLOntology ont) throws IOException {
 
-        SummaryPageFactory fac = new SummaryPageFactory(kit);
+        final OWLClassSummaryHTMLPage clsSummary = new OWLClassSummaryHTMLPage(kit);
+        final OWLObjectPropertySummaryHTMLPage objPropSummary = new OWLObjectPropertySummaryHTMLPage(kit);
+        final OWLDataPropertySummaryHTMLPage dataPropSummary = new OWLDataPropertySummaryHTMLPage(kit);
+        final OWLAnnotationPropertySummaryHTMLPage annotationPropSummary = new OWLAnnotationPropertySummaryHTMLPage(kit);
+        final OWLIndividualSummaryHTMLPage indSummary = new OWLIndividualSummaryHTMLPage(kit);
+        final OWLDatatypeSummaryHTMLPage datatypeSummary = new OWLDatatypeSummaryHTMLPage(kit);
 
+        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionShowMiniHierarchies)){
+            final OWLClassHierarchyTreeFragment clsTreeModel = new OWLClassHierarchyTreeFragment(kit, kit.getOWLServer().getClassHierarchyProvider(), "Asserted Class Hierarchy");
+            clsSummary.setOWLHierarchyRenderer(new HierarchyRootDoclet<OWLClass>(kit, clsTreeModel));
 
-        final OWLDocPage<OWLClass> clsSummary = fac.getSummaryPage(OWLClass.class);
-        final OWLDocPage<OWLObjectProperty> objPropSummary = fac.getSummaryPage(OWLObjectProperty.class);
-        final OWLDocPage<OWLDataProperty> dataPropSummary = fac.getSummaryPage(OWLDataProperty.class);
-        final OWLDocPage<OWLAnnotationProperty> annotationPropSummary = fac.getSummaryPage(OWLAnnotationProperty.class);
-        final OWLDocPage<OWLIndividual> indSummary = fac.getSummaryPage(OWLIndividual.class);
-        final OWLDocPage<OWLDatatype> datatypeSummary = fac.getSummaryPage(OWLDatatype.class);
+            final OWLPropertyHierarchyTreeFragment<OWLObjectProperty> objPropTreeModel = new OWLPropertyHierarchyTreeFragment<OWLObjectProperty>(kit, kit.getOWLServer().getOWLObjectPropertyHierarchyProvider());
+            objPropSummary.setOWLHierarchyRenderer(new HierarchyRootDoclet<OWLObjectProperty>(kit, objPropTreeModel));
+
+            final OWLPropertyHierarchyTreeFragment<OWLDataProperty> dataPropTreeModel = new OWLPropertyHierarchyTreeFragment<OWLDataProperty>(kit, kit.getOWLServer().getOWLDataPropertyHierarchyProvider());
+            dataPropSummary.setOWLHierarchyRenderer(new HierarchyRootDoclet<OWLDataProperty>(kit, dataPropTreeModel));
+        }
 
         // export classes
         exportReferencedEntities(NamedObjectType.classes,
@@ -246,6 +255,7 @@ public class OntologyExporter {
                                  ont.getIndividualsInSignature(),
                                  ont);
 
+
         // export datatypes
         exportReferencedEntities(NamedObjectType.datatypes,
                                  datatypeSummary,
@@ -253,7 +263,7 @@ public class OntologyExporter {
                                  ont);
     }
 
-    private void exportReferencedEntities(NamedObjectType type, OWLDocPage ren,
+    private void exportReferencedEntities(NamedObjectType type, EmptyOWLDocPage ren,
                                           Set<? extends OWLEntity>entities, OWLOntology ont) throws IOException {
         if (!entities.isEmpty()){
 
@@ -270,11 +280,11 @@ public class OntologyExporter {
             File ontologyEntityIndexFile = new File(root, localFilename);
             ensureExists(ontologyEntityIndexFile);
             PrintWriter indexWriter = fileUtils.open(ontologyEntityIndexFile);
-            OWLObjectIndexDoclet ontIndexRenderer = new OWLObjectIndexDoclet(kit);
+            OWLObjectIndexHTMLPage ontIndexRenderer = new OWLObjectIndexHTMLPage(kit);
             ontIndexRenderer.setTitle(kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont) + ": " + type);
 
             // index generation for all ontologies
-            OWLObjectIndexDoclet indexAllRenderer = getTypeIndexRenderer(type);
+            OWLObjectIndexHTMLPage indexAllRenderer = getTypeIndexRenderer(type);
 
             for (OWLEntity entity : entities){
 
@@ -295,15 +305,13 @@ public class OntologyExporter {
 
             logger.debug("Rendering index: " + type);
 
-            OWLDocPage page = new OWLDocPage(kit);
-            page.addDoclet(ontIndexRenderer);
-            page.renderAll(indexBaseURL, indexWriter);
+            ontIndexRenderer.renderAll(indexBaseURL, indexWriter);
             indexWriter.flush();
             indexWriter.close();
         }
     }
 
-    private boolean exportEntity(OWLEntity entity, OWLDocPage ren) throws IOException {
+    private boolean exportEntity(OWLEntity entity, EmptyOWLDocPage ren) throws IOException {
 
         URL entityURL = kit.getURLScheme().getURLForOWLObject(entity);
         String localFilename = URLUtils.createRelativeURL(kit.getBaseURL(), entityURL);
@@ -333,10 +341,10 @@ public class OntologyExporter {
         }
     }
 
-    private OWLObjectIndexDoclet getTypeIndexRenderer(NamedObjectType type) throws MalformedURLException {
-        OWLObjectIndexDoclet indexAllRenderer = typeIndices.get(type);
+    private OWLObjectIndexHTMLPage getTypeIndexRenderer(NamedObjectType type) throws MalformedURLException {
+        OWLObjectIndexHTMLPage indexAllRenderer = typeIndices.get(type);
         if (indexAllRenderer == null){
-            indexAllRenderer = new OWLObjectIndexDoclet(kit);
+            indexAllRenderer = new OWLObjectIndexHTMLPage(kit);
             indexAllRenderer.setTitle("All " +
                                       type.toString().substring(0, 1).toUpperCase() +
                                       type.toString().substring(1).toLowerCase());
@@ -382,10 +390,7 @@ public class OntologyExporter {
         String indexFile = kit.getHTMLProperties().get(OWLHTMLProperty.optionIndexAllURL);
         PrintWriter indexAllWriter = fileUtils.open(new File(root, indexFile));
         URL pageURL = kit.getURLScheme().getURLForRelativePage(indexFile);
-
-        OWLDocPage page = new OWLDocPage(kit);
-        page.addDoclet(indexAllResourcesRenderer);
-        page.renderAll(pageURL, indexAllWriter);
+        indexAllResourcesRenderer.renderAll(pageURL, indexAllWriter);
         indexAllWriter.flush();
         indexAllWriter.close();
     }

@@ -4,13 +4,13 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Author: Nick Drummond<br>

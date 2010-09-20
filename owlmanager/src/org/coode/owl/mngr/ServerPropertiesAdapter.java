@@ -1,11 +1,12 @@
 package org.coode.owl.mngr;
 
+import java.util.List;
+import java.util.Set;
+import java.util.Map;
 import java.beans.PropertyChangeListener;
+import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
 /*
 * Copyright (C) 2007, University of Manchester
 *

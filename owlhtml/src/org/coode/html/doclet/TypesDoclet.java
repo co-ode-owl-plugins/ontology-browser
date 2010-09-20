@@ -5,8 +5,8 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import java.util.Collection;
 import java.util.Set;

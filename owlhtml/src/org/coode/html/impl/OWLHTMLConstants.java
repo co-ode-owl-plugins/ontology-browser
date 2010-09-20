@@ -2,8 +2,8 @@ package org.coode.html.impl;
 
 import org.coode.owl.mngr.ServerConstants;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.MalformedURLException;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -37,55 +37,53 @@ import java.net.URL;
  */
 public class OWLHTMLConstants extends ServerConstants {
 
-    public static final String DEFAULT_ENCODING = "UTF-8";
+    public static final String DEFAULT_ENCODING = "utf8";
 
-    public static final String JS_ROOT = "js/";
-    public static final String CSS_BASE= "css/";
-    public static final String IMAGES_BASE = "images/";
 
-    public static final String JS_DEFAULT = JS_ROOT + "default.js";
-    public static final String JS_DL_QUERY = JS_ROOT + "dlquery.js";
-    public static final String JS_TREE = JS_ROOT + "tree.js";
-    public static final String AUTO_SUGGEST_JS = JS_ROOT + "bsn.AutoSuggest_2.1_multiword.js";
+    public static final String JS_DEFAULT = "default.js";
+    public static final String JS_FORM = "form.js";
+    public static final String JS_DL_QUERY = "dlquery.js";
+    public static final String JS_TREE = "tree.js";
+    public static final String IMAGES_REMOVE_PNG = "images/remove.png";
+    public static final String AUTO_SUGGEST_JS = "bsn.AutoSuggest_2.1_multiword.js";
+    public static final String AUTO_SUGGEST_CSS = "css/autosuggest_inquisitor.css";
 
-    public static final String CSS_DEFAULT = CSS_BASE + "default.css";
-    public static final String AUTO_SUGGEST_CSS = CSS_BASE + "autosuggest_inquisitor.css";
+    // used to find the base URL of the servlets - will hunt in request URL for this string
+    public static final String ONTOLOGY_SERVER = "/browser/";
 
     public static final String DEFAULT_EXTENSION = ".html";
 
     public static final String INDEX_HTML = "index" + DEFAULT_EXTENSION;
 
+    public static final String ONTOLOGY_HTML = "ontology" + DEFAULT_EXTENSION;
     public static final String CONTENTS_HTML = "contents" + DEFAULT_EXTENSION;
     public static final String DL_QUERY_HTML = "dlquery/";
-    public static final String QUERY_HTML = "query/";
+    public static final String MANAGE_HTML = "manage/";
     public static final String OPTIONS_HTML = "options/";
     public static final String HEADER_HTML = "header" + DEFAULT_EXTENSION;
     public static final String SIGNOUT_HTML = "signout" + DEFAULT_EXTENSION;
 
     public static final String DL_QUERY_LABEL = "DL Query";
-    public static final String LOAD_LABEL = "Load";
+    public static final String PERMALINK_LABEL = "Permalink";    
+    public static final String MANAGE_LABEL = "Manage";
     public static final String CONTENTS_LABEL = "Contents";
     public static final String RESTART_LABEL = "Restart";
     public static final String BOOKMARKS_LABEL = "Bookmarks";
-    public static final String PERMALINK_LABEL = "permalink";
+
+    public static final int MAX_SESSIONS = 4;
+    public static final int SESSION_TIMEOUT = 5;
 
     public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
 
     public static final URL HOME_PAGE;
 
-    public static final String EQUIV_CHAR = "&equiv;";
-    public static final String SUBCLASS_CHAR = "&sube;";
+    public static final String EQUIV_CHAR = "\u2261";
+    public static final String SUBCLASS_CHAR = "\u2286";
 
     public static final String START_QUERY = "?";
     public static final String EQUALS = "=";
     public static final String PARAM_SEP = "&";
     public static final String SLASH = "/";
-
-    // how far towards the root do we trim the trees
-    public static final int DEFAULT_TREE_ANCESTORS_COUNT = 10;
-
-     // actually needs one more layer than displayed, as this is required for determining if leaf
-    public static final int DEFAULT_TREE_DESCENDANTS_COUNT = 2;
 
 
     static {
@@ -110,4 +108,5 @@ public class OWLHTMLConstants extends ServerConstants {
 
     // non-external values
     public static final String DEFAULT_INDEX_ALL_URL = "index-all" + DEFAULT_EXTENSION;
+    public static final String CSS_DEFAULT = "default.css";
 }

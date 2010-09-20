@@ -2,10 +2,11 @@ package org.coode.html.index;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.BookmarksDoclet;
+import org.coode.html.doclet.ElementsDoclet;
 import org.coode.html.doclet.OntologyContentsDoclet;
 import org.coode.html.doclet.OverallContentsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.page.OWLDocPage;
+import org.coode.html.page.EmptyOWLDocPage;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
@@ -22,7 +23,7 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class OWLContentsHTMLPage extends OWLDocPage<OWLOntology> {
+public class OWLContentsHTMLPage extends EmptyOWLDocPage<OWLOntology> {
 
     private OverallContentsDoclet contentsDoclet;
 
@@ -35,18 +36,18 @@ public class OWLContentsHTMLPage extends OWLDocPage<OWLOntology> {
 
         setTitle(OWLHTMLConstants.CONTENTS_LABEL);
 
-        final Set<OWLOntology> visibleOntologies = getOWLHTMLKit().getVisibleOntologies();
+        final Set<OWLOntology> visibleOntologies = getHTMLGenerator().getVisibleOntologies();
 
         if (visibleOntologies.size() > 1){
             for (OWLOntology ont : visibleOntologies){
-                OntologyContentsDoclet doclet = new OntologyContentsDoclet(getOWLHTMLKit());
+                OntologyContentsDoclet doclet = new OntologyContentsDoclet(getHTMLGenerator());
                 doclet.setPinned(true);
                 doclet.setUserObject(ont);
                 addDoclet(doclet);
             }
         }
 
-        addDoclet(new BookmarksDoclet(kit));
+        addDoclet(new BookmarksDoclet(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, kit));
     }
 
     public void setTitle(String title) {

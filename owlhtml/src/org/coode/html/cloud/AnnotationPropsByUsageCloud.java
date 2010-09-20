@@ -2,8 +2,8 @@ package org.coode.html.cloud;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.url.URLScheme;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 
 import java.net.URL;
 import java.util.HashSet;

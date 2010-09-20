@@ -4,20 +4,15 @@ import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
-import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
+import java.net.*;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Author: Nick Drummond<br>

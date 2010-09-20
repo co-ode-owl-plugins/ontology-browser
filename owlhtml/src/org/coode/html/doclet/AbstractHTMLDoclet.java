@@ -4,7 +4,6 @@
 package org.coode.html.doclet;
 
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.page.HTMLPage;
 import org.coode.html.util.URLUtils;
 
 import java.io.PrintWriter;
@@ -40,15 +39,9 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
     }
 
     public final void renderAll(URL pageURL, PrintWriter out) {
-        try{
-            renderHeader(pageURL, out);
-            renderContent(pageURL, out);
-            renderFooter(pageURL, out);
-        }
-        catch (Throwable e) {
-            e.printStackTrace();
-            out.println("<p>" + e.getMessage() + "</p>");
-        }
+        renderHeader(pageURL, out);
+        renderContent(pageURL, out);
+        renderFooter(pageURL, out);
     }
 
     public final void addDoclet(HTMLDoclet<O> doclet){
@@ -115,14 +108,6 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
         return pinned;
     }
 
-    public boolean isFullPage() {
-        return false;
-    }
-
-    public HTMLPage asPage() {
-        return null; // not a page
-    }
-
     public Set<URL> getRequiredCSS() {
         Set<URL> css = new HashSet<URL>();
         for (HTMLDoclet doclet : doclets){
@@ -151,60 +136,31 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
      * @param out printwriter to write to
      */
     protected final void renderLink(String name, URL href, OWLHTMLConstants.LinkTarget target, String cssClass, boolean singleFrame, URL pageURL, PrintWriter out) {
-        final String relURL = URLUtils.createRelativeURL(pageURL, href);
-        if (relURL.length() == 0){
-            out.print("<span class='currentpage'>");
-            out.print(name);
-            out.print("</span>");
+        out.print("<a href='" + URLUtils.createRelativeURL(pageURL, href) + "'");
+
+        if (cssClass != null){
+            out.print(" class='" + cssClass + "'");
         }
-        else{
-            out.print("<a href='" + relURL + "'");
 
-            if (cssClass != null){
-                out.print(" class='" + cssClass + "'");
-            }
-
-            // if the linktarget is another window or we are in a frames view add the target
-            if (target != null && (target == OWLHTMLConstants.LinkTarget._blank || !singleFrame)){
-                out.print(" target='" + target + "'");
-            }
-
-            out.print(" >" + name + "</a>");
+        // if the linktarget is another window or we are in a frames view add the target
+        if (target != null && (target == OWLHTMLConstants.LinkTarget._blank || !singleFrame)){
+            out.print(" target='" + target + "'");
         }
+
+        out.println(" >" + name + "</a>");
     }
 
     protected final void renderBoxStart(String name, PrintWriter out) {
-        String id = name != null ? name.toLowerCase().replace(" ", "_") : "ID" + new Random().nextLong();
-        renderBoxStart(name, id, out);
+        out.println("<h2>" + name + "</h2>");
+        out.println("<div class='codebox' id='" + name.toLowerCase().replace(" ", "_") + "'>");
     }
 
     protected final void renderBoxStart(String name, String id, PrintWriter out) {
-        out.println();
-        if (name != null){
-            out.print("<div id='");
-            out.print(id);
-            out.println("'>");
-
-            out.print("<h4>");
-            out.print(name);
-            out.println("</h4>");
-        }
-        out.print("<div class='codebox");
-        if (name == null){
-            out.print("' id='");
-            out.print(id);
-        }
-        out.println("'>");
+        out.println("<h2>" + name + "</h2>");
+        out.println("<div class='codebox' id='" + id + "'>");
     }
 
-    protected final void renderBoxEnd(String name, PrintWriter out) {
-        out.println("</div>");
-        if (name != null){
-            out.print("</div>");
-            out.print("<!-- ");
-            out.print(name.toLowerCase());
-            out.println(" -->");
-        }
-        out.println();
+    protected final void renderBoxEnd(String id, PrintWriter out) {
+        out.println("</div><!-- " + id.toLowerCase() + " -->");
     }
 }

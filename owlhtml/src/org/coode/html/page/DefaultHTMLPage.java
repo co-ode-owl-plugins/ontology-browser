@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * Also has convenience methods for adding JS and CSS imports, and an onLoad JS action.
  */
-public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPage<O> {
+public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> {
 
     private List<URL> cssImports = new ArrayList<URL>();
     private List<URL> jsImports = new ArrayList<URL>();
@@ -37,35 +37,30 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
 
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.println("<html>");
-        out.println("<head>");
+        out.println("<html><head>");
 
         out.println("<title>" + getTitle() + "</title>");
 
-        out.print("<meta http-equiv='content-type' content='text/html;charset=");
-        out.print(getEncoding());
-        out.println("'>");
+        out.println("<meta http-equiv='content-type' content='text/html;charset=" + getEncoding() + "'>");
 
         for (URL cssURL : getRequiredCSS()){
-            out.print("<link rel='stylesheet' href='");
-            out.print(URLUtils.createRelativeURL(pageURL, cssURL));
-            out.println("' type='text/css' />");
+            out.println("<link rel='stylesheet' href='" + URLUtils.createRelativeURL(pageURL, cssURL) +
+                        "' type='text/css' />");
         }
 
         for (URL jsURL : getRequiredJS()){
-            out.print("<script src='");
-            out.print(URLUtils.createRelativeURL(pageURL, jsURL));
-            out.println("' type='text/javascript'></script>");
+            out.println("<script src='" + URLUtils.createRelativeURL(pageURL, jsURL) +
+                        "' type='text/javascript'></script>");
         }
 
-        out.println("</head>\n\n");
+        out.println("</head>");
 
         out.print("<body");
 
         String onloadJS = onload;
-//        if (onloadJS.length() > 0){
-//            onloadJS += ";";
-//        }
+        if (onloadJS.length() > 0){
+            onloadJS += ";";
+        }
         if (focusedComponent != null){
             onloadJS += "document.getElementById(\"" + focusedComponent + "\").focus();";
         }
@@ -75,10 +70,6 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
         out.println(">");
     }
 
-    @Override
-    public boolean isFullPage() {
-        return true;
-    }
 
     protected String getEncoding() {
         return OWLHTMLConstants.DEFAULT_ENCODING;
@@ -86,8 +77,7 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
 
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        out.println("</body>");
-        out.println("</html>");
+        out.println("</body></html>");
     }
 
     protected void addCSS(URL css){

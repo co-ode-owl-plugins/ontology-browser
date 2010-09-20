@@ -10,9 +10,9 @@ import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.util.ModelUtil;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -55,39 +55,36 @@ public class RestURLScheme extends AbstractURLScheme {
 
 
     public URL getURLForOWLObject(OWLObject owlObject) {
-        if (owlObject == null){
-            throw new NullPointerException("OWLObject may not be null");
-        }
-
-        String type;
-        int code;
-
-        if (owlObject instanceof OWLEntity){
-            type = NamedObjectType.getType(owlObject).toString();
-            code = ((OWLEntity)owlObject).getIRI().hashCode();
-        }
-        else if (owlObject instanceof OWLOntology){
-            type = NamedObjectType.getType(owlObject).toString();
-            code = ((OWLOntology)owlObject).getOntologyID().hashCode();
-        }
-        else{
-            type = owlObject.getClass().getSimpleName();
-            code = owlObject.hashCode();
-        }
-
-        StringBuilder sb = new StringBuilder(type);
-        sb.append(OWLHTMLConstants.SLASH);
-        sb.append(code);
-        sb.append(OWLHTMLConstants.SLASH);
-
-        if (additionalLinkArguments != null){
-            sb.append(additionalLinkArguments);
-        }
-
         try {
+
+            String type;
+            int code;
+
+            if (owlObject instanceof OWLEntity){
+                type = NamedObjectType.getType(owlObject).toString();
+                code = ((OWLEntity)owlObject).getIRI().hashCode();
+            }
+            else if (owlObject instanceof OWLOntology){
+                type = NamedObjectType.getType(owlObject).toString();
+                code = ((OWLOntology)owlObject).getOntologyID().hashCode();
+            }
+            else{
+                type = owlObject.getClass().getSimpleName();
+                code = owlObject.hashCode();
+            }
+
+            StringBuilder sb = new StringBuilder(type);
+            sb.append(OWLHTMLConstants.SLASH);
+            sb.append(code);
+            sb.append(OWLHTMLConstants.SLASH);
+
+            if (additionalLinkArguments != null){
+                sb.append(additionalLinkArguments);
+            }
+
             return new URL(getBaseURL(), sb.toString());
         }
-        catch (MalformedURLException e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

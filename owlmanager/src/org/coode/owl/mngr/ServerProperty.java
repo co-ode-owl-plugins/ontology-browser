@@ -1,7 +1,7 @@
 package org.coode.owl.mngr;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -35,7 +35,6 @@ import java.util.Map;
  */
 public enum ServerProperty {
 
-    optionReasonerEnabled("Reasoner enabled", "reasoner.enabled"),    
     optionReasoner("Reasoner", "option_reasoner"),
     optionReasonerUrl("DIG reasoner URL", "option_reaoner_url"), // for DIG reasoners
     optionRenderer("Renderer type", "ren"),

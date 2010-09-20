@@ -1,18 +1,20 @@
 package org.coode.owl.mngr.impl;
 
 import org.coode.owl.mngr.NamedObjectType;
+import org.coode.owl.mngr.OWLNameCache;
 import org.coode.owl.mngr.OWLEntityFinder;
 import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.util.ModelUtil;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.CachingBidirectionalShortFormProvider;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Author: Nick Drummond<br>
@@ -166,21 +168,16 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
     }
 
     private <T extends OWLEntity> void getMatches(String str, Set<T> results, NamedObjectType type){
-        try{
-            Pattern pattern = Pattern.compile(str.toLowerCase());
-            for (String rendering : cache.getShortForms()) { // not very efficient looking at all entity types
-                Matcher m = pattern.matcher(rendering.toLowerCase());
-                if (m.matches()) {
-                    for (OWLEntity entity : cache.getEntities(rendering)){
-                        if (type.getCls().isAssignableFrom(entity.getClass())){
-                            results.add((T)entity);
-                        }
+        Pattern pattern = Pattern.compile(str.toLowerCase());
+        for (String rendering : cache.getShortForms()) { // not very efficient looking at all entity types
+            Matcher m = pattern.matcher(rendering.toLowerCase());
+            if (m.matches()) {
+                for (OWLEntity entity : cache.getEntities(rendering)){
+                    if (type.getCls().isAssignableFrom(entity.getClass())){
+                        results.add((T)entity);
                     }
                 }
             }
-        }
-        catch(PatternSyntaxException e){
-            e.printStackTrace();
         }
     }
 }

@@ -1,11 +1,12 @@
 package org.coode.html.test;
 
 import junit.framework.TestCase;
-import org.apache.log4j.Logger;
-import org.coode.html.util.URLUtils;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.MalformedURLException;
+
+import org.coode.html.util.URLUtils;
+import org.apache.log4j.Logger;
 /*
 * Copyright (C) 2007, University of Manchester
 *

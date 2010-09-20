@@ -1,20 +1,19 @@
 package org.coode.html.impl;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.doclet.*;
 import org.coode.html.url.StaticFilesURLScheme;
 import org.coode.html.url.URLScheme;
-import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.impl.OWLServerImpl;
 import org.coode.owl.mngr.impl.ServerPropertiesAdapterImpl;
-import org.coode.owl.util.OWLObjectComparator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.OWLObject;
+import org.coode.owl.mngr.*;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 
 import java.net.URL;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.List;
+import java.util.Arrays;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -62,10 +61,6 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     private String id;
 
-    private Comparator<OWLObject> comparator;
-
-    private HTMLDocletFactory fac;
-
 
     public OWLHTMLKitImpl(String id, URL baseURL) {
         this(id, new OWLServerImpl(OWLManager.createOWLOntologyManager()), baseURL);
@@ -76,48 +71,6 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         this.id = id;
         this.owlServer = server;
         this.baseURL = baseURL;
-        this.comparator = new OWLObjectComparator<OWLObject>(server);
-        createDocletFactory();
-    }
-
-    private void createDocletFactory() {
-        this.fac = new HTMLDocletFactory(this);
-
-        fac.register("annotationproperty.domains", AnnotationPropertyDomainsDoclet.class);
-        fac.register("annotationproperty.ranges", AnnotationPropertyRangesDoclet.class);
-        fac.register("annotationproperty.supers", AnnotationPropertySuperPropertiesDoclet.class);
-
-        fac.register("class.supers.asserted", AssertedSuperclassesDoclet.class);
-        fac.register("class.equivalents.asserted", AssertedEquivalentsDoclet.class);
-        fac.register("class.disjoints.asserted", DisjointsDoclet.class);
-        fac.register("class.members.asserted", MembersDoclet.class);
-
-        fac.register("property.supers.asserted", AssertedSuperpropertiesDoclet.class);
-        fac.register("property.equivalents.asserted", AssertedEquivpropertiesDoclet.class);
-        fac.register("property.disjoints.asserted", DisjointPropertiesDoclet.class);
-        fac.register("property.domains.asserted", DomainsDoclet.class);
-        fac.register("property.ranges.asserted", RangesDoclet.class);
-        fac.register("property.inverses.asserted", InversesDoclet.class);
-        fac.register("property.characteristics.asserted", PropertyCharacteristicsDoclet.class);
-
-        fac.register("individual.different", DifferentFromDoclet.class);
-        fac.register("individual.same", SameAsDoclet.class);
-        fac.register("individual.types", TypesDoclet.class);
-
-        fac.register("datatype.definition", DatatypeDefinitionDoclet.class);
-
-        fac.register("ontology.annotations", OntologyAnnotationsDoclet.class);
-        fac.register("ontology.contents", OntologyContentsDoclet.class);
-        fac.register("ontology.imports", OntologyImportsDoclet.class);
-        fac.register("ontology.title", OntologyTitleDoclet.class);
-
-        // TODO add summaries?
-
-        fac.register("usage", UsageDoclet.class);
-// TODO tidy up so we can get this        fac.register("hierarchy", HierarchyDoclet.class);
-        fac.register("annotations", AnnotationsDoclet.class);
-        fac.register("bookmarks", BookmarksDoclet.class);
-        fac.register("cloud", CloudDoclet.class);
     }
 
 
@@ -138,9 +91,12 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
             // Allowed values
             List<String> booleanValues = Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString());
             properties.setAllowedValues(OWLHTMLProperty.optionRenderSubs, booleanValues);
+            properties.setAllowedValues(OWLHTMLProperty.optionReasonerEnabled, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionRenderPermalink, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowMiniHierarchies, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowInferredHierarchies, booleanValues);
+            properties.setAllowedValues(OWLHTMLProperty.optionRenderSubExpandLinks, booleanValues);
+
         }
         return properties;
     }
@@ -171,22 +127,11 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         this.urlScheme = urlScheme;
     }
 
-    public HTMLDocletFactory getDocletFactory() {
-        return fac;
-    }
-
-    public Comparator<OWLObject> getOWLObjectComparator() {
-        return comparator;
-    }
-
     public Set<OWLOntology> getVisibleOntologies() {
         Set<OWLOntology> visOnts = new HashSet<OWLOntology>();
-        final OWLOntology activeOnt = owlServer.getActiveOntology();
-        if (activeOnt != null){
-            for (OWLOntology ont : owlServer.getOWLOntologyManager().getImportsClosure(activeOnt)){
-                if (!hiddenOntologies.contains(ont)){
-                    visOnts.add(ont);
-                }
+        for (OWLOntology ont : owlServer.getOWLOntologyManager().getImportsClosure(owlServer.getActiveOntology())){
+            if (!hiddenOntologies.contains(ont)){
+                visOnts.add(ont);
             }
         }
         return visOnts;
@@ -215,9 +160,5 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         properties = null;
         urlScheme = null;
         baseURL = null;
-    }
-
-    public boolean isActive() {
-        return !owlServer.isDead() && !owlServer.getOntologies().isEmpty();
     }
 }

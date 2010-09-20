@@ -36,7 +36,7 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
         setComparator(kit.getOWLServer().getComparator());
     }
 
-    protected final OWLHTMLKit getOWLHTMLKit(){
+    protected final OWLHTMLKit getHTMLGenerator(){
         return kit;
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
 
     protected final Collection<E> getElements(){
         if (ontologies == null){
-            return getElements(getOWLHTMLKit().getVisibleOntologies());
+            return getElements(getHTMLGenerator().getVisibleOntologies());
         }
         else{
             return getElements(ontologies);

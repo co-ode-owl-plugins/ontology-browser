@@ -3,15 +3,19 @@
 */
 package org.coode.owl.mngr.impl;
 
+import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
-import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
+import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
 import org.semanticweb.owlapi.util.NamespaceUtil;
+import org.semanticweb.owlapi.util.ShortFormProvider;
 
 import java.text.ParseException;
 
@@ -55,7 +59,7 @@ public class ManchesterOWLSyntaxParser implements OWLClassExpressionParser {
         final OWLDataFactory df = ontMngr.getOWLDataFactory();
 
         ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(df, expression);
-        parser.setDefaultOntology(server.getActiveOntology());
+
         parser.setOWLEntityChecker(checker);
 
         return parser;

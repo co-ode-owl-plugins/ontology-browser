@@ -1,7 +1,7 @@
 package org.coode.html.impl;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -35,29 +35,30 @@ import java.util.Map;
  */
 public enum OWLHTMLProperty {
 
-    optionContentWindow("Content window", "content-window"),
-    optionIndexAllURL("Index all URL", "index-all-url"),
-    optionDefaultCSS("CSS file", "css"),
-    optionUseFrames("Use frames", "frames"),
-    optionShowMiniHierarchies("Show hierarchies", "option_show_mini_hierarchies"),
-    optionShowInferredHierarchies("Show inferred hierarchies", "option_show_inferred_hierarchies"),
-    optionRenderPermalink("Render permalinks", "option_render_permalink"),
-    optionRenderOntologySummaryCloud("Ontology summary cloud links", "option_render_ontology_summary_cloud"),
-    optionRenderSubs("Render children", "option_render_subs");
+    optionContentWindow("content-window"),
+    optionIndexAllURL("index-all-url"),
+    optionDefaultCSS("css"),
+    optionUseFrames("frames"),
+    optionReasonerEnabled("reasoner.enabled"),
+    optionShowMiniHierarchies("option_show_mini_hierarchies"),
+    optionShowInferredHierarchies("option_show_inferred_hierarchies"),
+    optionRenderPermalink("option_render_permalink"),
+    optionRenderOntologySummaryCloud("option_render_ontology_summary_cloud"),
+    optionRenderSubExpandLinks("option_render_sub_expand_links"),
+    optionRenderSubs("option_render_subs");
 
     private String[] altNames;
 
-    private String shortName;
 
-
-    OWLHTMLProperty(String shortName, String ... altNames) {
-        this.shortName = shortName;
+    OWLHTMLProperty(String ... altNames) {
         this.altNames = altNames;
     }
+
 
     public String[] getAlternateNames() {
         return altNames;
     }
+
 
     public static Map<String, String> generateDeprecatedNamesMap() {
         Map<String, String> map = new HashMap<String, String>();
@@ -69,8 +70,4 @@ public enum OWLHTMLProperty {
         return map;
     }
 
-    @Override
-    public String toString() {
-        return shortName;
-    }
 }

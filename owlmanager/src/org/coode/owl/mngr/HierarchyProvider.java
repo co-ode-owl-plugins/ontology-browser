@@ -1,5 +1,7 @@
 package org.coode.owl.mngr;
 
+import org.semanticweb.owlapi.model.OWLPropertyRange;
+
 import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
@@ -34,11 +36,7 @@ import java.util.Set;
  */
 public interface HierarchyProvider<O> {
 
-    Set<O> getRoots();
-
-    boolean isRoot(O node);
-
-    boolean isLeaf(O node);
+    O getRoot();
 
     Set<O> getParents(O node);
 
@@ -49,8 +47,6 @@ public interface HierarchyProvider<O> {
     Set<O> getDescendants(O node);
 
     Set<O> getAncestors(O node);
-
-    boolean hasAncestor(O node, O ancestor);
 
     void dispose();
 }

@@ -5,7 +5,7 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.page.HTMLPage;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.util.URLUtils;
 import org.semanticweb.owlapi.model.OWLEntity;
 
@@ -75,14 +75,6 @@ public class LinkDoclet<O extends OWLEntity> implements HTMLDoclet<O>{
         return true;
     }
 
-    public boolean isFullPage() {
-        return false;
-    }
-
-    public HTMLPage asPage() {
-        return null;
-    }
-
     public Set<URL> getRequiredCSS() {
         return Collections.emptySet();
     }
@@ -104,8 +96,7 @@ public class LinkDoclet<O extends OWLEntity> implements HTMLDoclet<O>{
     }
 
     private boolean isSingleFrameNavigation() {
-        return true;
-//        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
+        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
     }
 
     public void addAttribute(String attr, String value) {

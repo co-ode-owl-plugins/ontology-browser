@@ -4,9 +4,6 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.url.PermalinkURLScheme;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
@@ -30,29 +27,10 @@ public abstract class AbstractTitleDoclet<O extends OWLObject> extends AbstractO
 
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-
-        final OWLHTMLKit kit = getOWLHTMLKit();
-        final boolean permalink = kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderPermalink);
-
-        out.print("<h2>");
-        out.print(getTitle());
-        out.println("</h2>");
-
-        if (permalink){
-            renderLink(OWLHTMLConstants.PERMALINK_LABEL,
-                       new PermalinkURLScheme(kit.getURLScheme(), kit).getURLForAbsolutePage(pageURL),
-                       null,
-                       "permalink",
-                       isSingleFrameNavigation(),
-                       pageURL,
-                       out);
-        }
-
+        out.println("<h1>" + getTitle() + "</h1>");
         String subtitle = getSubtitle();
         if (subtitle != null){
-            out.print("<h3>");
-            out.print(subtitle);
-            out.println("</h3>");
+            out.println("<h2 class='summaryURI'>" + subtitle + "</h2>");
         }
     }
 

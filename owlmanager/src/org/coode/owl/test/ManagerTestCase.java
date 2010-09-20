@@ -7,6 +7,7 @@ import org.coode.owl.mngr.impl.OWLServerImpl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
