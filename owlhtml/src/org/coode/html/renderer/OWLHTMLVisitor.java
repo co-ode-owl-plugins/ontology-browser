@@ -549,24 +549,23 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         annotation.getValue().accept(this);
     }
-
-    public void visit(OWLStringLiteral node) {
+    
+    public void visit(OWLLiteral node) {
         write("<span class='" + CSS_LITERAL + "'>\"");
         writeLiteralContents(node.getLiteral());
-        write("\"");
-        final String lang = node.getLang();
-        if (lang != null){
-            write(" <span style='color: black;'>(" + lang + ")</span>");
+        if (node.isRDFPlainLiteral()) {
+            write("\"");
+            final String lang = node.getLang();
+            if (lang != null){
+                write(" <span style='color: black;'>(" + lang + ")</span>");
+            }
+            write("</span>");
         }
-        write("</span>");
-    }
-
-    public void visit(OWLTypedLiteral node) {
-        write("<span class='" + CSS_LITERAL + "'>\"");
-        writeLiteralContents(node.getLiteral());
-        write("\"</span> (");
-        node.getDatatype().accept(this);
-        write(")");
+        else {
+            write("\"</span> (");
+            node.getDatatype().accept(this);
+            write(")");
+        }
     }
 
 
