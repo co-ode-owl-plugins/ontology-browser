@@ -38,8 +38,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologySetProvider;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import org.semanticweb.owlapi.util.AnnotationValueShortFormProvider;
 import org.semanticweb.owlapi.util.CachingBidirectionalShortFormProvider;
 import org.semanticweb.owlapi.util.NonMappingOntologyIRIMapper;
@@ -285,8 +285,8 @@ public class OWLServerImpl implements OWLServer {
                 }
 
                 if (reasoner != null){
-                    this.reasoner = new SynchronizedOWLReasoner(reasoner);
-                    this.reasoner.prepareReasoner();
+                    this.reasoner = new ThreadSafeOWLReasoner(reasoner);
+                    this.reasoner.precomputeInferences(InferenceType.values());
                 }
             }
             catch (Throwable e) {
