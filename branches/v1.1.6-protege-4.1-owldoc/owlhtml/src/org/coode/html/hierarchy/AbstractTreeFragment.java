@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 /**
  * Author: Nick Drummond<br>
@@ -194,24 +193,19 @@ public abstract class AbstractTreeFragment<O extends OWLObject> implements TreeF
     }
 
     protected void refresh() {
-        clear();
-        try {
-            generateAncestorHierarchy(getFocus(), 0);
-            generateDescendantHierarchy(getFocus(), 0);
+    	clear();
+    	generateAncestorHierarchy(getFocus(), 0);
+    	generateDescendantHierarchy(getFocus(), 0);
 
-            roots.addAll(parent2ChildMap.keySet());
-            roots.removeAll(child2ParentMap.keySet());
+    	roots.addAll(parent2ChildMap.keySet());
+    	roots.removeAll(child2ParentMap.keySet());
 
-            if (roots.isEmpty()){
-                roots.add(focus); // this can happen for properties as there is currently no top property
-            }
-        }
-        catch (OWLReasonerException e) {
-            logger.error("Error generating mini hierarchy", e);
-        }
-        refreshRequired = false;
+    	if (roots.isEmpty()){
+    		roots.add(focus); // this can happen for properties as there is currently no top property
+    	}
+    	refreshRequired = false;
     }
 
-    protected abstract void generateAncestorHierarchy(O focus, int i) throws OWLReasonerException;
-    protected abstract void generateDescendantHierarchy(O focus, int i) throws OWLReasonerException;
+    protected abstract void generateAncestorHierarchy(O focus, int i);
+    protected abstract void generateDescendantHierarchy(O focus, int i);
 }

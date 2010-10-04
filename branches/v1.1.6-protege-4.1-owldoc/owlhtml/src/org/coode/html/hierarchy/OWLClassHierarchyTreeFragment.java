@@ -10,7 +10,6 @@ import org.coode.owl.mngr.HierarchyProvider;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 
 /**
@@ -43,7 +42,7 @@ public class OWLClassHierarchyTreeFragment extends AbstractTreeFragment<OWLClass
     }
 
 
-    protected void generateDescendantHierarchy(OWLClass currentCls, int depth) throws OWLReasonerException {
+    protected void generateDescendantHierarchy(OWLClass currentCls, int depth) {
         if (getDescendantLevels() < 0 || depth < getDescendantLevels()){
             // search for subclasses of the node
             Set<OWLClass> namedSubs = hp.getChildren(currentCls);
@@ -57,7 +56,7 @@ public class OWLClassHierarchyTreeFragment extends AbstractTreeFragment<OWLClass
     }
 
 
-    protected void generateAncestorHierarchy(OWLClass cls, int depth) throws OWLReasonerException {
+    protected void generateAncestorHierarchy(OWLClass cls, int depth) {
         if (depth < getAncestorLevels()){
             Set<OWLClass> namedSupers = hp.getParents(cls);
 

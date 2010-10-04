@@ -8,7 +8,6 @@ import java.util.Set;
 import org.coode.html.OWLHTMLKit;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 /**
  * Author: Nick Drummond<br>
@@ -31,7 +30,7 @@ public class OWLPropertyHierarchyTreeFragment<O extends OWLProperty> extends Abs
         return "Asserted Object Property Hierarchy";
     }
 
-    protected void generateDescendantHierarchy(O node, int depth) throws OWLReasonerException {
+    protected void generateDescendantHierarchy(O node, int depth)  {
         if (depth < getDescendantLevels()){
             // search for subclasses of the node
             Set<O> namedSubs = hp.getChildren(node);
@@ -44,7 +43,7 @@ public class OWLPropertyHierarchyTreeFragment<O extends OWLProperty> extends Abs
         }
     }
 
-    protected void generateAncestorHierarchy(O prop, int depth) throws OWLReasonerException {
+    protected void generateAncestorHierarchy(O prop, int depth) {
         if (depth < getAncestorLevels()){
             Set<O> namedSupers = hp.getParents(prop);
             Set<O> equivs = hp.getEquivalents(prop);
