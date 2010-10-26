@@ -23,11 +23,6 @@
         <servlet-class>org.coode.www.servlet.StartPage</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>Index</servlet-name>
-        <display-name>OWLDoc Frames</display-name>
-        <servlet-class>org.coode.www.servlet.Index</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>Contents</servlet-name>
         <display-name>Render Contents</display-name>
         <servlet-class>org.coode.www.servlet.Contents</servlet-class>
@@ -65,11 +60,6 @@
         <display-name>DL Query Page</display-name>
         <description>generates a page with a form on which DL Queries can take place</description>
         <servlet-class>org.coode.www.servlet.DLQuery</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FramesHeader</servlet-name>
-        <display-name>Frames Header</display-name>
-        <servlet-class>org.coode.www.servlet.FramesHeader</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestServlet</servlet-name>
@@ -143,10 +133,6 @@
         <url-pattern>/dlquery/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FramesHeader</servlet-name>
-        <url-pattern>/header.html</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>TestServlet</servlet-name>
         <url-pattern>/test/</url-pattern>
     </servlet-mapping>
@@ -160,7 +146,7 @@
     </servlet-mapping>
 
     <session-config>
-        <session-timeout>1</session-timeout>
+        <session-timeout>10</session-timeout>
     </session-config>
 
 </web-app>
