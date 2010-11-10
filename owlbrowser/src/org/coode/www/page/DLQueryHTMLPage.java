@@ -7,7 +7,6 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.page.OWLDocPage;
-import org.coode.html.url.PermalinkURLScheme;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.doclet.DLQueryBoxDoclet;
 
@@ -38,7 +37,7 @@ public class DLQueryHTMLPage extends OWLDocPage {
 
         setAutoFocusedComponent(acDoclet.getID());
 
-        addOnLoad("queryURL=\"" + new PermalinkURLScheme(kit.getURLScheme(), kit).getURLForRelativePage(OWLHTMLConstants.QUERY_HTML) + "\";");
+        addOnLoad("queryURL=\"" + kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.QUERY_HTML) + "\";");
 
         addDoclet(new AbstractHTMLDoclet(){
 

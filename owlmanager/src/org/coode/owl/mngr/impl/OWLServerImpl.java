@@ -113,7 +113,7 @@ public class OWLServerImpl implements OWLServer {
 
     public OWLOntology loadOntology(URI physicalURI) throws OWLOntologyCreationException {
         for (OWLOntologyID id : getLocationsMap().keySet()){
-            if (getLocationsMap().get(id).equals(physicalURI)){
+            if (physicalURI.equals(getLocationsMap().get(id))){
                 return getOntologyForIRI(id.getDefaultDocumentIRI());
             }
         }
@@ -128,6 +128,31 @@ public class OWLServerImpl implements OWLServer {
         }
         return ont;
     }
+
+
+    public void loadOntologies(final Map<IRI, IRI> ontMap) {
+        OWLOntologyIRIMapper mapper = new OWLOntologyIRIMapper(){
+            public IRI getDocumentIRI(IRI ontologyIRI) {
+                return ontMap.get(ontologyIRI);
+            }
+        };
+        mngr.addIRIMapper(mapper);
+
+        for (IRI iri : ontMap.keySet()){
+            try {
+                mngr.loadOntology(iri);
+            }
+            catch (OWLOntologyAlreadyExistsException e){
+                // do nothing - as we're not trying to load in order just keep going
+            }
+            catch (OWLOntologyCreationException e) {
+                e.printStackTrace();
+            }
+        }
+
+        mngr.removeIRIMapper(mapper);
+    }
+
 
     public OWLOntology reloadOntology(OWLOntology ontology) throws OWLOntologyCreationException {
         URI physicalLocation = getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI();

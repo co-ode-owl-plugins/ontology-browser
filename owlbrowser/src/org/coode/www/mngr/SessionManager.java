@@ -5,6 +5,7 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.url.PermalinkURLScheme;
 import org.coode.html.url.RestURLScheme;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
@@ -12,7 +13,7 @@ import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +24,9 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -150,40 +153,32 @@ public class SessionManager {
 
         try{
             // we are currently reading the file twice - @@TODO make this much nicer
-            // pass 1 to get the properties
+
+            // pass 1 to get the ontology mappings
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            Map<IRI, IRI> ontMap = new HashMap<IRI, IRI>();
+            while ((line = reader.readLine()) != null){
+                    if (line.startsWith(URI_MAPPING_MARKER)){
+                        line = line.substring(URI_MAPPING_MARKER.length(), line.length());
+                        String[] param = line.split("=");
+                        IRI ontURI = IRI.create(param[0].trim());
+                        IRI physicalURI = IRI.create(param[1].trim());
+                        if (ontURI.isAbsolute() && physicalURI.isAbsolute()){
+                            ontMap.put(ontURI, physicalURI);
+                        }
+                    }
+            }
+
+            kit.getOWLServer().loadOntologies(ontMap);
+
+            // pass 2 to get the properties
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
             kit.getHTMLProperties().load(in);
             in.close();
             cleanupProperties(kit);
 
-            // pass 2 to get the ontology mappings
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            int currentLine = 0;
-            String line;
-            List<Exception> exceptions = new ArrayList<Exception>();
-            while ((line = reader.readLine()) != null){
-                try{
-                    if (line.startsWith(URI_MAPPING_MARKER)){
-                        line = line.substring(URI_MAPPING_MARKER.length(), line.length());
-                        String[] param = line.split("=");
-                        URI ontURI = URI.create(param[0].trim());
-                        URI physicalURI = URI.create(param[1].trim());
-                        if (ontURI.isAbsolute() && physicalURI.isAbsolute()){
-                            kit.getOWLServer().loadOntology(physicalURI); // auto set active ont to the first
-                        }
-                    }
-                }
-                catch(OWLOntologyCreationException e){
-                    exceptions.add(e);
-                }
-                currentLine++;
-            }
-
             kit.setCurrentLabel(label);
-
-            if (!exceptions.isEmpty()){
-                throw new OntServerException("There were problems reloading all of your ontologies. Please check the ontologies page");
-            }
         }
         catch(IOException e){
             throw new OntServerException(e);
@@ -262,7 +257,7 @@ public class SessionManager {
         kit.getOWLServer().getOWLOntologyManager().setSilentMissingImportsHandling(true);
 
         // use a servlet URL scheme which encodes the names in params
-        kit.setURLScheme(new RestURLScheme(kit));
+        kit.setURLScheme(new PermalinkURLScheme(new RestURLScheme(kit)));
 
         // register parsers
         kit.getOWLServer().registerDescriptionParser(ServerConstants.Syntax.man.toString(),

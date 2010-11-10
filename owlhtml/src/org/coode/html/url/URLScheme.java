@@ -1,5 +1,6 @@
 package org.coode.html.url;
 
+import org.coode.html.OWLHTMLKit;
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -22,6 +23,8 @@ import java.net.URL;
  */
 public interface URLScheme extends OWLObjectURLRenderer {
 
+    OWLHTMLKit getOWLHTMLKit();
+    
     NamedObjectType getType(URL url);
 
     URL getBaseURL();
