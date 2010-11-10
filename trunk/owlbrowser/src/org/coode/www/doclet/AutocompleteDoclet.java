@@ -136,7 +136,7 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
 
-        String findURL = URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities&"));
+        String findURL = URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities")) + "&";
 
         out.print("<script type=\"text/javascript\">\n" +
                   "    var options = {\n" +

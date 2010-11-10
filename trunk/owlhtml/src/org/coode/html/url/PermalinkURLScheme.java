@@ -29,16 +29,14 @@ public class PermalinkURLScheme implements URLScheme {
     private static final Logger logger = Logger.getLogger(PermalinkURLScheme.class);
 
     private URLScheme baseScheme;
-    private OWLHTMLKit kit;
 
 
-    public PermalinkURLScheme(URLScheme baseScheme, OWLHTMLKit kit) {
+    public PermalinkURLScheme(URLScheme baseScheme) {
         this.baseScheme = baseScheme;
-        this.kit = kit;
     }
 
     private URL append(URL url) {
-        if (kit.getCurrentLabel() != null){
+        if (getOWLHTMLKit().getCurrentLabel() != null){
             String link = url.toString();
             if (!link.contains(OWLHTMLConstants.START_QUERY)){
                 link += OWLHTMLConstants.START_QUERY;
@@ -46,7 +44,7 @@ public class PermalinkURLScheme implements URLScheme {
             else{
                 link += OWLHTMLConstants.PARAM_SEP;
             }
-            link += OWLHTMLParam.session + OWLHTMLConstants.EQUALS + kit.getCurrentLabel();
+            link += OWLHTMLParam.session + OWLHTMLConstants.EQUALS + getOWLHTMLKit().getCurrentLabel();
 
             try {
                 return new URL(link);
@@ -64,6 +62,10 @@ public class PermalinkURLScheme implements URLScheme {
 
     public OWLObject getOWLObjectForURL(URL url) {
         return baseScheme.getOWLObjectForURL(url);
+    }
+
+    public OWLHTMLKit getOWLHTMLKit() {
+        return baseScheme.getOWLHTMLKit();
     }
 
     public NamedObjectType getType(URL url) {

@@ -2,6 +2,7 @@
 
 html {
     font-family: Verdana, Arial, sans-serif;
+    overflow-y: scroll;
 }
 
 body {

@@ -5,7 +5,6 @@ import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.doclet.OWLSelectorDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.url.PermalinkURLScheme;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.www.OntologyBrowserConstants;
 
@@ -80,7 +79,7 @@ public class DLQueryBoxDoclet extends OWLSelectorDoclet{
             }
         };
         acDoclet.setIsTextArea(true);
-        acDoclet.setSubmitURL(new PermalinkURLScheme(kit.getURLScheme(), kit).getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
+        acDoclet.setSubmitURL(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
         acDoclet.setSubmitName("query");
         acDoclet.setMultiword(true);
 

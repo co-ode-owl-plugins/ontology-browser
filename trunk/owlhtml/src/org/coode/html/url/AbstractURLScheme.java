@@ -73,7 +73,7 @@ public abstract class AbstractURLScheme implements URLScheme {
         return kit.getBaseURL();
     }
 
-    protected OWLHTMLKit getOWLHTMLKit(){
+    public OWLHTMLKit getOWLHTMLKit(){
         return kit;
     }
 }

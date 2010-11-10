@@ -9,7 +9,6 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
-import org.coode.html.url.PermalinkURLScheme;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.ParametersBuilder;
@@ -176,10 +175,9 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 break;
             case html:
                 OWLDocPage errorPage = new OWLDocPage(kit);
-                final PermalinkURLScheme permalinkScheme = new PermalinkURLScheme(kit.getURLScheme(), kit);
                 errorPage.addMessage("<p>Error rendering page</p>" +
                                      "<p>Please send the following address to the developers</p><pre>" +
-                                     permalinkScheme.getURLForAbsolutePage(pageURL) + "</pre>");
+                                     kit.getURLScheme().getURLForAbsolutePage(pageURL) + "</pre>");
                 errorPage.addError(e);
                 wrap(errorPage, kit);
                 errorPage.renderAll(pageURL, response.getWriter());

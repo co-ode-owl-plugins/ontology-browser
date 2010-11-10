@@ -38,6 +38,8 @@ public interface OWLServer {
 
     OWLOntology loadOntology(URI ontPhysicalURI) throws OWLOntologyCreationException;
 
+    void loadOntologies(Map<IRI, IRI> ontMap);
+
     OWLOntology reloadOntology(OWLOntology ontology) throws OWLOntologyCreationException;
 
     void removeOntology(OWLOntology ont);
