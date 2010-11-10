@@ -131,8 +131,8 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
         return css;
     }
 
-    public Set<URL> getRequiredJS() {
-        Set<URL> js = new HashSet<URL>();
+    public List<URL> getRequiredJS() {
+        List<URL> js = new ArrayList<URL>();
         for (HTMLDoclet doclet : doclets){
             js.addAll(doclet.getRequiredJS());
         }

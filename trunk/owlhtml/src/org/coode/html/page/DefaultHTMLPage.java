@@ -37,6 +37,9 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
 
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
+        // Strict mode - see http://www.quirksmode.org/css/quirksmode.html
+        out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+
         out.println("<html>");
         out.println("<head>");
 
@@ -104,8 +107,8 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
         return css;
     }
 
-    public Set<URL> getRequiredJS() {
-        Set<URL> js = super.getRequiredJS(); // pick up all required from doclets
+    public List<URL> getRequiredJS() {
+        List<URL> js = super.getRequiredJS(); // pick up all required from doclets
         js.addAll(jsImports); // and any hand added ones
         return js;
     }

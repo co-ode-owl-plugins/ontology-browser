@@ -200,6 +200,13 @@ public class OWLServerImpl implements OWLServer {
                 return ontology;
             }
         }
+
+        // look for an ontology with this location
+        for (OWLOntology ontology : getOntologies()){
+            if (iri.equals(getOWLOntologyManager().getOntologyDocumentIRI(ontology))){
+                return ontology;
+            }
+        }
         return null;
     }
 
@@ -283,7 +290,10 @@ public class OWLServerImpl implements OWLServer {
     }
 
     public synchronized OWLReasoner getOWLReasoner() {
-        if (reasoner == null && !this.isDead()){
+        if (isDead()){
+            throw new RuntimeException("Cannot getOWLReasoner - server is dead");
+        }
+        if (reasoner == null){
 
             final String selectedReasoner = getProperties().get(ServerProperty.optionReasoner);
 
@@ -333,14 +343,21 @@ public class OWLServerImpl implements OWLServer {
     }
 
     public Comparator<OWLObject> getComparator() {
-        if (comparator == null && !this.isDead()){
+        if (isDead()){
+            throw new RuntimeException("Cannot getComparator - server is dead");
+        }
+        if (comparator == null){
             comparator = new OWLObjectComparator<OWLObject>(this);
         }
         return comparator;
     }
 
     public OWLEntityFinder getFinder() {
-        if (finder == null && !this.isDead()){
+        if (isDead()){
+            throw new RuntimeException("Cannot getFinder - server is dead");
+        }
+
+        if (finder == null){
             finder = new OWLEntityFinderImpl(getNameCache(), this);
         }
         return finder;
@@ -348,14 +365,21 @@ public class OWLServerImpl implements OWLServer {
 
 
     public OWLEntityChecker getOWLEntityChecker() {
-        if (owlEntityChecker == null && !this.isDead()){
+        if (isDead()){
+            throw new RuntimeException("Cannot getOWLEntityChecker - server is dead");
+        }
+        if (owlEntityChecker == null){
             owlEntityChecker = new ShortFormEntityChecker(getNameCache());
         }
         return owlEntityChecker;
     }
 
     public ShortFormProvider getShortFormProvider() {
-        if (shortFormProvider == null && !this.isDead()){
+        if (isDead()){
+            throw new RuntimeException("Cannot getShortFormProvider - server is dead");
+        }
+
+        if (shortFormProvider == null){
             String ren = getProperties().get(ServerProperty.optionRenderer);
             if (ren.equals(ServerConstants.RENDERER_FRAG)){
                 shortFormProvider = new MySimpleShortFormProvider();
@@ -398,10 +422,11 @@ public class OWLServerImpl implements OWLServer {
 
 
     public final OWLClassExpressionParser getClassExpressionParser(String type){
-        if (!this.isDead()){
-            return parsers.get(type);
+        if (isDead()){
+            throw new RuntimeException("Cannot getClassExpressionParser - server is dead");
         }
-        return null;
+
+        return parsers.get(type);
     }
 
     public final void registerDescriptionParser(String syntax, OWLClassExpressionParser parser) {
@@ -481,6 +506,9 @@ public class OWLServerImpl implements OWLServer {
     }
 
     private CachingBidirectionalShortFormProvider getNameCache(){
+        if (isDead()){
+            throw new RuntimeException("Cannot getNameCache - server is dead");
+        }
         if (nameCache == null){
             nameCache = new CachingBidirectionalShortFormProvider(){
                 protected String generateShortForm(OWLEntity owlEntity) {

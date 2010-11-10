@@ -439,7 +439,8 @@ function getValueForElement(element){
             return element.options[element.selectedIndex].value;
         case "anchorNode":
             return element.getAttribute("title");
-        case "text": // dropthrough
+        case "text":     // dropthrough
+        case "textarea": // dropthrough
         case "hidden":
             return element.value;
         default:

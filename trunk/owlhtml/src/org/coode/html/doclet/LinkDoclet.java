@@ -11,10 +11,7 @@ import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Author: Nick Drummond<br>
@@ -87,8 +84,8 @@ public class LinkDoclet<O extends OWLEntity> implements HTMLDoclet<O>{
         return Collections.emptySet();
     }
 
-    public Set<URL> getRequiredJS() {
-        return Collections.emptySet();
+    public List<URL> getRequiredJS() {
+        return Collections.emptyList();
     }
 
     public void setCSSClass(String cssClass){

@@ -12,7 +12,6 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -86,8 +85,8 @@ public class HierarchyNodeSubsDoclet<O extends OWLEntity> extends LeafNodeDoclet
         return !isAutoExpandSubs() && getChildren().size() > subThreshold + 1;
     }
 
-    public Set<URL> getRequiredJS() {
-        Set<URL> js = super.getRequiredJS();
+    public List<URL> getRequiredJS() {
+        List<URL> js = super.getRequiredJS();
         if (hideSomeChildren()){
             js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_TREE));
         }

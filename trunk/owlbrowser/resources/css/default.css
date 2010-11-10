@@ -22,14 +22,15 @@ img.button {
 
 div {
     margin-top: 0;
-    -moz-border-radius: 6px; -webkit-border-radius: 6px;
 }
 
 div.codebox, div.error, div.message {
     border: solid 1px #c7cfd5;
     background: #ffffff;
     overflow: hidden;
+    position: relative; /* force everything to be contained and positioned inside */
     padding: 5px;
+    -moz-border-radius: 6px; -webkit-border-radius: 6px;
 }
 
 div.message {
@@ -224,6 +225,9 @@ input.location{
 
 form.autocomplete {
     display: inline;
+}
+
+#findForm{
     float: right;
 }
 
@@ -244,4 +248,16 @@ form#bookmarks{
 
 pre {
     font-family: Verdana, Arial, sans-serif;
+}
+
+#find {
+    width: 200px;
+}
+
+#dlQuery{
+    width: 90%;
+    height: 200px;
+    display: block;
+    margin-bottom: 10px;
+    margin-left: 5px; margin-right: 5px;
 }

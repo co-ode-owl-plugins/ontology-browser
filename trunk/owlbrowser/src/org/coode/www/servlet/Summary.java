@@ -45,12 +45,12 @@ import java.util.*;
  */
 public class Summary extends AbstractOntologyServerServlet {
 
-    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL) throws OntServerException {
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
 
         String uri = params.get(OWLHTMLParam.uri);
         String entityName = params.get(OWLHTMLParam.name);
         String ontology = params.get(OWLHTMLParam.ontology);
-        NamedObjectType type = kit.getURLScheme().getType(servletURL);
+        NamedObjectType type = kit.getURLScheme().getType(pageURL);
 
         Set<OWLObject> results = Collections.emptySet();
         if (uri == null && entityName == null){

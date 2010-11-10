@@ -113,7 +113,7 @@ public class SelectorContentsDoclet implements HTMLDoclet {
         return null;  //@@TODO implement
     }
 
-    public Set getRequiredJS() {
+    public List<URL> getRequiredJS() {
         return null;  //@@TODO implement
     }
 }
