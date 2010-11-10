@@ -157,7 +157,7 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<O> {
         int size = getFontSize(score);
 
         LinkDoclet link = new LinkDoclet<O>(entity, kit);
-        link.setCSS("color: " + colour + "; font-size: " + size + ";");
+        link.setCSS("color: " + colour + "; font-size: " + size + "pt;");
         link.setTarget(target);
         link.addAttribute("title", Integer.toString(score));
 

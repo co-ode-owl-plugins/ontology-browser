@@ -11,6 +11,7 @@ import org.coode.html.util.URLUtils;
 
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,9 +38,9 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
     private String submitName = "find";
     private String jsAction; //javascript to be run when page loads (will be contained in a 'delimited string so make sure it contains \" for literals )
 
-    private String width = "200px";
-
     private static final String ID = "doclet.autocomplete";
+
+    private boolean isTextArea = false;
 
 
     public AutocompleteDoclet(OWLHTMLKit kit, String id, boolean autoSubmitOnAccept) {
@@ -56,12 +57,12 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         this.submitName = submitName;
     }
 
-    public void setJsAction(String jsAction) {
-        this.jsAction = jsAction;
+    public void setIsTextArea(boolean isTextArea){
+        this.isTextArea = isTextArea;
     }
 
-    public void setWidth(String width) {
-        this.width = width;
+    public void setJsAction(String jsAction) {
+        this.jsAction = jsAction;
     }
 
     public void setParamName(String paramName) {
@@ -105,11 +106,21 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         }
         out.println(">");
 
-        out.print("<input name='" + paramName + "' type='text'");
-        if (initialValue != null && initialValue.length() > 0){
-            out.println(" value='" + initialValue + "'");
+        if (isTextArea){
+            out.print("<textarea name='" + paramName + "' ");
+            out.print(" id='" + id + "'>");
+            if (initialValue != null && initialValue.length() > 0){
+                out.print(initialValue);
+            }
+            out.println("</textarea>");
         }
-        out.println(" id='" + id + "' style='width: " + width + ";' />");
+        else{
+            out.print("<input type='text' name='" + paramName + "' ");
+            if (initialValue != null && initialValue.length() > 0){
+                out.println(" value='" + initialValue + "'");
+            }
+            out.println(" id='" + id + "'/>");
+        }
 
         out.println("<input name='syntax' id='dlQuerySyntax' type='hidden' value='man' />"); // no harm leaving this in both
 
@@ -128,10 +139,10 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         String findURL = URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities&"));
 
         out.print("<script type=\"text/javascript\">\n" +
-                "    var options = {\n" +
-                "        script: \"" + findURL + "\",\n" +
-                "        varname: \"input\",\n" +
-                "        cache: false");
+                  "    var options = {\n" +
+                  "        script: \"" + findURL + "\",\n" +
+                  "        varname: \"input\",\n" +
+                  "        cache: false");
         if (multiword){
             out.println(",\n    multiword: true");
         }
@@ -139,8 +150,8 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
             out.println(",\n        callback: function (obj){document." + id + "Form.submit();}\n");
         }
         out.println("    };\n" +
-                "    var as = new AutoSuggest(\"" + id + "\", options);\n" +
-                "</script>");
+                    "    var as = new AutoSuggest(\"" + id + "\", options);\n" +
+                    "</script>");
     }
 
     public String getID() {
@@ -153,8 +164,8 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         return css;
     }
 
-    public Set<URL> getRequiredJS() {
-        Set<URL> js = super.getRequiredJS();
+    public List<URL> getRequiredJS() {
+        List<URL> js = super.getRequiredJS();
         js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_JS));
         return js;
     }

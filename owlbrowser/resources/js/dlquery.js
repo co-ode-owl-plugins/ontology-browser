@@ -124,11 +124,12 @@ function getValueForElement(element){
             return element.options[element.selectedIndex].value;
         case "anchorNode":
             return element.getAttribute("title");
-        case "text": // dropthrough
+        case "text":     // dropthrough
+        case "textarea": // dropthrough
         case "hidden":
             return element.value;
         default:
-            alert("type of property element: " + element.type);
+            alert("cannot get value from property element: " + element.type);
             return "";
     }
 }

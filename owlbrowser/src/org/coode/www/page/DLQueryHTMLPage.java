@@ -7,12 +7,13 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.page.OWLDocPage;
+import org.coode.html.url.PermalinkURLScheme;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.doclet.DLQueryBoxDoclet;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Author: Nick Drummond<br>
@@ -37,7 +38,7 @@ public class DLQueryHTMLPage extends OWLDocPage {
 
         setAutoFocusedComponent(acDoclet.getID());
 
-        addOnLoad("queryURL=\"" + kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.QUERY_HTML) + "\";");
+        addOnLoad("queryURL=\"" + new PermalinkURLScheme(kit.getURLScheme(), kit).getURLForRelativePage(OWLHTMLConstants.QUERY_HTML) + "\";");
 
         addDoclet(new AbstractHTMLDoclet(){
 
@@ -65,8 +66,8 @@ public class DLQueryHTMLPage extends OWLDocPage {
         acDoclet.setInitialValue(query);
     }
 
-    public Set<URL> getRequiredJS() {
-        Set<URL> js = super.getRequiredJS();
+    public List<URL> getRequiredJS() {
+        List<URL> js = super.getRequiredJS();
         js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DL_QUERY));
         return js;
     }

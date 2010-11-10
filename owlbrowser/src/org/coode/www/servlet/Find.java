@@ -49,7 +49,7 @@ public class Find extends AbstractOntologyServerServlet {
     private static final String WILDCARD = "*";
 
 
-    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL) throws OntServerException {
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         Set<OWLEntity> results = getResults(params, kit.getOWLServer());
         return new XMLResultsDoclet(results, kit);
     }

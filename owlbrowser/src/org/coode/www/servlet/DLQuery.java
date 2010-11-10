@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class DLQuery extends AbstractOntologyServerServlet {
 
-    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL servletURL) throws OntServerException {
+    protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         return null; //@@TODO implement
     }
 

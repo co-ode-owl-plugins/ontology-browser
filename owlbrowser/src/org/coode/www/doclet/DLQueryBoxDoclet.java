@@ -5,7 +5,16 @@ import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.doclet.OWLSelectorDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.url.PermalinkURLScheme;
+import org.coode.owl.mngr.ServerProperty;
 import org.coode.www.OntologyBrowserConstants;
+
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Author: drummond<br>
@@ -24,11 +33,56 @@ public class DLQueryBoxDoclet extends OWLSelectorDoclet{
     public DLQueryBoxDoclet(OWLHTMLKit kit) {
         super(kit);
 
-        acDoclet = new AutocompleteDoclet(kit, DL_QUERY_AC_ID, false);
-        acDoclet.setSubmitURL(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
+        acDoclet = new AutocompleteDoclet(kit, DL_QUERY_AC_ID, false){
+
+            @Override
+            protected void renderHeader(URL pageURL, PrintWriter out) {
+                // show the active reasoner
+                out.print("<p>Reasoner: <a href=\"");
+                out.print(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
+                out.print("\">");
+                out.print(getOWLHTMLKit().getOWLServer().getProperties().get(ServerProperty.optionReasoner));
+                out.print("</a></p>");
+
+                super.renderHeader(pageURL, out);
+            }
+
+            @Override
+            protected void renderFooter(URL pageURL, PrintWriter out) {
+                out.print("<script type=\"text/javascript\">\n" +
+                          "new ExpressionEditor(\"" + DL_QUERY_AC_ID + "\",\n" +
+                          "{parser : \"../parse/?format=xml&session=" + getOWLHTMLKit().getCurrentLabel() + "\",\n" +
+                          " autocomplete: \"../autocomplete/?format=xml&session=" + getOWLHTMLKit().getCurrentLabel() + "\",\n" +
+                          " errorHandler: function(e){\n" +
+                          "    var submit = $('#" + DL_QUERY_AC_ID + "Form input[type=submit]');\n" +
+                          "   if (e){\n" +
+                          "      submit.attr('disabled', 'disabled');\n" +
+                          "   }\n" +
+                          "   else{\n" +
+                          "      submit.removeAttr('disabled');\n" +
+                          "   }\n" +
+                          "}" +
+                          "});\n" +
+                          "</script>");
+            }
+
+            @Override
+            public List<URL> getRequiredJS() {
+                List<URL> js = new ArrayList<URL>();
+                js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.JQUERY_JS));
+                js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.GAPHU_JS));
+                return js;
+            }
+
+            @Override
+            public Set<URL> getRequiredCSS() {
+                return Collections.singleton(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.GAPHU_CSS));
+            }
+        };
+        acDoclet.setIsTextArea(true);
+        acDoclet.setSubmitURL(new PermalinkURLScheme(kit.getURLScheme(), kit).getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML));
         acDoclet.setSubmitName("query");
         acDoclet.setMultiword(true);
-        acDoclet.setWidth("300px");
 
         addDoclet(new AbstractTitleDoclet(kit){
 

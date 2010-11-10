@@ -7,6 +7,7 @@ import org.coode.html.page.HTMLPage;
 
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -55,5 +56,5 @@ public interface HTMLDoclet<O> extends Doclet{
 
     Set<URL> getRequiredCSS();
 
-    Set<URL> getRequiredJS();
+    List<URL> getRequiredJS();
 }

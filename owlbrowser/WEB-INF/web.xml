@@ -62,6 +62,18 @@
         <servlet-class>org.coode.www.servlet.DLQuery</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ParseMOS</servlet-name>
+        <display-name>Parse Manchester OWL Syntax</display-name>
+        <description>for use with parse.js</description>
+        <servlet-class>org.coode.www.servlet.ParseMOS</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AutocompleteMOS</servlet-name>
+        <display-name>Autocomplete Manchester OWL Syntax</display-name>
+        <description>for use with parse.js</description>
+        <servlet-class>org.coode.www.servlet.AutocompleteMOS</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>TestServlet</servlet-name>
         <display-name>Test Servlet</display-name>
         <description>Tests for the TOmcat framework</description>
@@ -132,7 +144,7 @@
         <servlet-name>DLQuery</servlet-name>
         <url-pattern>/dlquery/</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
+        <servlet-mapping>
         <servlet-name>TestServlet</servlet-name>
         <url-pattern>/test/</url-pattern>
     </servlet-mapping>
@@ -143,6 +155,14 @@
     <servlet-mapping>
         <servlet-name>Summary</servlet-name>
         <url-pattern>/datatypes/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ParseMOS</servlet-name>
+        <url-pattern>/parse/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AutocompleteMOS</servlet-name>
+        <url-pattern>/autocomplete/</url-pattern>
     </servlet-mapping>
 
     <session-config>

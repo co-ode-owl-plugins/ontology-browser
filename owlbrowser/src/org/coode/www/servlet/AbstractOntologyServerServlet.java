@@ -53,7 +53,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     protected abstract Doclet handleXMLRequest(Map<OWLHTMLParam, String> params,
                                                OWLHTMLKit kit,
-                                               URL servletURL) throws OntServerException;
+                                               URL pageURL) throws OntServerException;
 
     protected abstract HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params,
                                                       OWLHTMLKit kit,
