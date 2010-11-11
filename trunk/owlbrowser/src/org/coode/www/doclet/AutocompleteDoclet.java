@@ -123,6 +123,7 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         }
 
         out.println("<input name='syntax' id='dlQuerySyntax' type='hidden' value='man' />"); // no harm leaving this in both
+        out.println("<input name='session' type='hidden' value='" + getOWLHTMLKit().getCurrentLabel() + "' />");
 
         if (jsAction != null){
             out.println("<input type='button' value='" + submitName + "' onmouseup='" + jsAction + "' />");
