@@ -106,7 +106,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
                 success.add(uri);
             }
             else{
-                throw new IllegalArgumentException("Ontology URIs must be absolute");
+                throw new IllegalArgumentException("Ontology URIs must be absolute: " + uri);
             }
         }
         catch(Exception e){
