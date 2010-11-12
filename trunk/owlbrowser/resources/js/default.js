@@ -126,7 +126,8 @@ function getChildren(li){
             })
         },
         error: function(request, textStatus, errorThrown){
-            alert(textStatus + ": " + errorThrown);
+            // get rid of the spinner and replace with an error message
+            $("ul", this).html("Sorry, cannot get children");
         }
     });
 
