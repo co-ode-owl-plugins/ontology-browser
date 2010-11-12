@@ -19,6 +19,15 @@ import java.util.Set;
  */
 public class ModelUtil {
 
+    public static String getOntologyIdString(OWLOntologyID id){
+        if (id.isAnonymous()){
+            return id.toString();
+        }
+        else{
+            return id.getDefaultDocumentIRI().toString();
+        }
+    }
+
     public static boolean isDeprecated(OWLEntity entity, Set<OWLOntology> ontologies) {
         return false; // there is currently no implementation of deprecated in the OWL API
     }

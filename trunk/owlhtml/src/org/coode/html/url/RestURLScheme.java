@@ -125,7 +125,7 @@ public class RestURLScheme extends AbstractURLScheme {
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            String encodedURI = URLEncoder.encode(ont.getOntologyID().getOntologyIRI().toString(), OWLHTMLConstants.DEFAULT_ENCODING);
+            String encodedURI = URLEncoder.encode(ModelUtil.getOntologyIdString(ont.getOntologyID()), OWLHTMLConstants.DEFAULT_ENCODING);
 
             StringBuilder sb = new StringBuilder(type.toString());
             sb.append(OWLHTMLConstants.SLASH);

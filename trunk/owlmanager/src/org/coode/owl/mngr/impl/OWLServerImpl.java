@@ -2,6 +2,7 @@ package org.coode.owl.mngr.impl;
 
 import org.apache.log4j.Logger;
 import org.coode.owl.mngr.*;
+import org.coode.owl.util.ModelUtil;
 import org.coode.owl.util.MySimpleShortFormProvider;
 import org.coode.owl.util.OWLObjectComparator;
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
@@ -85,14 +86,13 @@ public class OWLServerImpl implements OWLServer {
         }
 
         public void finishedLoadingOntology(LoadingFinishedEvent loadingFinishedEvent) {
-            final IRI iri = loadingFinishedEvent.getOntologyID().getDefaultDocumentIRI();
-            logger.info("loaded " + iri);
-            if (iri != null){
-                final OWLOntology ont = getOntologyForIRI(iri);
-                if (ont != null){
-                    loadedOntology(ont);
-                }
+            OWLOntologyID id = loadingFinishedEvent.getOntologyID();
+            OWLOntology ont = mngr.getOntology(id);
+            if (ont == null){
+                ont = getOntologyForIRI(id.getDefaultDocumentIRI());
             }
+            logger.info("loaded " + ModelUtil.getOntologyIdString(id));
+            loadedOntology(ont);
         }
     };
 
@@ -272,14 +272,27 @@ public class OWLServerImpl implements OWLServer {
         if (activeOntology == null){
             String ont = getProperties().get(ServerProperty.optionActiveOnt);
             if (ont != null){
-                // @@TODO handle anonymous ontologies
-                IRI activeOntIRI = IRI.create(ont);
-                if (activeOntIRI != null){
-                    activeOntology = getOntologyForIRI(activeOntIRI);
+                try{
+                    IRI activeOntIRI = IRI.create(ont);
+                    if (activeOntIRI != null){
+                        activeOntology = getOntologyForIRI(activeOntIRI);
+                    }
+                }
+                catch(Exception e){
+                    activeOntology = getAnonymousOntology(ont);
                 }
             }
         }
         return activeOntology;
+    }
+
+    private OWLOntology getAnonymousOntology(String id) {
+        for (OWLOntology ontology : getOntologies()){
+            if (id.equals(ontology.getOntologyID().toString())){
+                return ontology;
+            }
+        }
+        return null;
     }
 
     public void setActiveOntology(OWLOntology ont) {
@@ -290,11 +303,9 @@ public class OWLServerImpl implements OWLServer {
 
         final OWLOntology activeOnt = getActiveOntology();
         if (activeOnt == null || !activeOnt.equals(ont)){
-            // @@TODO handle anonymous ontologies
-            getProperties().set(ServerProperty.optionActiveOnt, ont.getOntologyID().getDefaultDocumentIRI().toString());
+            getProperties().set(ServerProperty.optionActiveOnt, ModelUtil.getOntologyIdString(ont.getOntologyID()));
         }
     }
-
 
     public Set<OWLOntology> getOntologies() {
         return mngr.getOntologies();
@@ -554,8 +565,8 @@ public class OWLServerImpl implements OWLServer {
         getProperties().setAllowedValues(ServerProperty.optionLabelUri, labelURIs);
 
         List<String> ontologies = new ArrayList<String>();
-        for (OWLOntology o : getOntologies()){
-            ontologies.add(o.getOntologyID().getDefaultDocumentIRI().toString());
+        for (OWLOntology ontology : getOntologies()){
+            ontologies.add(ModelUtil.getOntologyIdString(ontology.getOntologyID()));
         }
         getProperties().setAllowedValues(ServerProperty.optionActiveOnt, ontologies);
     }

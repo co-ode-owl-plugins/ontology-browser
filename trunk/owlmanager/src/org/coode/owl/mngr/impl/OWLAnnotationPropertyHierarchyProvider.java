@@ -52,6 +52,10 @@ public class OWLAnnotationPropertyHierarchyProvider implements HierarchyProvider
     }
 
 
+    public Class<? extends OWLAnnotationProperty> getNodeClass() {
+        return OWLAnnotationProperty.class;
+    }
+
     public Set<OWLAnnotationProperty> getRoots() {
         if (implicitRoots == null){
             implicitRoots = new HashSet<OWLAnnotationProperty>();

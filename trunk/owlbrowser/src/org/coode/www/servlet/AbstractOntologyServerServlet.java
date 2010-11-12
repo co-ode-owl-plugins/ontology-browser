@@ -82,7 +82,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
         session = request.getSession(false);
 
-        final URL pageURL = ServletUtils.rebuildRequestURL(request);
+        final URL pageURL = ServletUtils.getPageURL(request);
 
         final String sessionLabel = getParameter(request, OWLHTMLParam.session);
 
@@ -121,7 +121,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
         // TODO: should really get the request type from the request header but how would we specify htmlfrag?
         String str = getParameter(request, OWLHTMLParam.format);
-        if ("html-frag".equals(str)){ // convert old requests
+        if (OntologyBrowserConstants.HTML_FRAG.equals(str)){ // convert old requests
             format = OntologyBrowserConstants.RequestFormat.htmlfrag;
         }
         else{

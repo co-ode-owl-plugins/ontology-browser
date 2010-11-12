@@ -89,3 +89,46 @@ function GetXmlHttpObject(callback) {
     objXMLHttp.onreadystatechange=callback;
     return objXMLHttp;
 }
+
+$(document).ready(function(){
+    $("li > span.expandable").click(function(e){
+        handleExpand($(this).parent());
+    });
+});
+
+function handleExpand(li){
+    var children = $("ul", li);
+    if (children.length > 0){
+        children.toggle();
+    }
+    else{
+        li.append(getChildren(li));
+    }
+}
+
+function getChildren(li){
+    var childList = $("<ul><li><img src=\"../../images/small_busy.gif\" width=\"10\" height=\"10\"/></li></ul>");
+
+    var data = {
+        format: "html-frag",
+        parent: $("a", li).attr("title"),
+        cls: $(".minihierarchy").attr("class") // will leave the service to split
+    };
+    $.ajax({
+        url: "http://localhost:8080/browser/hierarchy/", // @@TODO: take this hardcoded stuff out
+        data: data,
+        context: li,
+        success: function(data, textStatus, request){
+            this.html(data); // replace the li with an expanded version
+            // and add the expand click listener to the new nodes
+            $("span.expandable", this).click(function(e){
+                handleExpand($(this).parent());
+            })
+        },
+        error: function(request, textStatus, errorThrown){
+            alert(textStatus + ": " + errorThrown);
+        }
+    });
+
+    return childList;
+}

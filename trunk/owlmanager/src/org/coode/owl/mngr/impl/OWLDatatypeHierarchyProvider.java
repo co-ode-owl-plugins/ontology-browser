@@ -31,6 +31,10 @@ public class OWLDatatypeHierarchyProvider implements HierarchyProvider<OWLDataty
         this.root = server.getOWLOntologyManager().getOWLDataFactory().getTopDatatype();
     }
 
+    public Class<? extends OWLDatatype> getNodeClass() {
+        return OWLDatatype.class;
+    }
+
     public Set<OWLDatatype> getRoots() {
         return Collections.singleton(root);
     }

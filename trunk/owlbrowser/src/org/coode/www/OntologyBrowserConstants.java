@@ -28,6 +28,8 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
 
     public static final String DL_QUERY_LABEL = "DL Query";
 
+    public static final String HTML_FRAG = "html-frag";
+
     // supported formats
     public enum RequestFormat{
         xml(MIME_XML),

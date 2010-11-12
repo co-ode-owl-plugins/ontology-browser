@@ -28,24 +28,42 @@ public class NodeDoclet<O extends OWLObject> extends LeafNodeDoclet<O>{
         final O nodeObject = getNodeObject();
         if (nodeObject != null){
             final HierarchyProvider<O> hp = getHierarchyProvider();
-            if (nodeObject.equals(focus)){
-                for (O child : asOrderedList(hp.getChildren(nodeObject))){
-                    addDoclet(new LeafNodeDoclet<O>(getOWLHTMLKit(), child, hp));
+
+            // if no focus is set then just descend another level
+            if (focus == null){
+                expand(nodeObject, hp);
+            }
+            else{
+                // otherwise "prune" the tree to show the minimal paths to the foci
+                if (nodeObject.equals(focus)){
+                    expand(nodeObject, hp);
+                }
+                else if (hp.hasAncestor(focus, nodeObject)){
+                    descend(nodeObject, focus, hp);
                 }
             }
-            else if (hp.hasAncestor(focus, nodeObject)){
-                for (O child : asOrderedList(hp.getChildren(nodeObject))){
-                    if (hp.getDescendants(child).contains(nodeObject)){
-                        // loop
-                        addDoclet(new LeafNodeDoclet<O>(getOWLHTMLKit(), child, hp));
-                    }
-                    else{
-                        NodeDoclet<O> subDoclet = new NodeDoclet<O>(getOWLHTMLKit(), child, hp);
-                        subDoclet.setAutoExpandEnabled(isAutoExpandSubs());
-                        subDoclet.setUserObject(focus);
-                        addDoclet(subDoclet);
-                    }
-                }
+        }
+    }
+
+    // expand one level down
+    private void expand(O nodeObject, HierarchyProvider<O> hp) {
+        for (O child : asOrderedList(hp.getChildren(nodeObject))){
+            addDoclet(new LeafNodeDoclet<O>(getOWLHTMLKit(), child, hp));
+        }
+    }
+
+    // keep expanding
+    private void descend(O nodeObject, O focus, HierarchyProvider<O> hp) {
+        for (O child : asOrderedList(hp.getChildren(nodeObject))){
+            if (hp.getDescendants(child).contains(nodeObject)){
+                // loop
+                addDoclet(new LeafNodeDoclet<O>(getOWLHTMLKit(), child, hp));
+            }
+            else{
+                NodeDoclet<O> subDoclet = new NodeDoclet<O>(getOWLHTMLKit(), child, hp);
+                subDoclet.setAutoExpandEnabled(isAutoExpandSubs());
+                subDoclet.setUserObject(focus);
+                addDoclet(subDoclet);
             }
         }
     }

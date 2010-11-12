@@ -32,6 +32,10 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
         this.server = server;
     }
 
+    public Class<? extends OWLClass> getNodeClass() {
+        return OWLClass.class;
+    }
+
     public Set<OWLClass> getRoots() {
         return Collections.singleton(getOWLThing());
     }

@@ -125,7 +125,7 @@ public class LeafNodeDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O>
             out.print("<li>-&nbsp;");
         }
         else{
-            out.print("<li class='expandable'>+");
+            out.print("<li><span class='expandable'>+</span>");
         }
 
         out.print("&nbsp;");

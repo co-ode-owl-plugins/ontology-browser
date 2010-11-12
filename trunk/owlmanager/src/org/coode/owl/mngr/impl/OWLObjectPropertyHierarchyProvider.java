@@ -31,4 +31,8 @@ public class OWLObjectPropertyHierarchyProvider extends AbstractPropertyHierarch
     protected Set<OWLObjectProperty> getPropertiesInSignature(OWLOntology ont) {
         return ont.getObjectPropertiesInSignature();
     }
+
+    public Class<? extends OWLObjectProperty> getNodeClass() {
+        return OWLObjectProperty.class;
+    }
 }
