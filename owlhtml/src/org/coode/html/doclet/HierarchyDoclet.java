@@ -32,7 +32,7 @@ public class HierarchyDoclet<O extends OWLObject> extends LeafNodeDoclet<O> {
     protected void renderHeader(URL pageURL, PrintWriter out) {
         out.println("<div class='owlselector'>");
         renderBoxStart(title, out);
-        out.println("<ul class='minihierarchy'>");
+        out.println("<ul class='minihierarchy " + getHierarchyProvider().getNodeClass().getSimpleName() + "'>");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
@@ -40,6 +40,8 @@ public class HierarchyDoclet<O extends OWLObject> extends LeafNodeDoclet<O> {
         renderBoxEnd(title, out);
         out.println("</div><!-- owlselector -->");
     }
+
+    
 
     /**
      * This will be the <em>focus</em> object, not the root

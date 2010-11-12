@@ -147,7 +147,19 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
         if (writeLink){
             write("<a class='" + cssClass + "'");
-            write(" href=\"" + link + "\" title='" + ontology.getOntologyID() + "'");
+            String id;
+            if (ontology.getOntologyID().isAnonymous()){
+                id = ontology.getOntologyID().toString();
+            }
+            else{
+                if (ontology.getOntologyID().getVersionIRI() != null){
+                    id = ontology.getOntologyID().getVersionIRI().toString();
+                }
+                else{
+                    id = ontology.getOntologyID().getOntologyIRI().toString();                    
+                }
+            }
+            write(" href=\"" + link + "\" title='" + id + "'");
             if (targetWindow != null){
                 write(" target=\"" + targetWindow + "\"");
             }

@@ -50,6 +50,10 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
     }
 
 
+    public Class<? extends OWLObject> getNodeClass() {
+        return OWLNamedIndividual.class;
+    }
+
     public Set<OWLObject> getRoots() {
         return new HashSet<OWLObject>(cache.keySet());
     }

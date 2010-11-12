@@ -34,6 +34,8 @@ import java.util.Set;
  */
 public interface HierarchyProvider<O> {
 
+    Class<? extends O> getNodeClass();
+
     Set<O> getRoots();
 
     boolean isRoot(O node);

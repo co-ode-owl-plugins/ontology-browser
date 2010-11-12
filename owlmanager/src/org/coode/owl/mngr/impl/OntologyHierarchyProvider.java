@@ -25,6 +25,10 @@ public class OntologyHierarchyProvider implements HierarchyProvider<OWLOntology>
         this.server = server;
     }
 
+    public Class<? extends OWLOntology> getNodeClass() {
+        return OWLOntology.class;
+    }
+
     public Set<OWLOntology> getRoots() {
         Set<OWLOntology> allImported = new HashSet<OWLOntology>();
         Set<OWLOntology> cycles = new HashSet<OWLOntology>();

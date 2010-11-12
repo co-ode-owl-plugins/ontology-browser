@@ -58,7 +58,7 @@ public class ServerOptions extends AbstractOntologyServerServlet {
         if (success){
             String propertyName = params.get(OWLHTMLParam.property);
             String value = params.get(OWLHTMLParam.value);
-            result = "<optionset result=\"true\"><" + propertyName + " value='" + value + "'/></options>";
+            result = "<optionset result=\"true\"><" + propertyName + " value='" + value + "'/></optionset>";
         }
         else{
             result = "<optionset result=\"false\"/>";

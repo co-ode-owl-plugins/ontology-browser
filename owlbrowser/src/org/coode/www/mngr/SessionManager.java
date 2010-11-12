@@ -11,6 +11,7 @@ import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
+import org.coode.owl.util.ModelUtil;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
@@ -113,11 +114,11 @@ public class SessionManager {
 
             // always print the active ontology first
             OWLOntologyID activeOnt = kit.getOWLServer().getActiveOntology().getOntologyID();
-            writer.println(URI_MAPPING_MARKER + activeOnt.getOntologyIRI() + "=" + ontologyMappings.get(activeOnt));
+            writer.println(URI_MAPPING_MARKER + ModelUtil.getOntologyIdString(activeOnt) + "=" + ontologyMappings.get(activeOnt));
 
             onts.remove(activeOnt);
             for (OWLOntologyID ont : onts){
-                writer.println(URI_MAPPING_MARKER + ont.getOntologyIRI() + "=" + ontologyMappings.get(ont));
+                writer.println(URI_MAPPING_MARKER + ModelUtil.getOntologyIdString(ont) + "=" + ontologyMappings.get(ont));
             }
 
             writer.flush();
@@ -164,9 +165,9 @@ public class SessionManager {
                         String[] param = line.split("=");
                         IRI ontURI = IRI.create(param[0].trim());
                         IRI physicalURI = IRI.create(param[1].trim());
-                        if (ontURI.isAbsolute() && physicalURI.isAbsolute()){
+//                        if (ontURI.isAbsolute() && physicalURI.isAbsolute()){
                             ontMap.put(ontURI, physicalURI);
-                        }
+//                        }
                     }
             }
 

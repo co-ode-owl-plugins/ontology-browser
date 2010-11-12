@@ -48,5 +48,6 @@ public enum OWLHTMLParam {
     property,
     value,
     section, // used to specify which doclet is returned in htmlfrag mode
-    confirm
+    cls, // used for hierarchy
+    parent, confirm
 }
