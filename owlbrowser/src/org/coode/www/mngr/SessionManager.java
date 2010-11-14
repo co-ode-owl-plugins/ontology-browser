@@ -5,7 +5,6 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.url.PermalinkURLScheme;
 import org.coode.html.url.RestURLScheme;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
@@ -15,6 +14,7 @@ import org.coode.owl.util.ModelUtil;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,18 +107,19 @@ public class SessionManager {
             OutputStream out = new FileOutputStream(file);
             PrintWriter writer = new PrintWriter(out);
             Map<OWLOntologyID, URI> ontologyMappings = kit.getOWLServer().getLocationsMap();
-            Set<OWLOntologyID> onts = ontologyMappings.keySet();
+            Set<OWLOntologyID> ids = ontologyMappings.keySet();
 
             // this saves the base properties (which includes the OWL server properties)
             kit.getHTMLProperties().save(out);
 
             // always print the active ontology first
-            OWLOntologyID activeOnt = kit.getOWLServer().getActiveOntology().getOntologyID();
+            OWLOntology activeOnt = kit.getOWLServer().getActiveOntology();
             writer.println(URI_MAPPING_MARKER + ModelUtil.getOntologyIdString(activeOnt) + "=" + ontologyMappings.get(activeOnt));
 
-            onts.remove(activeOnt);
-            for (OWLOntologyID ont : onts){
-                writer.println(URI_MAPPING_MARKER + ModelUtil.getOntologyIdString(ont) + "=" + ontologyMappings.get(ont));
+            ids.remove(activeOnt);
+            for (OWLOntologyID id : ids){
+                final OWLOntology ont = kit.getOWLServer().getOWLOntologyManager().getOntology(id);
+                writer.println(URI_MAPPING_MARKER + ModelUtil.getOntologyIdString(ont) + "=" + ontologyMappings.get(id));
             }
 
             writer.flush();
@@ -258,7 +259,7 @@ public class SessionManager {
         kit.getOWLServer().getOWLOntologyManager().setSilentMissingImportsHandling(true);
 
         // use a servlet URL scheme which encodes the names in params
-        kit.setURLScheme(new PermalinkURLScheme(new RestURLScheme(kit)));
+        kit.setURLScheme(new RestURLScheme(kit));
 
         // register parsers
         kit.getOWLServer().registerDescriptionParser(ServerConstants.Syntax.man.toString(),

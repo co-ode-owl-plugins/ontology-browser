@@ -33,6 +33,10 @@ package org.coode.owl.mngr;
  */
 public class ServerConstants {
 
+    public static final String IMPORTS_CLOSURE = "Imports closure";
+    public static final String ALL_ONTOLOGIES = "All ontologies";
+    public static final String ACTIVE_ONTOLOGY = "Active ontology";
+
     public static enum Syntax {man, simple, qd}
 
     // supported renderers

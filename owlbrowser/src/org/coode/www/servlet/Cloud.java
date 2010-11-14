@@ -99,7 +99,7 @@ public class Cloud extends AbstractOntologyServerServlet {
                 if (ontURI != null){
                     OWLOntology ont = kit.getOWLServer().getOWLOntologyManager().getOntology(ontURI);
                     if (ont != null){
-                        ontologies = kit.getOWLServer().getOWLOntologyManager().getImportsClosure(ont);
+                        ontologies = kit.getOWLServer().getActiveOntologies();
                     }
                 }
             }

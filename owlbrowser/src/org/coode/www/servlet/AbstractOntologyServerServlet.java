@@ -174,11 +174,10 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 errorDoclet.renderContent(pageURL, response.getWriter());
                 break;
             case html:
-                OWLDocPage errorPage = new OWLDocPage(kit);
-                errorPage.addMessage("<p>Error rendering page</p>" +
+                kit.addUserError("<p>Error rendering page</p>" +
                                      "<p>Please send the following address to the developers</p><pre>" +
-                                     kit.getURLScheme().getURLForAbsolutePage(pageURL) + "</pre>");
-                errorPage.addError(e);
+                                     kit.getURLScheme().getURLForAbsolutePage(pageURL) + "</pre>", e);
+                OWLDocPage errorPage = new OWLDocPage(kit);
                 wrap(errorPage, kit);
                 errorPage.renderAll(pageURL, response.getWriter());
                 break;

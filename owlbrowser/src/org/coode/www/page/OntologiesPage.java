@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class OntologiesPage extends OWLDocPage {
 
-    public OntologiesPage(OWLHTMLKit kit, URL pageURL, String message) {
+    public OntologiesPage(OWLHTMLKit kit, URL pageURL) {
         super(kit);
 
         setTitle(OntologyBrowserConstants.LOAD_LABEL);
@@ -34,38 +34,31 @@ public class OntologiesPage extends OWLDocPage {
         final Map<OWLOntologyID, URI> locationsMap = kit.getOWLServer().getLocationsMap();
 
 
-            AbstractTitleDoclet titleDoclet = new AbstractTitleDoclet(kit){
+        AbstractTitleDoclet titleDoclet = new AbstractTitleDoclet(kit){
 
-                @Override
-                public String getTitle() {
-                    return NamedObjectType.ontologies.getPluralRendering();
-                }
-
-                @Override
-                public String getSubtitle() {
-                    return null;
-                }
-            };
-
-            addDoclet(titleDoclet);
-
-            if (locationsMap.containsValue(null)){
-                if (message == null){
-                    message = "";
-                }
-                String contentsURL = URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML));
-                message += ("<p>There appear to be missing imports in your ontology.</p>" +
-                            "<p>You can specify a location for any that have not been loaded in the following table.<br />" +
-                            "Or, you can <a href='" + contentsURL +
-                            "'>continue to browse</a> your ontology without loading the imports.</p>");
+            @Override
+            public String getTitle() {
+                return NamedObjectType.ontologies.getPluralRendering();
             }
 
-            OntologyMappingsTableDoclet table = new OntologyMappingsTableDoclet(kit);
-            table.setMap(locationsMap);
-            addDoclet(table);
+            @Override
+            public String getSubtitle() {
+                return null;
+            }
+        };
 
-        if (message != null){
-            addMessage(message);
+        addDoclet(titleDoclet);
+
+        if (locationsMap.containsValue(null)){
+            String contentsURL = URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML));
+            kit.addUserError("<p>There appear to be missing imports in your ontology.</p>" +
+                        "<p>You can specify a location for any that have not been loaded in the following table.<br />" +
+                        "Or, you can <a href='" + contentsURL +
+                        "'>continue to browse</a> your ontology without loading the imports.</p>");
         }
+
+        OntologyMappingsTableDoclet table = new OntologyMappingsTableDoclet(kit);
+        table.setMap(locationsMap);
+        addDoclet(table);
     }
 }

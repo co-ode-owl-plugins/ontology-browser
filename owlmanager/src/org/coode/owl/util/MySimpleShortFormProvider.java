@@ -22,7 +22,7 @@ public class MySimpleShortFormProvider implements ShortFormProvider {
         if (name == null){
             name = iri.toString();
             if (name.endsWith("/")){
-                name = name.substring(name.length()-1);
+                name = name.substring(0, name.length()-1);
             }
             int index = name.lastIndexOf("/");
             if (index >= 0){

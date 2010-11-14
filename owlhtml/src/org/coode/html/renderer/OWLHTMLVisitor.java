@@ -4,6 +4,7 @@
 package org.coode.html.renderer;
 
 import org.apache.log4j.Logger;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.OWLObjectURLRenderer;
 import org.coode.html.util.URLUtils;
@@ -15,6 +16,7 @@ import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,13 +70,13 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private boolean writeStats = false;
 
+    private OWLHTMLKit kit;
 
-    public OWLHTMLVisitor(OWLObjectURLRenderer urlRenderer,
-                          ShortFormProvider sfProvider,
-                          Writer out) {
-        this.urlRenderer = urlRenderer;
-        this.sfProvider = sfProvider;
-        this.ontologyIriSFProvider = new OntologyIRIShortFormProvider();
+    public OWLHTMLVisitor(OWLHTMLKit kit, PrintWriter out) {
+        this.kit = kit;
+        this.urlRenderer = kit.getURLScheme();
+        this.sfProvider = kit.getOWLServer().getShortFormProvider();
+        this.ontologyIriSFProvider = kit.getOWLServer().getOntologyShortFormProvider();
         this.out = out;
     }
 
@@ -147,18 +149,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
         if (writeLink){
             write("<a class='" + cssClass + "'");
-            String id;
-            if (ontology.getOntologyID().isAnonymous()){
-                id = ontology.getOntologyID().toString();
-            }
-            else{
-                if (ontology.getOntologyID().getVersionIRI() != null){
-                    id = ontology.getOntologyID().getVersionIRI().toString();
-                }
-                else{
-                    id = ontology.getOntologyID().getOntologyIRI().toString();                    
-                }
-            }
+            String id = ModelUtil.getOntologyIdString(ontology);
             write(" href=\"" + link + "\" title='" + id + "'");
             if (targetWindow != null){
                 write(" target=\"" + targetWindow + "\"");

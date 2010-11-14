@@ -13,6 +13,8 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.*;
 /*
@@ -54,8 +56,6 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     private String label;
 
-    private Set<OWLOntology> hiddenOntologies = new HashSet<OWLOntology>();
-
     private OWLServer owlServer;
 
     private ServerPropertiesAdapter<OWLHTMLProperty> properties;
@@ -65,6 +65,8 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
     private Comparator<OWLObject> comparator;
 
     private HTMLDocletFactory fac;
+
+    private List<String> errorMessages = new ArrayList<String>();
 
 
     public OWLHTMLKitImpl(String id, URL baseURL) {
@@ -180,25 +182,7 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
     }
 
     public Set<OWLOntology> getVisibleOntologies() {
-        Set<OWLOntology> visOnts = new HashSet<OWLOntology>();
-        final OWLOntology activeOnt = owlServer.getActiveOntology();
-        if (activeOnt != null){
-            for (OWLOntology ont : owlServer.getOWLOntologyManager().getImportsClosure(activeOnt)){
-                if (!hiddenOntologies.contains(ont)){
-                    visOnts.add(ont);
-                }
-            }
-        }
-        return visOnts;
-    }
-
-    public void setOntologyVisible(OWLOntology ontology, boolean visible) {
-        if (visible){
-            hiddenOntologies.remove(ontology);
-        }
-        else{
-            hiddenOntologies.add(ontology);
-        }
+        return owlServer.getActiveOntologies();
     }
 
     public void setCurrentLabel(String label) {
@@ -219,5 +203,34 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     public boolean isActive() {
         return !owlServer.isDead() && !owlServer.getOntologies().isEmpty();
+    }
+
+    public void addUserError(String errorMessage) {
+        errorMessages.add(errorMessage);
+    }
+
+    public void addUserError(String errorMessage, Throwable error) {
+        Throwable cause = error;
+        while (cause.getCause() != null){
+            cause = cause.getCause();
+        }
+        String msg = cause.getMessage();
+        if (msg == null){
+            StringWriter stringWriter = new StringWriter();
+            final PrintWriter printWriter = new PrintWriter(stringWriter);
+            cause.printStackTrace(printWriter);
+            printWriter.flush();
+            msg = stringWriter.toString();
+        }
+        errorMessages.add("<p>" + errorMessage + "</p>" + msg);
+
+    }
+
+    public List<String> getUserErrors() {
+        return new ArrayList<String>(errorMessages);
+    }
+
+    public void clearUserErrors() {
+        errorMessages.clear();
     }
 }

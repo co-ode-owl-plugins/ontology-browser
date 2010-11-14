@@ -45,7 +45,7 @@ public class DLQuery extends AbstractOntologyServerServlet {
                 OWLClassExpression descr = parser.parse(q);
             }
             catch (ParseException e) {
-                acRenderer.addError(e);
+                kit.addUserError("Parse error.", e);
             }
         }
 
