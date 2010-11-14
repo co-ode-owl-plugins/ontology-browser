@@ -19,12 +19,12 @@ import java.util.Set;
  */
 public class ModelUtil {
 
-    public static String getOntologyIdString(OWLOntologyID id){
-        if (id.isAnonymous()){
-            return id.toString();
+    public static String getOntologyIdString(OWLOntology ont){
+        if (ont.isAnonymous()){
+            return ont.getOWLOntologyManager().getOntologyDocumentIRI(ont).toString();
         }
         else{
-            return id.getDefaultDocumentIRI().toString();
+            return ont.getOntologyID().getDefaultDocumentIRI().toString();
         }
     }
 

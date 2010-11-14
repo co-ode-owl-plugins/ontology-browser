@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.url.PermalinkURLScheme;
 import org.coode.html.util.URLUtils;
 
 import java.io.PrintWriter;
@@ -137,7 +138,7 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
 
-        String findURL = URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForRelativePage("find/?format=xml&type=entities")) + "&";
+        String findURL = URLUtils.createRelativeURL(pageURL, new PermalinkURLScheme(getOWLHTMLKit().getURLScheme()).getURLForRelativePage("find/?format=xml&type=entities")) + "&";
 
         out.print("<script type=\"text/javascript\">\n" +
                   "    var options = {\n" +

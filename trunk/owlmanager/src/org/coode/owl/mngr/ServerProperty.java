@@ -41,7 +41,8 @@ public enum ServerProperty {
     optionRenderer("Renderer type", "ren"),
     optionLabelUri("Label annotation", "option_label_uri"),
     optionLabelLang("Label language", "option_label_lang"),
-    optionActiveOnt("Active ontology", "option_active_ont");
+    optionActiveOnt("Active ontology", "option_active_ont"),
+    optionShowOntologies("Show");
 
 
     private String[] altNames;

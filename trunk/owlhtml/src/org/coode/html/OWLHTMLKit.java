@@ -10,6 +10,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.net.URL;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
@@ -83,4 +84,9 @@ public interface OWLHTMLKit {
      * @return true if there are ontologies to browse
      */
     boolean isActive();
+
+    void addUserError(String errorMessage);
+    void addUserError(String errorMessage, Throwable e);
+    List<String> getUserErrors();
+    void clearUserErrors();
 }

@@ -9,6 +9,7 @@ import org.coode.html.page.HTMLPage;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -54,24 +55,40 @@ public class Hierarchy extends AbstractOntologyServerServlet{
     // TODO: how do we handle puns?
     private OWLObject getNodeObject(String s, OWLHTMLKit kit) {
         IRI iri = IRI.create(s);
+
+        final OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
+
+        if (iri.equals(df.getOWLThing())){
+            return df.getOWLThing();
+        }
+        else if (iri.equals(df.getTopDatatype())){
+            return df.getTopDatatype();
+        }
+        else if (iri.equals(df.getOWLTopDataProperty())){
+            return df.getOWLTopDataProperty();
+        }
+        else if (iri.equals(df.getOWLTopObjectProperty())){
+            return df.getOWLTopObjectProperty();
+        }
+
         for (OWLOntology ont : kit.getOWLServer().getActiveOntologies()){
             if (ont.containsClassInSignature(iri)){
-                return kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory().getOWLClass(iri);
+                return df.getOWLClass(iri);
             }
             if (ont.containsObjectPropertyInSignature(iri)){
-                return kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory().getOWLObjectProperty(iri);
+                return df.getOWLObjectProperty(iri);
             }
             if (ont.containsDataPropertyInSignature(iri)){
-                return kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory().getOWLDataProperty(iri);
+                return df.getOWLDataProperty(iri);
             }
             if (ont.containsAnnotationPropertyInSignature(iri)){
-                return kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory().getOWLAnnotationProperty(iri);
+                return df.getOWLAnnotationProperty(iri);
             }
             if (ont.containsDatatypeInSignature(iri)){
-                return kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory().getOWLDatatype(iri);
+                return df.getOWLDatatype(iri);
             }
             if (ont.containsIndividualInSignature(iri)){
-                return kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(iri);
+                return df.getOWLNamedIndividual(iri);
             }
         }
 

@@ -1,7 +1,6 @@
 package org.coode.html.page;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.doclet.TabsDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
@@ -9,7 +8,6 @@ import org.coode.html.impl.OWLHTMLProperty;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URL;
 
 /**
@@ -49,6 +47,13 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
         if (!kit.getOWLServer().getOntologies().isEmpty()){
             addDoclet(new TabsDoclet(kit));
         }
+
+        for (String error : kit.getUserErrors()){
+            final MessageBoxDoclet messageDoclet = new MessageBoxDoclet(null, error);
+            messageDoclet.setClass("error");
+            addDoclet(messageDoclet);
+        }
+        kit.clearUserErrors();
     }
 
     protected final void renderHeader(URL pageURL, PrintWriter out) {
@@ -64,50 +69,6 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
         out.println("</p>");
 
         super.renderFooter(pageURL, out);
-    }
-
-    public void addMessage(String title, String message, String cssClass) {
-        int pos = 0;
-        final HTMLDoclet tabs = getDoclet(TabsDoclet.ID);
-        if (tabs != null){
-            pos = Math.max(0, indexOf(tabs)+1);
-        }
-        final MessageBoxDoclet messageBoxDoclet = new MessageBoxDoclet(title, message);
-        messageBoxDoclet.setClass(cssClass);
-        addDoclet(messageBoxDoclet, pos);
-    }
-
-    /**
-     * Puts a message box at the top of the page, under the tabs (if there are any)
-     * @param title
-     * @param message
-     */
-    public void addMessage(String title, String message) {
-        addMessage(title, message, "message");
-    }
-
-    public void addMessage(String message) {
-        addMessage(null, message);
-    }
-
-    public void addError(String error) {
-        addMessage("Detailed error", error, "error");
-    }
-
-    public void addError(Throwable error){
-        Throwable cause = error;
-        while (cause.getCause() != null){
-            cause = cause.getCause();
-        }
-        String msg = cause.getMessage();
-        if (msg == null){
-            StringWriter stringWriter = new StringWriter();
-            final PrintWriter printWriter = new PrintWriter(stringWriter);
-            cause.printStackTrace(printWriter);
-            printWriter.flush();
-            msg = stringWriter.toString();
-        }
-        addError(msg);
     }
 
     protected final OWLHTMLKit getOWLHTMLKit() {

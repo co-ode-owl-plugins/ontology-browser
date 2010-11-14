@@ -15,6 +15,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -69,17 +70,20 @@ public class Ontologies extends AbstractOntologyServerServlet {
             switch(action){
                 case load:
                     boolean clear = Boolean.parseBoolean(params.get(OWLHTMLParam.clear));
-                    return handleLoad(getURIFromParam(params.get(OWLHTMLParam.uri)), clear, kit, pageURL);
+                    URL redirect = null;
+                    if (params.get(OWLHTMLParam.redirect) != null){
+                        try {
+                            redirect = new URL(params.get(OWLHTMLParam.redirect));
+                        }
+                        catch (MalformedURLException e) {
+                            logger.warn("Cannot redirect to " + params.get(OWLHTMLParam.redirect));
+                        }
+                    }
+                    return handleLoad(getURIFromParam(params.get(OWLHTMLParam.uri)), clear, redirect, kit, pageURL);
                 case remove:
                     return handleRemove(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), kit, pageURL);
                 case reload:
                     return handleReload(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), kit, pageURL);
-//                    case hide:
-//                        handleSetVisibility(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), false, kit);
-//                        break;
-//                    case unhide:
-//                        handleSetVisibility(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), true, kit);
-//                        break;
             }
         }
         catch (URISyntaxException e) {
@@ -88,11 +92,11 @@ public class Ontologies extends AbstractOntologyServerServlet {
         throw new RuntimeException("Missing action handler!!");
     }
 
-    private HTMLPage handleLoad(URI uri, boolean clear, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    private HTMLPage handleLoad(URI uri, boolean clear, URL redirect, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         Set<URI> success = new HashSet<URI>();
         Map<URI, Throwable> fail = new HashMap<URI, Throwable>();
 
-        String message = "";
+//        String message = "";
 
         OWLServer server = kit.getOWLServer();
 
@@ -121,17 +125,15 @@ public class Ontologies extends AbstractOntologyServerServlet {
         }
 
 
-        if (!fail.isEmpty()){
-            for (URI f : fail.keySet()){
-                message += "failed to load: " + uri +
-                           " ("  + fail.get(f).getClass().getSimpleName() +
-                           ": " + fail.get(f).getMessage() + ")<br />";
-            }
+        for (URI f : fail.keySet()){
+            kit.addUserError("failed to load: " + uri +
+                             " ("  + fail.get(f).getClass().getSimpleName() +
+                             ": " + fail.get(f).getMessage() + ")");
         }
 
         if (!success.isEmpty()){
             SessionManager.labelServerState(kit);
-            message += "<p>loaded " + success.size() + " ontologies</p>";
+//            message += "<p>loaded " + success.size() + " ontologies</p>";
         }
 
         Map<OWLOntologyID, URI> map = server.getLocationsMap();
@@ -141,10 +143,10 @@ public class Ontologies extends AbstractOntologyServerServlet {
         }
 
         if (map.containsValue(null)){ // missing value in map
-            return new OntologiesPage(kit, pageURL, message);
+            return new OntologiesPage(kit, pageURL);
         }
 
-        throw new RedirectException(kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
+        throw new RedirectException(redirect != null ? redirect : kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
     }
 
 
@@ -161,14 +163,14 @@ public class Ontologies extends AbstractOntologyServerServlet {
             server.removeOntology(ontology);
 
             SessionManager.labelServerState(kit);
-            sb.append("<p>Removed ");
-            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
-            sb.append("</p><p>saved session: [");
-            sb.append(kit.getCurrentLabel());
-            sb.append("]</p>");
+//            sb.append("<p>Removed ");
+//            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
+//            sb.append("</p><p>saved session: [");
+//            sb.append(kit.getCurrentLabel());
+//            sb.append("]</p>");
         }
 
-        return new OntologiesPage(kit, pageURL, sb.toString());
+        return new OntologiesPage(kit, pageURL);
     }
 
 
@@ -186,12 +188,11 @@ public class Ontologies extends AbstractOntologyServerServlet {
 
         }
         catch (Exception e) {
-            sb.append("Could not reload ontology: ");
-            sb.append(ontName);
-            sb.append("<p>").append(e.getMessage()).append("</p>");
+            sb.append("Could not reload ontology: ").append(ontName);
+            kit.addUserError(sb.toString(), e);
         }
 
-        return new OntologiesPage(kit, pageURL, sb.toString());
+        return new OntologiesPage(kit, pageURL);
     }
 
     private URI getURIFromParam(String param) throws URISyntaxException {

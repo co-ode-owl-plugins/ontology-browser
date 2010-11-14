@@ -56,7 +56,7 @@ public class SignOut extends AbstractOntologyServerServlet {
         final String confirm = params.get(OWLHTMLParam.confirm);
 
         if (confirm == null){
-            OWLDocPage page = new OWLDocPage(kit);
+
             StringBuilder sb = new StringBuilder();
             sb.append("<p>This will clear all ontologies you are browsing.");
             sb.append(" All permalinks you have bookmarked or sent to friends will continue to work.</p>");
@@ -68,9 +68,8 @@ public class SignOut extends AbstractOntologyServerServlet {
             sb.append(pageURL);
             sb.append("?confirm=false'>No</a></p>");
 
-            page.addMessage(sb.toString());
-
-            return page;
+            kit.addUserError(sb.toString());
+            return new OWLDocPage(kit);
         }
         else{
             final URL baseURL = kit.getBaseURL();

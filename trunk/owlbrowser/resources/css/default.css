@@ -53,6 +53,11 @@ div.message a{
     color: blue;
 }
 
+div.imageHolder{
+    overflow: auto;
+    text-align: center;
+}
+
 #look_and_feel {
     float: left;
     width: 45%;
@@ -230,6 +235,7 @@ form.autocomplete {
 
 #findForm{
     float: right;
+    margin-bottom: 10px;
 }
 
 #load_ontologies div.codebox{
@@ -265,4 +271,9 @@ pre {
 
 span.expandable{
     cursor: pointer;
+}
+
+a.urlOption{
+    color: blue;
+    font-size: smaller;
 }

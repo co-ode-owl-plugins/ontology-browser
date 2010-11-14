@@ -32,8 +32,7 @@ public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
     }
 
     public void render(OWLObject obj, URL pageURL, PrintWriter out){
-        OWLHTMLVisitor rendererVisitor = new OWLHTMLVisitor(kit.getURLScheme(),
-                                                            kit.getOWLServer().getShortFormProvider(), out);
+        OWLHTMLVisitor rendererVisitor = new OWLHTMLVisitor(kit, out);
         rendererVisitor.setOntologies(kit.getVisibleOntologies());
         rendererVisitor.setActiveOntology(kit.getOWLServer().getActiveOntology());
         rendererVisitor.setPageURL(pageURL);

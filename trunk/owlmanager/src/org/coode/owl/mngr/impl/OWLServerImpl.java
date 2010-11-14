@@ -86,13 +86,15 @@ public class OWLServerImpl implements OWLServer {
         }
 
         public void finishedLoadingOntology(LoadingFinishedEvent loadingFinishedEvent) {
-            OWLOntologyID id = loadingFinishedEvent.getOntologyID();
-            OWLOntology ont = mngr.getOntology(id);
-            if (ont == null){
-                ont = getOntologyForIRI(id.getDefaultDocumentIRI());
+            if (loadingFinishedEvent.isSuccessful()){
+                OWLOntologyID id = loadingFinishedEvent.getOntologyID();
+                OWLOntology ont = mngr.getOntology(id);
+                if (ont == null){
+                    ont = getOntologyForIRI(id.getDefaultDocumentIRI());
+                }
+                logger.info("loaded " + ModelUtil.getOntologyIdString(ont));
+                loadedOntology(ont);
             }
-            logger.info("loaded " + ModelUtil.getOntologyIdString(id));
-            loadedOntology(ont);
         }
     };
 
@@ -122,10 +124,10 @@ public class OWLServerImpl implements OWLServer {
 
         OWLOntology ont = mngr.loadOntologyFromOntologyDocument(IRI.create(physicalURI));
 
-        if (getActiveOntology() == null){
-            // the active ontology is always the first one that was requested
-            setActiveOntology(ont);
-        }
+//        if (getActiveOntology() == null){
+        // the active ontology is always the first one that was requested
+        setActiveOntology(ont);
+//        }
         return ont;
     }
 
@@ -232,7 +234,7 @@ public class OWLServerImpl implements OWLServer {
                 return ontology;
             }
         }
-        return null;
+        return getAnonymousOntology(iri.toString());
     }
 
     public void addServerListener(OWLServerListener l) {
@@ -262,6 +264,11 @@ public class OWLServerImpl implements OWLServer {
             properties.set(ServerProperty.optionLabelUri, OWLRDFVocabulary.RDFS_LABEL.getIRI().toString());
             properties.set(ServerProperty.optionLabelLang, "");
 
+            properties.set(ServerProperty.optionShowOntologies, ServerConstants.ALL_ONTOLOGIES);
+            properties.setAllowedValues(ServerProperty.optionShowOntologies, Arrays.asList(ServerConstants.IMPORTS_CLOSURE,
+                                                                                           ServerConstants.ALL_ONTOLOGIES,
+                                                                                           ServerConstants.ACTIVE_ONTOLOGY));
+
             properties.addPropertyChangeListener(propertyChangeListener);
         }
         return properties;
@@ -272,14 +279,9 @@ public class OWLServerImpl implements OWLServer {
         if (activeOntology == null){
             String ont = getProperties().get(ServerProperty.optionActiveOnt);
             if (ont != null){
-                try{
-                    IRI activeOntIRI = IRI.create(ont);
-                    if (activeOntIRI != null){
-                        activeOntology = getOntologyForIRI(activeOntIRI);
-                    }
-                }
-                catch(Exception e){
-                    activeOntology = getAnonymousOntology(ont);
+                IRI activeOntIRI = IRI.create(ont);
+                if (activeOntIRI != null){
+                    activeOntology = getOntologyForIRI(activeOntIRI);
                 }
             }
         }
@@ -303,7 +305,7 @@ public class OWLServerImpl implements OWLServer {
 
         final OWLOntology activeOnt = getActiveOntology();
         if (activeOnt == null || !activeOnt.equals(ont)){
-            getProperties().set(ServerProperty.optionActiveOnt, ModelUtil.getOntologyIdString(ont.getOntologyID()));
+            getProperties().set(ServerProperty.optionActiveOnt, ModelUtil.getOntologyIdString(ont));
         }
     }
 
@@ -312,13 +314,25 @@ public class OWLServerImpl implements OWLServer {
     }
 
     public Set<OWLOntology> getActiveOntologies() {
-        final OWLOntology activeOnt = getActiveOntology();
 
-        if (activeOnt == null){
-            return Collections.emptySet();
+        final String show = getProperties().get(ServerProperty.optionShowOntologies);
+        if (show == null || show.equals(ServerConstants.IMPORTS_CLOSURE)){
+            final OWLOntology activeOnt = getActiveOntology();
+            if (activeOnt == null){
+                return Collections.emptySet();
+            }
+            return mngr.getImportsClosure(activeOnt);
         }
-
-        return mngr.getImportsClosure(activeOnt);
+        else if (show.equals(ServerConstants.ALL_ONTOLOGIES)){
+            return mngr.getOntologies();
+        }
+        else if (show.equals(ServerConstants.ACTIVE_ONTOLOGY)){
+            final OWLOntology activeOnt = getActiveOntology();
+            if (activeOnt != null){
+                return Collections.singleton(activeOnt);
+            }
+        }
+        return Collections.emptySet();
     }
 
     public OWLOntologyManager getOWLOntologyManager() {
@@ -451,7 +465,15 @@ public class OWLServerImpl implements OWLServer {
 
     public OntologyIRIShortFormProvider getOntologyShortFormProvider() {
         if (uriShortFormProvider == null){
-            uriShortFormProvider = new OntologyIRIShortFormProvider();
+            uriShortFormProvider = new OntologyIRIShortFormProvider(){
+                @Override
+                public String getShortForm(OWLOntology ont) {
+                    if (ont.isAnonymous()){
+                        return getOWLOntologyManager().getOntologyDocumentIRI(ont).toString();
+                    }
+                    return super.getShortForm(ont);
+                }
+            };
         }
         return uriShortFormProvider;
     }
@@ -566,7 +588,7 @@ public class OWLServerImpl implements OWLServer {
 
         List<String> ontologies = new ArrayList<String>();
         for (OWLOntology ontology : getOntologies()){
-            ontologies.add(ModelUtil.getOntologyIdString(ontology.getOntologyID()));
+            ontologies.add(ModelUtil.getOntologyIdString(ontology));
         }
         getProperties().setAllowedValues(ServerProperty.optionActiveOnt, ontologies);
     }
@@ -665,7 +687,8 @@ public class OWLServerImpl implements OWLServer {
                     // invalid URI - do not change the renderer
                 }
                 break;
-            case optionActiveOnt:
+            case optionActiveOnt:    // DROPTHROUGH
+            case optionShowOntologies:
                 activeOntology = null; // this will force it to be taken from the properties
 
                 clear();

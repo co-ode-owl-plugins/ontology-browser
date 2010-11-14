@@ -3,6 +3,7 @@ package org.coode.html.util;
 import org.apache.log4j.Logger;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.net.URL;
 import java.util.*;
@@ -121,7 +122,7 @@ public class URLUtils {
         }
     }
 
-    public static Map<OWLHTMLParam, String> getParams(URL url) {  
+    public static Map<OWLHTMLParam, String> getParams(URL url) {
         Map<OWLHTMLParam, String> paramMap = new HashMap<OWLHTMLParam, String>();
         String query = url.getQuery();
         if (query != null){
@@ -150,5 +151,19 @@ public class URLUtils {
             sb.append(map.get(param));
         }
         return sb.toString();
+    }
+
+    public static boolean isImageURL(IRI iri) {
+        String iriStr = iri.toString();
+        return iriStr.endsWith(".png") ||
+               iriStr.endsWith(".gif") ||
+               iriStr.endsWith(".jpg") ||
+               iriStr.endsWith(".jpeg");
+    }
+
+    public static boolean isSoundURL(IRI iri) {
+        String iriStr = iri.toString();
+        return iriStr.endsWith(".mp3") ||
+               iriStr.endsWith(".wav");               
     }
 }
