@@ -1,10 +1,16 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.renderer.OWLHTMLRenderer;
+import org.coode.owl.util.ModelUtil;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
 
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.*;
 
 /**
  * Author: drummond<br>
@@ -39,5 +45,29 @@ public class OWLIndividualSummaryDoclet extends AbstractOWLDocDoclet<OWLNamedInd
 
     public String getID() {
         return "doclet.summary.individual";
+    }
+
+    @Override
+    public void setUserObject(OWLNamedIndividual individual) {
+        super.setUserObject(individual);
+        if (individual != null){
+            final Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props =
+                    ModelUtil.getPropertyMap(individual, getOWLHTMLKit().getOWLServer().getActiveOntologies());
+            final List<OWLPropertyExpression> orderedProps = new ArrayList<OWLPropertyExpression>(props.keySet());
+            Collections.sort(orderedProps, getOWLHTMLKit().getOWLObjectComparator());
+            for (final OWLPropertyExpression prop : orderedProps){
+                addDoclet(new AbstractOWLElementsDoclet<OWLNamedIndividual, OWLPropertyAssertionObject>(prop.toString(), ElementsDoclet.Format.list, getOWLHTMLKit()){
+
+                    protected Collection<OWLPropertyAssertionObject> getElements(Set<OWLOntology> ontologies) {
+                        return props.get(prop);
+                    }
+
+                    protected void renderBoxStart(String name, String id, PrintWriter out, URL pageURL) {
+                        name = new OWLHTMLRenderer(getOWLHTMLKit()).render(prop, pageURL);
+                        super.renderBoxStart(name, id, out, pageURL);
+                    }
+                });
+            }
+        }
     }
 }

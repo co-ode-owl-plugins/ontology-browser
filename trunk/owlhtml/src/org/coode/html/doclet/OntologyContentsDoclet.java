@@ -5,6 +5,7 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.util.ModelUtil;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -38,7 +39,7 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
     protected void renderHeader(URL pageURL, PrintWriter out) {
         OWLOntology ont = getUserObject();
 
-        renderBoxStart(getTitle(pageURL), getOntologyName(), out);
+        renderBoxStart(getTitle(pageURL), getOntologyName(), out, pageURL);
 
         out.println("<ul>");
 
@@ -51,7 +52,7 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        renderBoxEnd(getOntologyName(), out);
+        HTMLUtils.renderBoxEnd(getOntologyName(), out);
     }
 
     private String getTitle(URL pageURL) {
@@ -63,7 +64,7 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
             URL ontURL = getOWLHTMLKit().getURLScheme().getURLForOWLObject(getUserObject());
             StringWriter writer = new StringWriter();
             PrintWriter out = new PrintWriter(writer);
-            renderLink(getOntologyName(), ontURL,
+            HTMLUtils.renderLink(getOntologyName(), ontURL,
                        OWLHTMLConstants.LinkTarget.content,
                        null, isSingleFrameNavigation(), pageURL, out);
             out.flush();
@@ -80,7 +81,7 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
             URL indexURL = getOWLHTMLKit().getURLScheme().getURLForOntologyIndex(getUserObject(), type);
             out.println("<li>");
             String label = type.getPluralRendering();
-            renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);
+            HTMLUtils.renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);
             out.println(" (" + count + ")");
             out.println("</li>");
         }

@@ -9,7 +9,7 @@ import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.URLScheme;
-import org.coode.html.util.URLUtils;
+import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
@@ -84,7 +84,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
         final URL optionsURL = getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML);
 
-        renderLink("Options", optionsURL, OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
+        HTMLUtils.renderLink("Options", optionsURL, OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
 
         out.print("| <form id='");
         out.print(RENDERER_FORM);
@@ -96,11 +96,9 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
         out.print("<input type='checkbox' name='");
         out.print(RENDERER_NAME);
-        out.print("' id=");
+        out.print("' id=\"");
         out.print(RENDERER_NAME);
-        out.print("' onclick='");
-        printCheckAction(URLUtils.createRelativeURL(pageURL, optionsURL), out);
-        out.print("'");
+        out.print("\"");
         if (isRenderLabels()){
             out.print(" checked='checked'");
         }
@@ -115,23 +113,6 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
         final ShortFormProvider sfp = getOWLHTMLKit().getOWLServer().getShortFormProvider();
         return sfp.getClass().equals(AnnotationValueShortFormProvider.class);
     }
-
-
-    private void printCheckAction(String optionsURL, PrintWriter out) {
-        out.print("var rendererName = \"");
-        out.print(OWLHTMLConstants.RENDERER_FRAG);
-        out.println("\";");
-        out.print("if (document.getElementById(\"");
-        out.print(RENDERER_FORM);
-        out.print("\").");
-        out.print(RENDERER_NAME);
-        out.print(".checked == true){rendererName = \"");
-        out.print(OWLHTMLConstants.RENDERER_LABEL);
-        out.print("\";}option(\"");
-        out.print(ServerProperty.optionRenderer.name());
-        out.print("\", rendererName, null);");
-    }
-
 
     public String getID() {
         return ID;

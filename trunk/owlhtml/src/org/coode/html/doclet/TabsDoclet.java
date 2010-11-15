@@ -5,6 +5,7 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -40,13 +41,13 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
 
                 if (entitiesExist(type)){
 
-                    renderLink(type.getPluralRendering(),
-                               kit.getURLScheme().getURLForIndex(type),
-                               OWLHTMLConstants.LinkTarget.subnav,
-                               "",
-                               singleFrame,
-                               pageURL,
-                               out);
+                    HTMLUtils.renderLink(type.getPluralRendering(),
+                                         kit.getURLScheme().getURLForIndex(type),
+                                         OWLHTMLConstants.LinkTarget.subnav,
+                                         "",
+                                         singleFrame,
+                                         pageURL,
+                                         out);
                 }
                 else{
                     out.print(type.getPluralRendering());
@@ -56,7 +57,7 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
             }
         }
 
-        renderLink("Clouds",
+        HTMLUtils.renderLink("Clouds",
                    kit.getURLScheme().getURLForRelativePage("cloud/"),
                    OWLHTMLConstants.LinkTarget.subnav,
                    "",
@@ -68,14 +69,14 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
 
         // add the DL Query tab if the reasoner is enabled
         if (kit.getOWLServer().getProperties().isSet(ServerProperty.optionReasonerEnabled)){
-            renderLink(OWLHTMLConstants.DL_QUERY_LABEL,
+            HTMLUtils.renderLink(OWLHTMLConstants.DL_QUERY_LABEL,
                        kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML),
                        OWLHTMLConstants.LinkTarget.subnav,
                        null,
                        singleFrame,
                        pageURL,
                        out);
-            out.println();            
+            out.println();
         }
 
     }

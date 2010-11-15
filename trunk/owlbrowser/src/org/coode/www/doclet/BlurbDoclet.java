@@ -25,7 +25,7 @@ public class BlurbDoclet extends AbstractHTMLDoclet {
 
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        renderBoxStart(null, out);
+        renderBoxStart(null, out, pageURL);
         out.print("<p style='font-weight: bold;/*text-decoration: underline;*/'><a href=\"");
         out.print(OWLHTMLConstants.HOME_PAGE);
         out.println("\" target=\"docs\">Ontology Browser Homepage</a><br />");

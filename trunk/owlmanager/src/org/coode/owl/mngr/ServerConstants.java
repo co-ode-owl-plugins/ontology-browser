@@ -37,6 +37,8 @@ public class ServerConstants {
     public static final String ALL_ONTOLOGIES = "All ontologies";
     public static final String ACTIVE_ONTOLOGY = "Active ontology";
 
+    public static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+
     public static enum Syntax {man, simple, qd}
 
     // supported renderers

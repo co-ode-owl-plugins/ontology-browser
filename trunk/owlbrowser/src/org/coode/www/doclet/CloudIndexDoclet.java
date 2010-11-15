@@ -8,6 +8,7 @@ import org.coode.html.cloud.CloudType;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.doclet.OWLSelectorDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.util.HTMLUtils;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -31,10 +32,10 @@ public class CloudIndexDoclet extends OWLSelectorDoclet {
 
             @Override
             protected void renderHeader(URL pageURL, PrintWriter out) {
-                renderBoxStart("Clouds", out);
+                renderBoxStart("Clouds", out, pageURL);
                 for (CloudType cloud : CloudType.values()){
                     out.print("<li>");
-                    renderLink(cloud.getRendering(), getOWLHTMLKit().getURLScheme().getURLForRelativePage("cloud/?type=" + cloud), OWLHTMLConstants.LinkTarget.subnav, "", isSingleFrameNavigation(), pageURL, out);
+                    HTMLUtils.renderLink(cloud.getRendering(), getOWLHTMLKit().getURLScheme().getURLForRelativePage("cloud/?type=" + cloud), OWLHTMLConstants.LinkTarget.subnav, "", isSingleFrameNavigation(), pageURL, out);
                     out.println("</li>");
                 }
             }

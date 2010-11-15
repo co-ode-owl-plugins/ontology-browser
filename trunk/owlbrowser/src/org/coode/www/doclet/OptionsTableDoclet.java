@@ -53,7 +53,7 @@ public class OptionsTableDoclet extends AbstractOWLDocDoclet {
 
     private <E extends Enum> void renderProperties(ServerPropertiesAdapter<E> properties, E[] keys, String title, URL pageURL, PrintWriter out) {
 
-        renderBoxStart(title, out);
+        renderBoxStart(title, out, pageURL);
 
         String lastProperty = params.get(OWLHTMLParam.property);
 

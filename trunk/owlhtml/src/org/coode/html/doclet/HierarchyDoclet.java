@@ -4,6 +4,7 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.semanticweb.owlapi.model.OWLObject;
 
@@ -31,13 +32,13 @@ public class HierarchyDoclet<O extends OWLObject> extends LeafNodeDoclet<O> {
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
         out.println("<div class='owlselector'>");
-        renderBoxStart(title, out);
+        renderBoxStart(title, out, pageURL);
         out.println("<ul class='minihierarchy " + getHierarchyProvider().getNodeClass().getSimpleName() + "'>");
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
         out.println("</ul>");
-        renderBoxEnd(title, out);
+        HTMLUtils.renderBoxEnd(title, out);
         out.println("</div><!-- owlselector -->");
     }
 

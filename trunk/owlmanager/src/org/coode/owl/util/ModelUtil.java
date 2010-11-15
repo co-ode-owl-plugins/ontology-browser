@@ -3,6 +3,9 @@ package org.coode.owl.util;
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.*;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,7 +35,7 @@ public class ModelUtil {
         return false; // there is currently no implementation of deprecated in the OWL API
     }
 
-    
+
     public static Set<? extends OWLEntity> getOWLEntitiesFromOntology(NamedObjectType type, OWLOntology ont) {
         switch(type){
             case classes:
@@ -59,5 +62,26 @@ public class ModelUtil {
             case entities: return ont.getSignature();
             default: throw new RuntimeException("Object type not known: " + type);
         }
+    }
+
+    public static Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> getPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
+        Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props = new HashMap<OWLPropertyExpression, Set<OWLPropertyAssertionObject>>();
+        for (OWLOntology ont : onts){
+            for (OWLAxiom ax : individual.getReferencingAxioms(ont)){
+                if (ax instanceof OWLPropertyAssertionAxiom){
+                    OWLPropertyAssertionAxiom propAssertion = (OWLPropertyAssertionAxiom)ax;
+                    if (propAssertion.getSubject().equals(individual)){
+                        OWLPropertyExpression p = propAssertion.getProperty();
+                        Set<OWLPropertyAssertionObject> objects = props.get(p);
+                        if (objects == null){
+                            objects = new HashSet<OWLPropertyAssertionObject>();
+                            props.put(p, objects);
+                        }
+                        objects.add(propAssertion.getObject());
+                    }
+                }
+            }
+        }
+        return props;
     }
 }

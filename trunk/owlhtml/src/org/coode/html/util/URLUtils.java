@@ -1,11 +1,15 @@
 package org.coode.html.util;
 
 import org.apache.log4j.Logger;
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.IRI;
 
+import java.io.PrintWriter;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -164,6 +168,48 @@ public class URLUtils {
     public static boolean isSoundURL(IRI iri) {
         String iriStr = iri.toString();
         return iriStr.endsWith(".mp3") ||
-               iriStr.endsWith(".wav");               
+               iriStr.endsWith(".wav");
+    }
+
+    public static void renderURLLinks(URL url, OWLHTMLKit kit, URL pageURL, PrintWriter out) {
+        try{
+            URL loadURL = new URL(kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies),
+                                  "?" + OWLHTMLParam.action + "=load&" +
+                                  OWLHTMLParam.uri + "=" +
+                                  URLEncoder.encode(url.toString(), OWLHTMLConstants.DEFAULT_ENCODING) +
+                                  "&redirect=" +
+                                  URLEncoder.encode(pageURL.toString(), OWLHTMLConstants.DEFAULT_ENCODING));
+            out.println(" ");
+            renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.EXTERNAL_IMAGE), "Attempt to open link in another window", url, OWLHTMLConstants.LinkTarget._blank, "urlOption", true, pageURL, out);
+
+            // if the ontology at this location has not already been loaded
+            if (!kit.getOWLServer().getLocationsMap().containsValue(url.toURI())){
+                out.println(" ");
+                renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.LOAD_IMAGE), "Attempt to load owl/rdf", loadURL, null, "urlOption", true, pageURL, out);
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void renderImageLink(URL imageURL, String altText, URL href, OWLHTMLConstants.LinkTarget target, String cssClass, boolean singleFrame, URL pageURL, PrintWriter out) {
+        final String relURL = URLUtils.createRelativeURL(pageURL, href);
+            out.print("<a href='" + relURL + "'");
+
+            if (cssClass != null){
+                out.print(" class='" + cssClass + "'");
+            }
+
+            // if the linktarget is another window or we are in a frames view add the target
+            if (target != null && (target == OWLHTMLConstants.LinkTarget._blank || !singleFrame)){
+                out.print(" target='" + target + "'");
+            }
+
+            out.print(" ><img src=\"");
+            out.print(imageURL);
+            out.print("\" title=\"");
+            out.print(altText);
+            out.print("\" /></a>");
     }
 }

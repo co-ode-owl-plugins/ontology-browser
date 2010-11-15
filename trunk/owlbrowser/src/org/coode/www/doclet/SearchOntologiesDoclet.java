@@ -45,7 +45,7 @@ public class SearchOntologiesDoclet extends AbstractHTMLDoclet {
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        renderBoxStart(TITLE_FIND, out);
+        renderBoxStart(TITLE_FIND, out, pageURL);
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {

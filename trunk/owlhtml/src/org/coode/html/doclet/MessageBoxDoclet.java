@@ -3,6 +3,8 @@
 */
 package org.coode.html.doclet;
 
+import org.coode.html.util.HTMLUtils;
+
 import java.io.PrintWriter;
 import java.net.URL;
 
@@ -39,7 +41,7 @@ public class MessageBoxDoclet extends AbstractHTMLDoclet {
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        renderBoxEnd(title, out);
+        HTMLUtils.renderBoxEnd(title, out);
     }
 
     public String getID() {

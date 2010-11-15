@@ -257,12 +257,14 @@ public class OWLServerImpl implements OWLServer {
             // make sure the deprecated names are updated on a load
             properties.addDeprecatedNames(ServerProperty.generateDeprecatedNamesMap());
 
-            properties.set(ServerProperty.optionRenderer, ServerConstants.RENDERER_FRAG);
+            properties.set(ServerProperty.optionRenderer, ServerConstants.RENDERER_LABEL);
             properties.setAllowedValues(ServerProperty.optionRenderer, Arrays.asList(ServerConstants.RENDERER_FRAG,
                                                                                      ServerConstants.RENDERER_LABEL));
 
             properties.set(ServerProperty.optionLabelUri, OWLRDFVocabulary.RDFS_LABEL.getIRI().toString());
             properties.set(ServerProperty.optionLabelLang, "");
+
+            properties.set(ServerProperty.optionLabelPropertyUri, ServerConstants.FOAF_NAME);
 
             properties.set(ServerProperty.optionShowOntologies, ServerConstants.ALL_ONTOLOGIES);
             properties.setAllowedValues(ServerProperty.optionShowOntologies, Arrays.asList(ServerConstants.IMPORTS_CLOSURE,
@@ -435,7 +437,6 @@ public class OWLServerImpl implements OWLServer {
                 shortFormProvider = new MySimpleShortFormProvider();
             }
             else if (ren.equals(ServerConstants.RENDERER_LABEL)){
-                OWLAnnotationProperty prop = mngr.getOWLDataFactory().getOWLAnnotationProperty(IRI.create(getProperties().get(ServerProperty.optionLabelUri)));
 
                 final OWLOntologySetProvider activeOntologiesSetProvider = new OWLOntologySetProvider() {
                     public Set<OWLOntology> getOntologies() {
@@ -445,18 +446,34 @@ public class OWLServerImpl implements OWLServer {
 
                 String lang = getProperties().get(ServerProperty.optionLabelLang);
 
-                final Map<OWLAnnotationProperty, List<String>> langMap;
-                if (lang.length() == 0){
-                    langMap = Collections.emptyMap();
-                }
-                else{
-                    langMap = Collections.singletonMap(prop, Collections.singletonList(lang));
-                }
+                // the property assertion sfp
+                OWLDataProperty dataProp = mngr.getOWLDataFactory().getOWLDataProperty(
+                        IRI.create(getProperties().get(ServerProperty.optionLabelPropertyUri)));
+                List<OWLPropertyExpression> props = new ArrayList<OWLPropertyExpression>();
+                props.add(dataProp);
 
-                shortFormProvider = new AnnotationValueShortFormProvider(Collections.singletonList(prop),
+                final Map<OWLDataPropertyExpression, List<String>> lMap;
+                lMap = new HashMap<OWLDataPropertyExpression, List<String>>();
+                if (lang.length() > 0){
+                    lMap.put(dataProp, Collections.singletonList(lang));
+                }
+                ShortFormProvider pValueProvider = new PropertyAssertionValueShortFormProvider(props,
+                                                                                               lMap,
+                                                                                               activeOntologiesSetProvider,
+                                                                                               new MySimpleShortFormProvider());
+
+                // the annotation label sfp
+                OWLAnnotationProperty annotProp = mngr.getOWLDataFactory().getOWLAnnotationProperty(
+                        IRI.create(getProperties().get(ServerProperty.optionLabelUri)));
+                final Map<OWLAnnotationProperty, List<String>> langMap;
+                langMap = Collections.emptyMap();
+                if (lang.length() > 0){
+                    langMap.put(annotProp, Collections.singletonList(lang));
+                }
+                shortFormProvider = new AnnotationValueShortFormProvider(Collections.singletonList(annotProp),
                                                                          langMap,
                                                                          activeOntologiesSetProvider,
-                                                                         new MySimpleShortFormProvider());
+                                                                         pValueProvider);
             }
         }
         return shortFormProvider;
@@ -553,14 +570,20 @@ public class OWLServerImpl implements OWLServer {
 
     private void resetAllowedLabels() {
         Set<String> uriStrings = new HashSet<String>();
-        Set<OWLAnnotationProperty> annotationProps = new HashSet<OWLAnnotationProperty>();
         for (OWLOntology ont : getActiveOntologies()){
-            annotationProps.addAll(ont.getAnnotationPropertiesInSignature());
-        }
-        for (OWLAnnotationProperty prop : annotationProps){
-            uriStrings.add(prop.getIRI().toString());
+            for (OWLAnnotationProperty p : ont.getAnnotationPropertiesInSignature()){
+                uriStrings.add(p.getIRI().toString());
+            }
         }
         getProperties().setAllowedValues(ServerProperty.optionLabelUri, new ArrayList<String>(uriStrings));
+
+        Set<String> dataPropStrings = new HashSet<String>();
+        for (OWLOntology ont : getActiveOntologies()){
+            for (OWLDataProperty p : ont.getDataPropertiesInSignature()){
+                dataPropStrings.add(p.getIRI().toString());
+            }
+        }
+        getProperties().setAllowedValues(ServerProperty.optionLabelPropertyUri, new ArrayList<String>(dataPropStrings));
     }
 
     private CachingBidirectionalShortFormProvider getNameCache(){
@@ -580,11 +603,7 @@ public class OWLServerImpl implements OWLServer {
     }
 
     private void loadedOntology(OWLOntology ont) {
-        List<String> labelURIs = getProperties().getAllowedValues(ServerProperty.optionLabelUri);
-        for (OWLAnnotationProperty ap : ont.getAnnotationPropertiesInSignature()){
-            labelURIs.add(ap.getIRI().toString());
-        }
-        getProperties().setAllowedValues(ServerProperty.optionLabelUri, labelURIs);
+        resetAllowedLabels();
 
         List<String> ontologies = new ArrayList<String>();
         for (OWLOntology ontology : getOntologies()){
@@ -678,7 +697,8 @@ public class OWLServerImpl implements OWLServer {
             case optionLabelLang:
                 resetRendererCache();
                 break;
-            case optionLabelUri:
+            case optionLabelUri:     // DROPTHROUGH
+            case optionLabelPropertyUri:
                 try {
                     new URI((String)newValue);
                     resetRendererCache();

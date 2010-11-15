@@ -8,9 +8,7 @@ TODO
 Bugs
 ----
 
-- if we fail to load an ontology no message is shown
-
-- individuals summary - how do we get to other types?
+- Absolute URL for image in HTMLUtils - start box
 
 - if FaCT++ fails to work, it silently switches to the structural reasoner (which fails to classify class expressions)
 

@@ -1,10 +1,37 @@
 
 
-var xmlHttpOption;  // XML HTTP object for option
-var onSuccess; // page to go to once the option has been set
-var optionsURL;
+var xmlHttpOption;                         // XML HTTP object for option
+var onSuccess;                             // page to go to once the option has been set (in the onload)
+var baseURL;                               // this is set by the java side
+var optionsURL = "options/";
+var hierarchyURL = "hierarchy/";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+$(document).ready(function(){
+    // add a listener to the render labels checkbox
+    $("#renderLabels").click(function(e){
+        var rendererName = "frag";
+        if (document.getElementById("rendererForm").renderLabels.checked){
+            rendererName = "label";
+        }
+        option("optionRenderer", rendererName, null);
+    });
+
+    createSlideToggles();
+
+    // add a listener to unexpanded tree nodes
+    $("li > span.expandable").click(function(e){
+        handleExpand($(this).parent());
+    });
+});
+
+// add a listener for all codeboxes
+function createSlideToggles() {
+    $("<img class=\"min\" src=\"../../images/min.png\" width=\"16\" height=\"16\"/>").click(function(e){
+        $(this).next(".codebox").slideToggle('fast');
+    }).insertBefore(".codebox");
+}
 
 function optionFromSelect(select){
     Item = select.selectedIndex;
@@ -25,7 +52,7 @@ function option(opt, value, successpage){
         alert ("Browser does not support HTTP Request");
     }
     else{
-        xmlHttpOption.open("POST", optionsURL, true);
+        xmlHttpOption.open("POST", baseURL + optionsURL, true);
 
         xmlHttpOption.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
@@ -90,16 +117,10 @@ function GetXmlHttpObject(callback) {
     return objXMLHttp;
 }
 
-$(document).ready(function(){
-    $("li > span.expandable").click(function(e){
-        handleExpand($(this).parent());
-    });
-});
-
 function handleExpand(li){
     var children = $("ul", li);
     if (children.length > 0){
-        children.toggle();
+        children.slideToggle('fast');
     }
     else{
         li.append(getChildren(li));
@@ -115,7 +136,7 @@ function getChildren(li){
         cls: $(".minihierarchy").attr("class") // will leave the service to split
     };
     $.ajax({
-        url: "http://localhost:8080/browser/hierarchy/", // @@TODO: take this hardcoded stuff out
+        url: baseURL + hierarchyURL,
         data: data,
         context: li,
         success: function(data, textStatus, request){

@@ -50,7 +50,7 @@ public abstract class ElementsDoclet<O, E> extends AbstractHTMLDoclet<O> {
         Collection<E> objects = getElements();
         if (!objects.isEmpty()){
 
-            renderBoxStart(getID(), out);
+            renderBoxStart(getID(), out, pageURL);
 
             ElementRenderer<? super E> elementRenderer = getElementRenderer();
 

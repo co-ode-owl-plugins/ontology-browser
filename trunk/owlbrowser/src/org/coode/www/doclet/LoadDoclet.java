@@ -33,7 +33,7 @@ public class LoadDoclet extends AbstractOWLDocDoclet {
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        renderBoxStart("Load Ontologies", out);
+        renderBoxStart("Load Ontologies", out, pageURL);
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
