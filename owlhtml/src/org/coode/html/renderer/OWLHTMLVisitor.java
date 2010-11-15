@@ -8,6 +8,7 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.OWLObjectURLRenderer;
 import org.coode.html.util.URLUtils;
+import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.util.ModelUtil;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
 import org.semanticweb.owlapi.model.*;
@@ -15,9 +16,8 @@ import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -50,7 +50,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     // the subset and equivalence symbols can be encoded in HTML
     private static final boolean USE_SYMBOLS = true;
 
-    private Writer out;
+    private PrintWriter out;
 
     private URL pageURL = null;
 
@@ -113,12 +113,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
     private void write(String s) {
-        try {
-            out.write(s);
-        }
-        catch (IOException e) {
-            logger.error(e);
-        }
+        out.write(s);
     }
 
     ////////// Ontology
@@ -173,35 +168,42 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     ////////// Entities
 
     public void visit(OWLClass desc) {
-        writeOWLEntity(desc);
+        writeOWLEntity(desc, NamedObjectType.classes.getSingularRendering());
     }
 
     public void visit(OWLDataProperty property) {
-        writeOWLEntity(property);
+        writeOWLEntity(property, NamedObjectType.dataproperties.getSingularRendering());
     }
 
     public void visit(OWLObjectProperty property) {
-        writeOWLEntity(property);
+        writeOWLEntity(property, NamedObjectType.objectproperties.getSingularRendering());
     }
 
     public void visit(OWLAnnotationProperty property) {
-        writeOWLEntity(property);
+        writeOWLEntity(property, NamedObjectType.annotationproperties.getSingularRendering());
     }
 
     public void visit(OWLNamedIndividual individual) {
-        writeOWLEntity(individual);
+        writeOWLEntity(individual, NamedObjectType.individuals.getSingularRendering());
     }
 
     public void visit(OWLDatatype datatype) {
-        writeOWLEntity(datatype);
+        writeOWLEntity(datatype, NamedObjectType.datatypes.getSingularRendering());
     }
 
     public void visit(IRI iri) {
         writeIRIWithBoldFragment(iri, iri.getFragment());
+        try {
+            URL url = iri.toURI().toURL();
+            URLUtils.renderURLLinks(url, kit, pageURL, out);
+        }
+        catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void visit(OWLAnonymousIndividual individual) {
-        write(individual.getID().toString());
+        writeAnonymousIndividual(individual);
     }
 
     ///////// Anonymous classes
@@ -903,12 +905,13 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
     }
 
 
-    private void writeOWLEntity(OWLEntity entity) {
+    private void writeOWLEntity(OWLEntity entity, String cssClass) {
         final URI uri = entity.getIRI().toURI();
 
         String name = getName(entity);
 
         Set<String> cssClasses = new HashSet<String>();
+        cssClasses.add(cssClass);
         if (ModelUtil.isDeprecated(entity, ontologies)){
             cssClasses.add(CSS_DEPRECATED);
         }
@@ -942,6 +945,72 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         }
     }
 
+    private void writeAnonymousIndividual(OWLAnonymousIndividual individual) {
+        write("<span class=\"anon\">");
+        final Set<OWLClassExpression> types = individual.getTypes(ontologies);
+        if (!types.isEmpty()){
+            writeOpList(types, ", ", false);
+        }
+
+        // TODO tidy this up - we shouldn't really group by ontology
+        for (OWLOntology ont : ontologies){
+            Map<OWLDataPropertyExpression, Set<OWLLiteral>> dataValues = individual.getDataPropertyValues(ont);
+            if (!dataValues.isEmpty()){
+                write("<ul>");
+                for (OWLDataPropertyExpression p : dataValues.keySet()){
+                    write("<li>");
+                    p.accept(this);
+                    write("<ul><li>");
+                    writeOpList(dataValues.get(p), "</li><li>", false);
+                    write("</ul></li>");
+                }
+                write("</ul>");
+            }
+            Map<OWLDataPropertyExpression, Set<OWLLiteral>> negDataValues = individual.getNegativeDataPropertyValues(ont);
+            if (!negDataValues.isEmpty()){
+                write("<ul>");
+
+                for (OWLDataPropertyExpression p : negDataValues.keySet()){
+                    write("<li>not ");
+                    p.accept(this);
+                    write("<ul><li>");
+                    writeOpList(negDataValues.get(p), "</li><li>", false);
+                    write("</ul></li>");
+                }
+                write("</ul>");
+            }
+
+            Map<OWLObjectPropertyExpression, Set<OWLIndividual>> objValues = individual.getObjectPropertyValues(ont);
+            if (!objValues.isEmpty()){
+                write("<ul>");
+
+                for (OWLObjectPropertyExpression p : objValues.keySet()){
+                    write("<li>");
+                    p.accept(this);
+                    write("<ul><li>");
+                    writeOpList(objValues.get(p), "</li><li>", false);
+                    write("</ul></li>");
+                }
+                write("</ul>");
+
+            }
+            Map<OWLObjectPropertyExpression, Set<OWLIndividual>> negbjValues = individual.getNegativeObjectPropertyValues(ont);
+            if (!negbjValues.isEmpty()){
+                write("<ul>");
+
+                for (OWLObjectPropertyExpression p : negbjValues.keySet()){
+                    write("<li>not ");
+                    p.accept(this);
+                    write("<ul><li>");
+                    writeOpList(negbjValues.get(p), "</li><li>", false);
+                    write("</ul></li>");
+                }
+                write("</ul>");
+            }
+        }
+        write("</span>");
+    }
+
 
     private void writeCardinality(OWLCardinalityRestriction desc, String cardinalityType) {
         desc.getProperty().accept(this);
@@ -969,8 +1038,6 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         return facet.getSymbolicForm();
     }
 
-    // @@TODO literal should use <pre> to make sure that fomatting inside the string doesn't disrupt the html
-    // but it appears java ignores this tag so for now just disable tags completely
     private void writeLiteralContents(String literal) {
         boolean writtenExternalRef = false;
         try {

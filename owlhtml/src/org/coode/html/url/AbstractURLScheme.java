@@ -32,16 +32,19 @@ public abstract class AbstractURLScheme implements URLScheme {
     }
 
     public NamedObjectType getType(URL url) {
-        String relativeURL = URLUtils.createRelativeURL(kit.getBaseURL(), url);
-        String[] path = relativeURL.split(OWLHTMLConstants.SLASH);
-        String typeName = path[0]; // always the first element
         try{
-            return NamedObjectType.valueOf(typeName);
+            return NamedObjectType.valueOf(getTypeString(url));
         }
         catch(IllegalArgumentException e){
             // do nothing
         }
         return null;
+    }
+
+    public String getTypeString(URL url){
+        String relativeURL = URLUtils.createRelativeURL(kit.getBaseURL(), url);
+        String[] path = relativeURL.split(OWLHTMLConstants.SLASH);
+        return path[0]; // always the first element
     }
 
     public URL getURLForIndex(NamedObjectType type) {

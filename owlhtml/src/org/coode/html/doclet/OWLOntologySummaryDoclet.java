@@ -26,25 +26,6 @@ public class OWLOntologySummaryDoclet extends AbstractOWLDocDoclet<OWLOntology> 
         addDoclet(referencesDoclet);
 
         addDoclet(new OntologyImportsDoclet(kit));
-
-        // @@TODO reenable clouds (maybe use links instead)
-//        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
-//            CloudDoclet<OWLClass> cloudDoclet = new CloudDoclet<OWLClass>(kit);
-//            cloudDoclet.setComparator(kit.getOWLServer().getComparator());
-//            cloudDoclet.setThreshold(8);
-//            cloudDoclet.setZoom(10);
-//            addDoclet(cloudDoclet);
-//        }
-    }
-
-
-    public void setUserObject(OWLOntology object) {
-        super.setUserObject(object);
-
-//        if (getOWLHTMLKit().getHTMLProperties().isSet(OWLHTMLProperty.optionRenderOntologySummaryCloud)){
-//            // only show the classes in this ontology
-//            cloudModel.setOntologies(Collections.singleton(getUserObject()));
-//        }
     }
 
     @Override

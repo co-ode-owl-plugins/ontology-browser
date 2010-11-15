@@ -3,6 +3,7 @@ package org.coode.html.doclet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.cloud.*;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.util.HTMLUtils;
 import org.semanticweb.owlapi.model.*;
 
 import java.awt.*;
@@ -58,7 +59,7 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<O> {
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
 
-        renderBoxStart(null, out);
+        renderBoxStart(null, out, pageURL);
 
         out.println("<div class='cloud'>");
 
@@ -79,7 +80,7 @@ public class CloudDoclet<O extends OWLEntity> extends AbstractHTMLDoclet<O> {
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
-        renderBoxEnd(getTitle(), out);
+        HTMLUtils.renderBoxEnd(getTitle(), out);
     }
 
     @Override

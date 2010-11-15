@@ -58,16 +58,16 @@ public class Hierarchy extends AbstractOntologyServerServlet{
 
         final OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
 
-        if (iri.equals(df.getOWLThing())){
+        if (iri.equals(df.getOWLThing().getIRI())){
             return df.getOWLThing();
         }
-        else if (iri.equals(df.getTopDatatype())){
+        else if (iri.equals(df.getTopDatatype().getIRI())){
             return df.getTopDatatype();
         }
-        else if (iri.equals(df.getOWLTopDataProperty())){
+        else if (iri.equals(df.getOWLTopDataProperty().getIRI())){
             return df.getOWLTopDataProperty();
         }
-        else if (iri.equals(df.getOWLTopObjectProperty())){
+        else if (iri.equals(df.getOWLTopObjectProperty().getIRI())){
             return df.getOWLTopObjectProperty();
         }
 

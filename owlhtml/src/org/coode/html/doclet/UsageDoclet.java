@@ -99,12 +99,26 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
         }
 
         public void visit(OWLClassAssertionAxiom ax) {
-            if (ax.getIndividual().equals(currentEntity)){
-                showUsage = false; // we'll already be showing it as type
-                return;
+            if (ax.getIndividual().equals(currentEntity) ||
+                ax.getClassExpression().equals(currentEntity)){
+                showUsage = false; // we'll already be showing it as type/member
             }
         }
 
+
+        @Override
+        public void visit(OWLObjectPropertyAssertionAxiom axiom) {
+            if (axiom.getSubject().equals(currentEntity)){
+                showUsage = false;
+            }
+        }
+
+        @Override
+        public void visit(OWLDataPropertyAssertionAxiom axiom) {
+            if (axiom.getSubject().equals(currentEntity)){
+                showUsage = false;
+            }
+        }
 
         public void visit(OWLDifferentIndividualsAxiom ax) {
             visitNaryIndAxiom(ax);

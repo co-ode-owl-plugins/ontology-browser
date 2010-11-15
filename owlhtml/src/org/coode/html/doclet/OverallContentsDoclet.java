@@ -6,6 +6,7 @@ package org.coode.html.doclet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.URLScheme;
+import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.util.ModelUtil;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -45,11 +46,11 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
         final URLScheme urlScheme = kit.getURLScheme();
 
 
-        renderBoxStart(title, out);
+        renderBoxStart(title, out, pageURL);
         out.println("<ul>");
         if (visibleOntologies.size() > 1){
             out.println("<li>");
-            renderLink("All " + NamedObjectType.ontologies.getPluralRendering(),
+            HTMLUtils.renderLink("All " + NamedObjectType.ontologies.getPluralRendering(),
                        kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies),
                        OWLHTMLConstants.LinkTarget.subnav, null,
                        isSingleFrameNavigation(), pageURL, out);
@@ -59,7 +60,7 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
             String ontID = kit.getOWLServer().getOntologyShortFormProvider().getShortForm(activeOnt);
             final URL ontURL = urlScheme.getURLForOWLObject(activeOnt);
             out.println("<li>");
-            renderLink(ontID, ontURL, OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
+            HTMLUtils.renderLink(ontID, ontURL, OWLHTMLConstants.LinkTarget.content, null, isSingleFrameNavigation(), pageURL, out);
         }
         out.println("</li>");
 
@@ -73,7 +74,7 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
         }
 
         out.println("</ul>");
-        renderBoxEnd(title, out);
+        HTMLUtils.renderBoxEnd(title, out);
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
@@ -85,7 +86,7 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
             URL indexURL = getOWLHTMLKit().getURLScheme().getURLForIndex(type);
             out.println("<li>");
             String label = type.getPluralRendering();
-            renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);
+            HTMLUtils.renderLink(label, indexURL, OWLHTMLConstants.LinkTarget.subnav, null, isSingleFrameNavigation(), pageURL, out);
             out.println(" (" + count + ")");
             out.println("</li>");
         }

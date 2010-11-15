@@ -43,6 +43,7 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String CSS_BASE= "css/";
     public static final String IMAGES_BASE = "images/";
 
+    // Javascript
     public static final String JS_DEFAULT = JS_ROOT + "default.js";
     public static final String JS_DL_QUERY = JS_ROOT + "dlquery.js";
     public static final String JS_TREE = JS_ROOT + "tree.js";
@@ -50,9 +51,15 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String JQUERY_JS = JS_ROOT + "jquery-1.4.3.min.js";
     public static final String GAPHU_JS = JS_ROOT + "gaphu-0.0.9.js";
 
+    // Styles
     public static final String CSS_DEFAULT = CSS_BASE + "default.css";
     public static final String AUTO_SUGGEST_CSS = CSS_BASE + "autosuggest_inquisitor.css";
     public static final String GAPHU_CSS = CSS_BASE + "gaphu-0.0.9.css";
+
+    // Images
+    public static final String EXTERNAL_IMAGE = OWLHTMLConstants.IMAGES_BASE + "external.png";
+    public static final String LOAD_IMAGE = OWLHTMLConstants.IMAGES_BASE + "download.png";
+    public static final String MINIMISE_IMAGE = IMAGES_BASE + "min.png";
 
     public static final String DEFAULT_EXTENSION = ".html";
 

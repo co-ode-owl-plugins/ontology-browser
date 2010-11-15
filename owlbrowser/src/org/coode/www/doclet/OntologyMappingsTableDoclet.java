@@ -9,6 +9,7 @@ import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.renderer.OWLHTMLRenderer;
+import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.www.OntologyAction;
 import org.coode.www.OntologyBrowserConstants;
@@ -54,7 +55,7 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
     protected void renderHeader(URL pageURL, PrintWriter out) {
         OWLHTMLKit kit = getOWLHTMLKit();
 
-        renderBoxStart(null, out);
+        renderBoxStart(null, out, pageURL);
 
         final boolean missingValues = map.containsValue(null);
         if (missingValues){
@@ -107,9 +108,13 @@ public class OntologyMappingsTableDoclet extends AbstractOWLDocDoclet {
                                 URL linkURL = new URL(kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies) + "?" +
                                                       OWLHTMLParam.action + "=" + action + "&" +
                                                       OWLHTMLParam.uri + "=" + encodedURI);
-                                renderLink(action.toString(),
-                                           linkURL,
-                                           OWLHTMLConstants.LinkTarget._top, "", isSingleFrameNavigation(), pageURL, out);
+                                HTMLUtils.renderLink(action.toString(),
+                                                     linkURL,
+                                                     OWLHTMLConstants.LinkTarget._top,
+                                                     "",
+                                                     isSingleFrameNavigation(),
+                                                     pageURL,
+                                                     out);
                             }
                             catch (MalformedURLException e) {
                                 logger.error("Cannot create action URL: " + action);

@@ -2,6 +2,7 @@ package org.coode.www.doclet;
 
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.util.HTMLUtils;
 import org.coode.www.OntologyBrowserConstants;
 
 import java.io.PrintWriter;
@@ -17,26 +18,23 @@ import java.net.URL;
  */
 public class TitleDoclet extends AbstractHTMLDoclet {
 
+    @Override
+    protected void renderHeader(URL pageURL, PrintWriter out) {
+        HTMLUtils.renderLink("Help", OWLHTMLConstants.HOME_PAGE, OWLHTMLConstants.LinkTarget._blank, "help", true, pageURL, out);
 
+        out.print("<h1>");
+        out.print(OntologyBrowserConstants.ONTOLOGY_SERVER_NAME);
+        out.println("</h1>");
+        out.print(" v");
+        out.print(OntologyBrowserConstants.VERSION);
+    }
 
-            @Override
-            protected void renderHeader(URL pageURL, PrintWriter out) {
-                renderLink("Help", OWLHTMLConstants.HOME_PAGE, OWLHTMLConstants.LinkTarget._blank, "help", true, pageURL, out);
+    @Override
+    protected void renderFooter(URL pageURL, PrintWriter out) {
+        // do nothing
+    }
 
-                out.print("<h1>");
-                out.print(OntologyBrowserConstants.ONTOLOGY_SERVER_NAME);
-                out.println("</h1>");
-                out.print(" v");
-                out.print(OntologyBrowserConstants.VERSION);
-            }
-
-            @Override
-            protected void renderFooter(URL pageURL, PrintWriter out) {
-                // do nothing
-            }
-
-            public String getID() {
-                return "TITLE";
-            }
-
+    public String getID() {
+        return "TITLE";
+    }
 }

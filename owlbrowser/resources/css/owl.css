@@ -16,8 +16,7 @@
 }
 
 .active-entity {
-    color: #00008b;
-    font-weight: bold;
+    background-color: #ffffaa;
 }
 
 .deprecated {
@@ -38,4 +37,40 @@
 .some, .only, .value, .min, .max, .exactly {
     color: #B200B2;
     font-weight:bolder;
+}
+
+.Class{
+    color: #000000;
+}
+
+a.Class:hover{
+    color: blue;
+}
+
+.Object.Property{
+    color: #009999;
+    font-style: italic;
+}
+
+a.Object.Property:hover{
+    color: #006666;
+    font-style: italic;
+}
+
+.Data.Property{
+    color: #99ccff;
+    font-style: italic;
+}
+
+a.Data.Property:hover{
+    color: #3366ff;
+    font-style: italic;
+}
+
+.Individual{
+    color: #000000;
+}
+
+a.Individual:hover{
+    color: blue;
 }

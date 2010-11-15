@@ -6,6 +6,7 @@ package org.coode.www.doclet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.util.HTMLUtils;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -35,7 +36,7 @@ public class MenuItemDoclet extends AbstractOWLDocDoclet {
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
         out.print(" | ");
-        renderLink(label, link, target, "", isSingleFrameNavigation(), pageURL, out);
+        HTMLUtils.renderLink(label, link, target, "", isSingleFrameNavigation(), pageURL, out);
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {
