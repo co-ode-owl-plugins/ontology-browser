@@ -9,6 +9,12 @@ var hierarchyURL = "hierarchy/";
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 $(document).ready(function(){
+
+    var minihierarchy = $(".minihierarchy").parent();
+    if (minihierarchy.size() > 0){
+        scroll($("span.active-entity", minihierarchy).first(), minihierarchy);
+    }
+
     // add a listener to the render labels checkbox
     $("#renderLabels").click(function(e){
         var rendererName = "frag";
@@ -153,4 +159,28 @@ function getChildren(li){
     });
 
     return childList;
+}
+
+
+function scroll(element, scrollParent){
+
+    if (!scrollParent){
+        scrollParent = element.offsetParent();
+    }
+
+    var pos = element.position();
+    if (pos){
+    var offset = pos.top;
+
+    if (offset < 0){
+        scrollParent.scrollTop(offset);
+    }
+    else{
+        var scrollerHeight = scrollParent.height();
+        var elementHeight = element.height();
+        if (offset + elementHeight > scrollerHeight){
+            scrollParent.scrollTop(offset + elementHeight - (scrollerHeight/2));
+        }
+    }
+    }
 }

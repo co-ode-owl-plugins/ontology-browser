@@ -465,8 +465,7 @@ public class OWLServerImpl implements OWLServer {
                 // the annotation label sfp
                 OWLAnnotationProperty annotProp = mngr.getOWLDataFactory().getOWLAnnotationProperty(
                         IRI.create(getProperties().get(ServerProperty.optionLabelUri)));
-                final Map<OWLAnnotationProperty, List<String>> langMap;
-                langMap = Collections.emptyMap();
+                final Map<OWLAnnotationProperty, List<String>> langMap = new HashMap<OWLAnnotationProperty, List<String>>();
                 if (lang.length() > 0){
                     langMap.put(annotProp, Collections.singletonList(lang));
                 }

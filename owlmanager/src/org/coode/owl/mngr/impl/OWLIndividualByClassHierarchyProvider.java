@@ -71,7 +71,11 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
         if (node instanceof OWLClassExpression){
             return Collections.emptySet();
         }
-        return new HashSet<OWLObject>(((OWLIndividual)node).getTypes(getOntologies()));
+        Set<OWLObject> types = new HashSet<OWLObject>(((OWLIndividual)node).getTypes(getOntologies()));
+        if (types.isEmpty()){
+            types = Collections.<OWLObject>singleton(server.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
+        }
+        return types;
     }
 
 
