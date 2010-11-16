@@ -5,7 +5,8 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owlapi.model.IRI;
+import org.coode.owl.mngr.ServerConstants;
+import org.semanticweb.owlapi.model.*;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -211,5 +212,33 @@ public class URLUtils {
             out.print("\" title=\"");
             out.print(altText);
             out.print("\" /></a>");
+    }
+
+    public static Loc getLocation(OWLEntity owlEntity, Set<OWLOntology> onts) {
+        if (owlEntity.isOWLNamedIndividual()){
+            Loc loc = new Loc();
+            for (OWLOntology ont : onts){
+                OWLDataFactory df = ont.getOWLOntologyManager().getOWLDataFactory();
+                OWLDataProperty latProp = df.getOWLDataProperty(IRI.create(ServerConstants.LATITUDE));
+                OWLDataProperty longProp = df.getOWLDataProperty(IRI.create(ServerConstants.LONGITUDE));
+                for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(latProp, ont)){
+                    loc.latitude = val.getLiteral();
+                    break; // use the first value
+                }
+                for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(longProp, ont)){
+                    loc.longitude = val.getLiteral();
+                    break; // use the first value
+                }
+                if (loc.latitude != null && loc.longitude != null){
+                    return loc;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static class Loc {
+        public String latitude;
+        public String longitude;
     }
 }

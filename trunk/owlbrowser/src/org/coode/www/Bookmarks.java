@@ -13,7 +13,7 @@ import org.xml.sax.SAXException;
 import java.io.*;
 import java.net.URI;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -50,7 +50,7 @@ public class Bookmarks {
     }
 
     private static Map<String, URI> loadBookmarks(Reader reader) throws IOException, SAXException {
-        Map<String, URI> bookmarkMap = new HashMap<String, URI>();
+        Map<String, URI> bookmarkMap = new LinkedHashMap<String, URI>();
         DOMParser parser = new DOMParser();
         InputSource inputSource = new InputSource(reader);
         parser.parse(inputSource);

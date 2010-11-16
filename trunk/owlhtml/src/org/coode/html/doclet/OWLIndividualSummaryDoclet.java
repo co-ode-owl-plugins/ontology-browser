@@ -30,7 +30,6 @@ public class OWLIndividualSummaryDoclet extends AbstractOWLDocDoclet<OWLNamedInd
         addDoclet(new TypesDoclet(kit));
         addDoclet(new SameAsDoclet(kit));
         addDoclet(new DifferentFromDoclet(kit));
-        addDoclet(new UsageDoclet<OWLNamedIndividual>(kit));
     }
 
     @Override
@@ -68,6 +67,7 @@ public class OWLIndividualSummaryDoclet extends AbstractOWLDocDoclet<OWLNamedInd
                     }
                 });
             }
+            addDoclet(new UsageDoclet<OWLNamedIndividual>(getOWLHTMLKit()));            
         }
     }
 }

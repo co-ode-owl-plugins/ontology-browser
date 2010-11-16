@@ -39,6 +39,9 @@ public class ServerConstants {
 
     public static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
 
+    public static final String LATITUDE = "http://www.w3.org/2003/01/geo/wgs84_pos#lat";
+    public static final String LONGITUDE = "http://www.w3.org/2003/01/geo/wgs84_pos#long";
+
     public static enum Syntax {man, simple, qd}
 
     // supported renderers

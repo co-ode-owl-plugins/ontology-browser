@@ -11,6 +11,7 @@ import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.mngr.SessionManager;
 import org.coode.www.page.OntologiesPage;
+import org.semanticweb.owlapi.io.UnparsableOntologyException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyID;
@@ -96,8 +97,6 @@ public class Ontologies extends AbstractOntologyServerServlet {
         Set<URI> success = new HashSet<URI>();
         Map<URI, Throwable> fail = new HashMap<URI, Throwable>();
 
-//        String message = "";
-
         OWLServer server = kit.getOWLServer();
 
         if (clear){
@@ -126,14 +125,18 @@ public class Ontologies extends AbstractOntologyServerServlet {
 
 
         for (URI f : fail.keySet()){
-            kit.addUserError("failed to load: " + uri +
-                             " ("  + fail.get(f).getClass().getSimpleName() +
-                             ": " + fail.get(f).getMessage() + ")");
+            String message;
+            if (fail.get(f) instanceof UnparsableOntologyException){
+                message = "Maybe it is not an ontology/linked data file.";
+            }
+            else{
+                message = fail.get(f).getMessage();
+            }
+            kit.addUserError("<p>Failed to load: " + uri + "</p><p>" + message + "</p>");
         }
 
         if (!success.isEmpty()){
             SessionManager.labelServerState(kit);
-//            message += "<p>loaded " + success.size() + " ontologies</p>";
         }
 
         Map<OWLOntologyID, URI> map = server.getLocationsMap();
