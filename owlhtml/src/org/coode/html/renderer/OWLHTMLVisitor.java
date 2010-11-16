@@ -136,7 +136,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
                 writeLink = true;
             }
             else{
-                write("<span class='" + CSS_ACTIVE_ENTITY + "'>");
+                write("<span class='" + CSS_ACTIVE_ENTITY + " " + cssClass + "'>");
                 write(ontologyIriSFProvider.getShortForm(ontology));
                 write("</span>");
             }

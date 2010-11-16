@@ -58,5 +58,18 @@ public class OWLEntityTitleDoclet<O extends OWLEntity> extends AbstractTitleDocl
             out.print(getUserObject().getIRI());
             out.println("\" autostart=\"true\" hidden=\"true\"/>");
         }
+
+        URLUtils.Loc loc = URLUtils.getLocation(getUserObject(), getOWLHTMLKit().getVisibleOntologies());
+        if (loc != null){
+            out.println("<div class=\"googlemaps\">");
+            out.print("<iframe width=\"425\" height=\"350\" frameborder=\"0\" scrolling=\"no\" src=\"http://maps.google.com/maps?q=");
+            out.print(loc.latitude);
+            out.print(",+");
+            out.print(loc.longitude);
+            out.print("+(");
+            out.print(getTitle());
+            out.println(")&amp;hl=en&amp;ie=UTF8&amp;z=14&amp;iwloc=A&amp;output=embed\"></iframe>");
+            out.println("</div>");
+        }
     }
 }
