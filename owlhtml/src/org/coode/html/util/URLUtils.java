@@ -215,18 +215,32 @@ public class URLUtils {
     }
 
     public static Loc getLocation(OWLEntity owlEntity, Set<OWLOntology> onts) {
+        if (onts == null || onts.isEmpty()){
+            throw new IllegalArgumentException("Ontologies cannot be empty");
+        }
+
         if (owlEntity.isOWLNamedIndividual()){
+            OWLDataFactory df = onts.iterator().next().getOWLOntologyManager().getOWLDataFactory();
+            OWLDataProperty latProp = df.getOWLDataProperty(IRI.create(ServerConstants.LATITUDE));
+            OWLDataProperty longProp = df.getOWLDataProperty(IRI.create(ServerConstants.LONGITUDE));
+            OWLDataProperty point = df.getOWLDataProperty(IRI.create(ServerConstants.POINT));
+
             Loc loc = new Loc();
             for (OWLOntology ont : onts){
-                OWLDataFactory df = ont.getOWLOntologyManager().getOWLDataFactory();
-                OWLDataProperty latProp = df.getOWLDataProperty(IRI.create(ServerConstants.LATITUDE));
-                OWLDataProperty longProp = df.getOWLDataProperty(IRI.create(ServerConstants.LONGITUDE));
+                for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(point, ont)){
+                    String[] latLong = val.getLiteral().trim().split("\\s+");
+                    if (latLong.length == 2){
+                        loc.latitude = latLong[0];
+                        loc.longitude = latLong[1];
+                        return loc;
+                    }
+                }
                 for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(latProp, ont)){
-                    loc.latitude = val.getLiteral();
+                    loc.latitude = val.getLiteral().trim();
                     break; // use the first value
                 }
                 for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(longProp, ont)){
-                    loc.longitude = val.getLiteral();
+                    loc.longitude = val.getLiteral().trim();
                     break; // use the first value
                 }
                 if (loc.latitude != null && loc.longitude != null){

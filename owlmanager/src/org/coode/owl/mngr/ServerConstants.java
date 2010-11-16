@@ -41,6 +41,7 @@ public class ServerConstants {
 
     public static final String LATITUDE = "http://www.w3.org/2003/01/geo/wgs84_pos#lat";
     public static final String LONGITUDE = "http://www.w3.org/2003/01/geo/wgs84_pos#long";
+    public static final String POINT = "http://www.georss.org/georss/point";
 
     public static enum Syntax {man, simple, qd}
 
