@@ -66,9 +66,11 @@ public class OWLEntityTitleDoclet<O extends OWLEntity> extends AbstractTitleDocl
             out.print(loc.latitude);
             out.print(",+");
             out.print(loc.longitude);
-            out.print("+(");
-            out.print(getTitle());
-            out.println(")&amp;hl=en&amp;ie=UTF8&amp;z=14&amp;iwloc=A&amp;output=embed\"></iframe>");
+            out.print("&amp;ie=UTF8&amp;z=14&amp;iwloc=A&amp;ll=");
+            out.print(loc.latitude);
+            out.print(",");
+            out.print(loc.longitude);
+            out.print("&amp;output=embed\"></iframe>");
             out.println("</div>");
         }
     }

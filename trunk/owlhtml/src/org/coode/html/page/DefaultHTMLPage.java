@@ -61,10 +61,6 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
             out.println("' type='text/javascript'></script>");
         }
 
-        out.println("</head>\n\n");
-
-        out.print("<body");
-
         String onloadJS = onload;
 //        if (onloadJS.length() > 0){
 //            onloadJS += ";";
@@ -73,9 +69,14 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
             onloadJS += "document.getElementById(\"" + focusedComponent + "\").focus();";
         }
         if (onloadJS.length() > 0){
-            out.print(" onload='" + onloadJS + "'");
+            out.println("<script type='text/javascript'>");
+            out.println(onloadJS);
+            out.println("</script>");
         }
-        out.println(">");
+
+        out.println("</head>\n\n");
+
+        out.print("<body>");
     }
 
     @Override

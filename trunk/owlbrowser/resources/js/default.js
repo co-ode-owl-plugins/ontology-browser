@@ -10,33 +10,45 @@ var hierarchyURL = "hierarchy/";
 
 $(document).ready(function(){
 
+    scrollTreeToSelection();
+
+    createLabelRendererListener();
+
+    createSlideToggles();
+
+    createTreeListeners();
+});
+
+function scrollTreeToSelection() {
     var minihierarchy = $(".minihierarchy").parent();
     if (minihierarchy.size() > 0){
         scroll($("span.active-entity", minihierarchy).first(), minihierarchy);
     }
+}
 
+function createLabelRendererListener() {
     // add a listener to the render labels checkbox
     $("#renderLabels").click(function(e){
         var rendererName = "frag";
-        if (document.getElementById("rendererForm").renderLabels.checked){
+        if (this.checked){
             rendererName = "label";
         }
         option("optionRenderer", rendererName, null);
     });
+}
 
-    createSlideToggles();
+function createSlideToggles() {
+    // add a listener for all codeboxes
+    $("<img class=\"min\" src=\"" + baseURL + "images/min.png\" width=\"16\" height=\"16\"/>").click(function(e){
+        $(this).next(".codebox").slideToggle('fast');
+    }).insertBefore(".codebox");
+}
 
+function createTreeListeners(){
     // add a listener to unexpanded tree nodes
     $("li > span.expandable").click(function(e){
         handleExpand($(this).parent());
     });
-});
-
-// add a listener for all codeboxes
-function createSlideToggles() {
-    $("<img class=\"min\" src=\"../../images/min.png\" width=\"16\" height=\"16\"/>").click(function(e){
-        $(this).next(".codebox").slideToggle('fast');
-    }).insertBefore(".codebox");
 }
 
 function optionFromSelect(select){
@@ -170,17 +182,17 @@ function scroll(element, scrollParent){
 
     var pos = element.position();
     if (pos){
-    var offset = pos.top;
+        var offset = pos.top;
 
-    if (offset < 0){
-        scrollParent.scrollTop(offset);
-    }
-    else{
-        var scrollerHeight = scrollParent.height();
-        var elementHeight = element.height();
-        if (offset + elementHeight > scrollerHeight){
-            scrollParent.scrollTop(offset + elementHeight - (scrollerHeight/2));
+        if (offset < 0){
+            scrollParent.scrollTop(offset);
         }
-    }
+        else{
+            var scrollerHeight = scrollParent.height();
+            var elementHeight = element.height();
+            if (offset + elementHeight > scrollerHeight){
+                scrollParent.scrollTop(offset + elementHeight - (scrollerHeight/2));
+            }
+        }
     }
 }

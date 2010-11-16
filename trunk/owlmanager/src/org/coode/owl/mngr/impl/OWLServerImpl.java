@@ -92,7 +92,6 @@ public class OWLServerImpl implements OWLServer {
                 if (ont == null){
                     ont = getOntologyForIRI(id.getDefaultDocumentIRI());
                 }
-                logger.info("loaded " + ModelUtil.getOntologyIdString(ont));
                 loadedOntology(ont);
             }
         }
@@ -602,6 +601,8 @@ public class OWLServerImpl implements OWLServer {
     }
 
     private void loadedOntology(OWLOntology ont) {
+        logger.info("loaded " + ModelUtil.getOntologyIdString(ont));
+
         resetAllowedLabels();
 
         List<String> ontologies = new ArrayList<String>();
