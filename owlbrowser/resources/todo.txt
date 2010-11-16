@@ -43,3 +43,13 @@ Features
 - Axiom pages (axiom by type)
 
 - DLQuery add list of past queries to the left pane
+
+
+Test pages
+----------
+
+The Cure (DBTune)           http://localhost:8080/browser/individuals/-333614508/?session=12c550e4e3e-6-12c55104e2f     shows similar artists
+The Cure (BBC)              http://localhost:8080/browser/individuals/-694738504/?session=12c5513f1a6-7-12c55147a4f     details of members
+
+
+

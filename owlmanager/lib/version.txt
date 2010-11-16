@@ -16,6 +16,4 @@ HermiT
 ------
 nightly build 05/08/2010
 
-NOTE
-----
-The HermiT.jar is not the jar contained in the distribution (as this contains all of the libraries compiled up in one package) but the result of building the ant HermiT-standalone-no-libraries target.
+NOTE: The HermiT.jar is not the jar contained in the distribution (as this contains all of the libraries compiled up in one package) but the result of building the ant HermiT-standalone-no-libraries target.
