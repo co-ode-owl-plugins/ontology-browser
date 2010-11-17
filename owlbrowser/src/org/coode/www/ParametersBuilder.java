@@ -50,14 +50,14 @@ public class ParametersBuilder {
 
 
         for (OWLHTMLParam param : params.keySet()){
+            String[] values = (String[])request.getParameterMap().get(param.name());
+            String value = values[0].trim();
             switch(param){
                 case session: break;
                 case format: break;
                 case uri:    // eg people+pets.owl gets corrupted otherwise
                 case parent: // dropthrough
-                    String[] v1 = (String[])request.getParameterMap().get(param.name());
                     try {
-                        String value = v1[0];
                         // hack to handle spaces (as the HttpServletRequest seems to decode these)
                         value = value.replace(' ', '+');
                         // hack to ensure that params are decoded (if not already uri escaped)
@@ -71,9 +71,7 @@ public class ParametersBuilder {
                     }
                     break;
                 default:
-                    String[] v2 = (String[])request.getParameterMap().get(param.name());
                     try {
-                        String value = v2[0];
                         // hack to ensure that params are decoded (if not already uri escaped)
                         if (request.getCharacterEncoding() == null && !value.startsWith("%")){
                             value = new String(value.getBytes("8859_1"), OWLHTMLConstants.DEFAULT_ENCODING);
