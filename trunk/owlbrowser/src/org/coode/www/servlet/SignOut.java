@@ -35,8 +35,7 @@ public class SignOut extends AbstractOntologyServerServlet {
         final String confirm = params.get(OWLHTMLParam.confirm);
         final String result;
         if (confirm != null && Boolean.parseBoolean(confirm)){
-            HttpSession session = getSession();
-            SessionManager.closeSession(session);
+            performSignout();
             result = "<quit result=\"true\"/>";
         }
         else{
@@ -74,11 +73,15 @@ public class SignOut extends AbstractOntologyServerServlet {
         else{
             final URL baseURL = kit.getBaseURL();
             if (Boolean.parseBoolean(confirm)){
-                HttpSession session = getSession();
-                SessionManager.closeSession(session);
+                performSignout();
             }
             throw new RedirectException(baseURL);
         }
+    }
+
+    private void performSignout() {
+        HttpSession session = getHttpSession();
+        SessionManager.closeSession(session);
     }
 
     @Override

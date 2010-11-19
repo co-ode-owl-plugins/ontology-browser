@@ -10,12 +10,11 @@ import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
-import org.coode.owl.util.ModelUtil;
+import org.coode.owl.util.OWLUtils;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,11 +22,9 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -67,7 +64,7 @@ public class SessionManager {
      * @return
      * @throws OntServerException
      */
-    public synchronized static OWLHTMLKit getServer(HttpServletRequest request) throws OntServerException {
+    public synchronized static OWLHTMLKit getHTMLKit(HttpServletRequest request) throws OntServerException {
         HttpSession session = request.getSession(true);
 
         if (session.isNew()){
@@ -86,10 +83,10 @@ public class SessionManager {
      * @return
      * @throws OntServerException
      */
-    public synchronized static OWLHTMLKit getServer(HttpServletRequest request, String label) throws OntServerException {
-        OWLHTMLKit kit = getServer(request);
+    public synchronized static OWLHTMLKit getHTMLKit(HttpServletRequest request, String label) throws OntServerException {
+        OWLHTMLKit kit = getHTMLKit(request);
         if (label != null && !label.equals(kit.getCurrentLabel())){
-            loadServerState(kit, label);
+            loadLabel(kit, label);
         }
         return kit;
     }
@@ -100,26 +97,26 @@ public class SessionManager {
      * @param kit note: will set the current label on the server
      * @throws OntServerException
      */
-    public synchronized static void labelServerState(OWLHTMLKit kit) throws OntServerException {
+    public synchronized static void createLabel(OWLHTMLKit kit) throws OntServerException {
         String label = kit.getID() + "-" + createID();
         File file = getFile(label + OntologyBrowserConstants.SERVER_STATES_EXT);
         try {
             OutputStream out = new FileOutputStream(file);
             PrintWriter writer = new PrintWriter(out);
-            Map<OWLOntologyID, URI> ontologyMappings = kit.getOWLServer().getLocationsMap();
-            Set<OWLOntologyID> ids = ontologyMappings.keySet();
 
             // this saves the base properties (which includes the OWL server properties)
             kit.getHTMLProperties().save(out);
 
             // always print the active ontology first
             OWLOntology activeOnt = kit.getOWLServer().getActiveOntology();
-            writer.println(URI_MAPPING_MARKER + ModelUtil.getOntologyIdString(activeOnt) + "=" + ontologyMappings.get(activeOnt));
+            writer.println(URI_MAPPING_MARKER + OWLUtils.getOntologyIdString(activeOnt) + "=" +
+                           kit.getOWLServer().getOWLOntologyManager().getOntologyDocumentIRI(activeOnt));
 
-            ids.remove(activeOnt);
-            for (OWLOntologyID id : ids){
-                final OWLOntology ont = kit.getOWLServer().getOWLOntologyManager().getOntology(id);
-                writer.println(URI_MAPPING_MARKER + ModelUtil.getOntologyIdString(ont) + "=" + ontologyMappings.get(id));
+            for (OWLOntology ont : kit.getOWLServer().getOntologies()){
+                if (!ont.equals(activeOnt)){
+                    writer.println(URI_MAPPING_MARKER + OWLUtils.getOntologyIdString(ont) + "=" +
+                                   kit.getOWLServer().getOWLOntologyManager().getOntologyDocumentIRI(ont));
+                }
             }
 
             writer.flush();
@@ -143,15 +140,13 @@ public class SessionManager {
      * @param label
      * @throws OntServerException
      */
-    private synchronized static void loadServerState(OWLHTMLKit kit, String label) throws OntServerException {
+    private synchronized static void loadLabel(OWLHTMLKit kit, String label) throws OntServerException {
 
         File file = getFile(label + OntologyBrowserConstants.SERVER_STATES_EXT);
 
         if (!file.exists()){
             throw new OntServerException("Cannot find stored state for unknown session " + label);
         }
-
-        kit.getOWLServer().clearOntologies(); // dump all ontologies and caches
 
         try{
             // we are currently reading the file twice - @@TODO make this much nicer
@@ -161,15 +156,18 @@ public class SessionManager {
             String line;
             Map<IRI, IRI> ontMap = new HashMap<IRI, IRI>();
             while ((line = reader.readLine()) != null){
-                    if (line.startsWith(URI_MAPPING_MARKER)){
-                        line = line.substring(URI_MAPPING_MARKER.length(), line.length());
-                        String[] param = line.split("=");
-                        IRI ontURI = IRI.create(param[0].trim());
-                        IRI physicalURI = IRI.create(param[1].trim());
-//                        if (ontURI.isAbsolute() && physicalURI.isAbsolute()){
-                            ontMap.put(ontURI, physicalURI);
-//                        }
+                if (line.startsWith(URI_MAPPING_MARKER)){
+                    line = line.substring(URI_MAPPING_MARKER.length(), line.length());
+                    String[] param = line.split("=");
+                    IRI ontURI = IRI.create(param[0].trim());
+                    final String str = param[1].trim();
+                    IRI physicalURI = null;
+                    // protect ourselves against http://a.com=null as null will be a valid relative IRI
+                    if (!str.equals("null")){
+                        physicalURI = IRI.create(str);
                     }
+                    ontMap.put(ontURI, physicalURI);
+                }
             }
 
             kit.getOWLServer().loadOntologies(ontMap);
@@ -240,7 +238,7 @@ public class SessionManager {
 
             SessionID id = new SessionID();
 
-            OWLHTMLKit kit = createServer(id.id, basePath);
+            OWLHTMLKit kit = createHTMLKit(id.id, basePath);
 
             activeServers.put(id, kit);
             mySession.setAttribute(ID, id);
@@ -251,7 +249,7 @@ public class SessionManager {
         }
     }
 
-    private static OWLHTMLKit createServer(String id, URL basePath) {
+    private static OWLHTMLKit createHTMLKit(String id, URL basePath) {
 
         OWLHTMLKit kit = new OWLHTMLKitImpl(id, basePath);
 
@@ -264,6 +262,7 @@ public class SessionManager {
         // register parsers
         kit.getOWLServer().registerDescriptionParser(ServerConstants.Syntax.man.toString(),
                                                      new ManchesterOWLSyntaxParser(kit.getOWLServer()));
+
 
         boolean defaultsLoaded = false;
 
@@ -308,8 +307,8 @@ public class SessionManager {
 
         ServerPropertiesAdapter<OWLHTMLProperty> properties = kit.getHTMLProperties();
 
-        // by default, do not use frames navigation
-        properties.set(OWLHTMLProperty.optionContentWindow, null);
+//        // by default, do not use frames navigation
+//        properties.set(OWLHTMLProperty.optionContentWindow, null);
 
         // the default entities index is at the location "entities/"
         properties.set(OWLHTMLProperty.optionIndexAllURL, "entities/");
@@ -320,11 +319,6 @@ public class SessionManager {
         properties.setBoolean(OWLHTMLProperty.optionShowMiniHierarchies, true);
 
         properties.setBoolean(OWLHTMLProperty.optionShowInferredHierarchies, false);
-
-        // default location for DIG reasoner
-        if (kit.getBaseURL().toString().contains("localhost")){ // just to make sure I don't accidentally publish this address
-            kit.getOWLServer().getProperties().set(ServerProperty.optionReasonerUrl, "http://rpc295.cs.man.ac.uk:8080");
-        }
     }
 
     /**

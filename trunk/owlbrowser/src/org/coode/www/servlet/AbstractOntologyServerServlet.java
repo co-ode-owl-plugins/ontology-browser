@@ -9,6 +9,7 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
+import org.coode.html.url.PermalinkURLScheme;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.ParametersBuilder;
@@ -48,7 +49,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     private OntologyBrowserConstants.RequestFormat format = OntologyBrowserConstants.RequestFormat.html;
 
-    private HttpSession session = null;
+    private HttpSession httpSession = null;
 
     protected abstract Doclet handleXMLRequest(Map<OWLHTMLParam, String> params,
                                                OWLHTMLKit kit,
@@ -78,17 +79,25 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     private void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        URL redirect = null;
+
         handleRequestType(request, response);
 
-        session = request.getSession(false);
+        httpSession = request.getSession(false);
 
         final URL pageURL = ServletUtils.getPageURL(request);
 
-        final String sessionLabel = getParameter(request, OWLHTMLParam.session);
+        final String label = getLabel(request);
 
-        final OWLHTMLKit kit = getOWLHTMLKit(request, sessionLabel, pageURL);
+        final OWLHTMLKit kit = getOWLHTMLKit(request, label, pageURL);
 
         try {
+            if (!kit.isActive()){
+                throw new OntServerException("<p>This session has timed out.</p>" +
+                                             "<p>Press back in your browser and select a permalink to restore.</p>");// +
+//                                             "<p>TIP: Enable cookies in your browser to avoid this happening again.</p>");
+            }
+
             // the param map is actually multivalued <String, String[]>, but to save hassle we'll simplify it
             final Map<OWLHTMLParam, String> params = new ParametersBuilder().checkAndCreateParams(request, kit, this);
 
@@ -100,16 +109,58 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 throw new OntServerException("Could not get renderer for request: " + pageURL);
             }
 
+//            // set the label cookie to the appropriate
+//            if (kit.isActive() && kit.getCurrentLabel() != null){
+//                Cookie cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, kit.getCurrentLabel());
+//                cookie.setPath(request.getContextPath() + "/");
+//                cookie.setMaxAge(-1); // until session expires
+//                response.addCookie(cookie);
+//                System.out.println("Setting cookie " + kit.getCurrentLabel());
+//            }
         }
         catch(RedirectException e){
-            handleRedirect(e.getRedirectPage(), response);
+            redirect = e.getRedirectPage();
         }
         catch (Throwable e) {
             handleError(e, kit, pageURL, response);
         }
         finally{
+//            if (!kit.isActive()){
+//                for (Cookie cookie : request.getCookies()){
+//                    if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
+//                        cookie.setValue("");
+//                        cookie.setDomain(pageURL.getHost());
+//                        cookie.setPath(request.getContextPath() + "/");
+//                        cookie.setMaxAge(0);
+//                        response.addCookie(cookie);
+//                        System.out.println("clearing cookie " + kit.getCurrentLabel());
+//                    }
+//                }
+//            }
+            if (redirect != null){
+                handleRedirect(redirect, response);
+            }
             response.getWriter().flush();
         }
+    }
+
+    private String getLabel(HttpServletRequest request) {
+        // first check if a label is given in the URL
+        String label = getParameter(request, OWLHTMLParam.session);
+        if (label != null){
+            return label;
+        }
+
+//        // and if not, check the cookies
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null){
+//            for (Cookie cookie : cookies){
+//                if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
+//                    return cookie.getValue();
+//                }
+//            }
+//        }
+        return null;
     }
 
     private void handleRedirect(URL redirectPage, HttpServletResponse response) throws IOException {
@@ -175,8 +226,8 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 break;
             case html:
                 kit.addUserError("<p>Error rendering page</p>" +
-                                     "<p>Please send the following address to the developers</p><pre>" +
-                                     kit.getURLScheme().getURLForAbsolutePage(pageURL) + "</pre>", e);
+                                 "<p>Please send the following address to the developers</p><pre>" +
+                                 new PermalinkURLScheme(kit.getURLScheme()).getURLForAbsolutePage(pageURL) + "</pre>", e);
                 OWLDocPage errorPage = new OWLDocPage(kit);
                 wrap(errorPage, kit);
                 errorPage.renderAll(pageURL, response.getWriter());
@@ -184,8 +235,8 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         }
     }
 
-    protected HttpSession getSession() {
-        return session;
+    protected HttpSession getHttpSession() {
+        return httpSession;
     }
 
     protected String getParameter(HttpServletRequest request, OWLHTMLParam param) {
@@ -194,7 +245,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     private OWLHTMLKit getOWLHTMLKit(HttpServletRequest request, String sessionLabel, URL pageURL) throws ServletException {
         try {
-            return SessionManager.getServer(request, sessionLabel);
+            return SessionManager.getHTMLKit(request, sessionLabel);
         }
         catch (OntServerException e) {
             throw new ServletException("Severe exception initialising kit session: " + pageURL, e);

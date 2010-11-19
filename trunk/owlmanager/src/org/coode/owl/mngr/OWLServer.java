@@ -44,8 +44,6 @@ public interface OWLServer {
 
     void removeOntology(OWLOntology ont);
 
-    Map<OWLOntologyID, URI> getLocationsMap();
-
     /**
      * First get an ontology with a matching version IRI if one exists.
      * If not, get an ontology with a matching ontology IRI.
@@ -82,6 +80,8 @@ public interface OWLServer {
 
     ServerPropertiesAdapter<ServerProperty> getProperties();
 
+    void resetProperties();
+
 
     /**
      * Get rid of all caches (such as renderings) and clear the reasoner.
@@ -94,4 +94,6 @@ public interface OWLServer {
     void dispose();
 
     boolean isDead();
+
+    OWLOntology getRootOntology();
 }

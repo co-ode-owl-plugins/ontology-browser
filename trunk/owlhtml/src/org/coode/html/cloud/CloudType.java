@@ -3,6 +3,8 @@
 */
 package org.coode.html.cloud;
 
+import org.coode.owl.mngr.NamedObjectType;
+
 /**
  * Author: Nick Drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
@@ -12,18 +14,25 @@ package org.coode.html.cloud;
  * Date: Jan 15, 2008<br><br>
  */
 public enum CloudType {
-        classusage ("Class Usage"),
-        indusage ("Individual Usage"),
-        objpropusage ("Object Property Usage"),
-        datapropusage ("Data Property Usage");
+    classusage ("Class Usage", NamedObjectType.classes),
+    indusage ("Individual Usage", NamedObjectType.individuals),
+    objpropusage ("Object Property Usage", NamedObjectType.objectproperties),
+    datapropusage ("Data Property Usage", NamedObjectType.dataproperties);
 
-        private String label;
+    private String label;
 
-        CloudType(String label) {
-            this.label = label;
-        }
+    private NamedObjectType type;
 
-        public String getRendering() {
-            return label;
-        }
+    CloudType(String label, NamedObjectType type) {
+        this.label = label;
+        this.type = type;
+    }
+
+    public String getRendering() {
+        return label;
+    }
+
+    public NamedObjectType getType(){
+        return type;
+    }
 }

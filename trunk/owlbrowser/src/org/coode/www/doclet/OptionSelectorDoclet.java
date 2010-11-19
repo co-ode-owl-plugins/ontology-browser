@@ -32,28 +32,37 @@ public class OptionSelectorDoclet extends AbstractOWLDocDoclet{
         this.allowedValues = allowedValues;
         Collections.sort(this.allowedValues);
     }
-
+    
     @Override
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        out.print("\n<form id='");
-        out.print(getID());
-        out.println("' method='POST'>");
+        out.println();
+        out.print("<form");
+        if (!getID().equals(option)){
+            out.print(" id=\"");
+            out.print(getID());
+            out.print("\"");
+        }
+        out.println(">");
 
         out.println("<input type='hidden' name='" + OWLHTMLParam.property + "' value='" + option + "' />");
 
-        out.print("<select name='");
+        out.print("<select class=\"option\" name=\"");
         out.print(OWLHTMLParam.value);
-        out.println("' onchange='optionFromSelect(this);'>");
+        out.println("\">");
 
         for (String allowedValue : allowedValues){
             out.print("<option value='" + allowedValue + "'");
             if (allowedValue.equals(value)){
                 out.print(" selected='selected'");
             }
-            out.println(">" + allowedValue + "</option>");
+            out.println(">" + renderValue(allowedValue) + "</option>");
         }
 
         out.println("</select>");
+    }
+
+    protected String renderValue(String value) {
+        return value;
     }
 
     @Override

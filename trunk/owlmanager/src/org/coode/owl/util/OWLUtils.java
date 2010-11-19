@@ -20,9 +20,21 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public class ModelUtil {
+public class OWLUtils {
+
+    public static Set<OWLOntology> getImportRoots(Set<OWLOntology> onts){
+        // TODO: handle cyclic imports
+        Set<OWLOntology> roots = new HashSet<OWLOntology>(onts);
+        for (OWLOntology ont : onts){
+            roots.removeAll(ont.getImports());
+        }
+        return roots;
+    }
 
     public static String getOntologyIdString(OWLOntology ont){
+        if (ont == null){
+            System.out.println("ont = " + ont);
+        }
         if (ont.isAnonymous()){
             return ont.getOWLOntologyManager().getOntologyDocumentIRI(ont).toString();
         }
@@ -39,29 +51,64 @@ public class ModelUtil {
     public static Set<? extends OWLEntity> getOWLEntitiesFromOntology(NamedObjectType type, OWLOntology ont) {
         switch(type){
             case classes:
-                Set<OWLClass> clses = ont.getClassesInSignature();
+                Set<OWLClass> clses = new HashSet<OWLClass>(ont.getClassesInSignature());
                 clses.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
                 clses.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLNothing());
                 return clses;
             case objectproperties:
-                Set<OWLObjectProperty> ops = ont.getObjectPropertiesInSignature();
+                Set<OWLObjectProperty> ops = new HashSet<OWLObjectProperty>(ont.getObjectPropertiesInSignature());
                 ops.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLTopObjectProperty());
                 ops.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLBottomObjectProperty());
                 return ops;
             case dataproperties:
-                Set<OWLDataProperty> dps = ont.getDataPropertiesInSignature();
+                Set<OWLDataProperty> dps = new HashSet<OWLDataProperty>(ont.getDataPropertiesInSignature());
                 dps.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLTopDataProperty());
                 dps.add(ont.getOWLOntologyManager().getOWLDataFactory().getOWLBottomDataProperty());
                 return dps;
             case annotationproperties: return ont.getAnnotationPropertiesInSignature();
             case individuals: return ont.getIndividualsInSignature();
             case datatypes:
-                Set<OWLDatatype> dts = ont.getDatatypesInSignature();
+                Set<OWLDatatype> dts = new HashSet<OWLDatatype>(ont.getDatatypesInSignature());
                 dts.add(ont.getOWLOntologyManager().getOWLDataFactory().getTopDatatype());
                 return dts;
             case entities: return ont.getSignature();
             default: throw new RuntimeException("Object type not known: " + type);
         }
+    }
+
+    public static boolean entitiesExist(NamedObjectType type, Set<OWLOntology> onts) {
+        for (OWLOntology ont : onts){
+            switch (type){
+                case classes: if (!ont.getClassesInSignature().isEmpty()){
+                    return true;
+                }
+                    break;
+                case objectproperties: if (!ont.getObjectPropertiesInSignature().isEmpty()){
+                    return true;
+                }
+                    break;
+                case dataproperties: if (!ont.getDataPropertiesInSignature().isEmpty()){
+                    return true;
+                }
+                    break;
+                case individuals: if (!ont.getIndividualsInSignature().isEmpty()){
+                    return true;
+                }
+                    break;
+                case annotationproperties: if (!ont.getAnnotationPropertiesInSignature().isEmpty()){
+                    return true;
+                }
+                    break;
+                case datatypes: if (!ont.getDatatypesInSignature().isEmpty()){
+                    return true;
+                }
+                    break;
+                case entities: return true;
+                case ontologies: return true;
+            }
+            // TODO: no more efficient way to ask this?
+        }
+        return false;
     }
 
     public static Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> getPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
@@ -83,5 +130,14 @@ public class ModelUtil {
             }
         }
         return props;
+    }
+
+    public static OWLNamedIndividual getIndividual(IRI iri, Set<OWLOntology> onts) {
+        for (OWLOntology ont : onts){
+            if (ont.containsIndividualInSignature(iri)){
+                return ont.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(iri);
+            }
+        }
+        return null;
     }
 }

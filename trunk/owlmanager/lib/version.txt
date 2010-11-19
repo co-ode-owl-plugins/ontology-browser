@@ -1,6 +1,9 @@
 OWL API
 -------
-release 3.1.0 21/08/2010
+release 3.1.0 (18 Nov 2010)
+
+locally modified and built to fix imports bug
+see https://sourceforge.net/tracker/?func=detail&aid=3110834&group_id=90989&atid=595534
 
 Pellet
 ------

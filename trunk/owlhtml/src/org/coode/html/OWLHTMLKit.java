@@ -51,6 +51,8 @@ public interface OWLHTMLKit {
 
     ServerPropertiesAdapter<OWLHTMLProperty> getHTMLProperties();
 
+    void resetProperties();
+
     URL getBaseURL();
     
     URLScheme getURLScheme();

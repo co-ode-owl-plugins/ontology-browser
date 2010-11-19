@@ -9,7 +9,7 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.OWLObjectURLRenderer;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.util.ModelUtil;
+import org.coode.owl.util.OWLUtils;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
@@ -144,7 +144,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
         if (writeLink){
             write("<a class='" + cssClass + "'");
-            String id = ModelUtil.getOntologyIdString(ontology);
+            String id = OWLUtils.getOntologyIdString(ontology);
             write(" href=\"" + link + "\" title='" + id + "'");
             if (targetWindow != null){
                 write(" target=\"" + targetWindow + "\"");
@@ -783,44 +783,14 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         writeAssertionAxiom(axiom);
     }
 
-
     private void writeEquivalence(Collection<? extends OWLObject> objects, OWLAxiom axiom) {
         String equiv = USE_SYMBOLS ? OWLHTMLConstants.EQUIV_CHAR : ManchesterOWLSyntax.EQUIVALENT_TO.toString();
         writeKeywordOpList(objects, equiv, false);
         writeAnnotations(axiom);
     }
 
-    public void writeImportsDeclaration(OWLImportsDeclaration axiom) {
-        writeKeyword("imports: ");
-        IRI iri = axiom.getIRI();
-        OWLOntology loadedOnt = null;
-        for (OWLOntology ont : ontologies){
-            if (ont.getOntologyID().getDefaultDocumentIRI().equals(iri)){
-                loadedOnt = ont;
-                break;
-            }
-        }
-        if (loadedOnt != null){
-            loadedOnt.accept(this);
-        }
-        else{
-            write(iri.toString());//writeOntologyURIWithBoldFragment(uri);
-        }
-    }
-
     private String getName(OWLEntity entity){
         return sfProvider.getShortForm(entity).replaceAll(" ", "&nbsp;");
-    }
-
-    private String getBase(URI uri){
-        String uriStr = uri.toString();
-        String fragment = uri.getFragment();
-        if (fragment != null){
-            return uriStr.substring(0, uriStr.length()-uri.getFragment().length()-1);
-        }
-        else{
-            return uri.toString();
-        }
     }
 
     // just make sure a named class is first if there is one
@@ -840,10 +810,9 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         return orderedOps;
     }
 
-    private void writeOntologyIRI(OWLOntology ont) {
-        writeIRIWithBoldFragment(ont.getOntologyID().getOntologyIRI(), ontologyIriSFProvider.getShortForm(ont));
-    }
-
+//    private void writeOntologyIRI(OWLOntology ont) {
+//        writeIRIWithBoldFragment(ont.getOntologyID().getOntologyIRI(), ontologyIriSFProvider.getShortForm(ont));
+//    }
 
     private void writeIRIWithBoldFragment(IRI iri, String shortForm) {
         final String fullURI = iri.toString();
@@ -912,7 +881,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
         Set<String> cssClasses = new HashSet<String>();
         cssClasses.add(cssClass);
-        if (ModelUtil.isDeprecated(entity, ontologies)){
+        if (OWLUtils.isDeprecated(entity, ontologies)){
             cssClasses.add(CSS_DEPRECATED);
         }
 

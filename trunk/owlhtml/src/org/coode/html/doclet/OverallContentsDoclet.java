@@ -8,7 +8,7 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.util.ModelUtil;
+import org.coode.owl.util.OWLUtils;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -67,7 +67,7 @@ public class OverallContentsDoclet extends AbstractOWLDocDoclet{
         for (NamedObjectType type : NamedObjectType.entitySubtypes()){
             Set<OWLEntity> allEntities = new HashSet<OWLEntity>();
             for (OWLOntology ont : visibleOntologies){
-                allEntities.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ont));
+                allEntities.addAll(OWLUtils.getOWLEntitiesFromOntology(type, ont));
             }
 
             renderIndexLink(allEntities.size(), type, pageURL, out);

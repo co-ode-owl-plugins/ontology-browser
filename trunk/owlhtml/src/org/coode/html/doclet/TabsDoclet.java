@@ -8,7 +8,7 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.coode.owl.util.OWLUtils;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -35,11 +35,13 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
         OWLHTMLKit kit = getOWLHTMLKit();
         final boolean singleFrame = isSingleFrameNavigation();
 
+        boolean entitiesExist = false;
+
         for (NamedObjectType type : NamedObjectType.values()){
 
             if (type != NamedObjectType.entities){ // skip entities
 
-                if (entitiesExist(type)){
+                if (OWLUtils.entitiesExist(type, getOWLHTMLKit().getOWLServer().getActiveOntologies())){
 
                     HTMLUtils.renderLink(type.getPluralRendering(),
                                          kit.getURLScheme().getURLForIndex(type),
@@ -48,6 +50,10 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
                                          singleFrame,
                                          pageURL,
                                          out);
+
+                    if (type != NamedObjectType.ontologies){
+                        entitiesExist = true;
+                    }
                 }
                 else{
                     out.print(type.getPluralRendering());
@@ -57,63 +63,29 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
             }
         }
 
-        HTMLUtils.renderLink("Clouds",
-                   kit.getURLScheme().getURLForRelativePage("cloud/"),
-                   OWLHTMLConstants.LinkTarget.subnav,
-                   "",
-                   singleFrame,
-                   pageURL,
-                   out);
-        out.println();
+        if (entitiesExist){
+//            HTMLUtils.renderLink("Clouds",
+//                                 kit.getURLScheme().getURLForRelativePage("cloud/"),
+//                                 OWLHTMLConstants.LinkTarget.subnav,
+//                                 "",
+//                                 singleFrame,
+//                                 pageURL,
+//                                 out);
+//            out.println();
 
 
-        // add the DL Query tab if the reasoner is enabled
-        if (kit.getOWLServer().getProperties().isSet(ServerProperty.optionReasonerEnabled)){
-            HTMLUtils.renderLink(OWLHTMLConstants.DL_QUERY_LABEL,
-                       kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML),
-                       OWLHTMLConstants.LinkTarget.subnav,
-                       null,
-                       singleFrame,
-                       pageURL,
-                       out);
-            out.println();
-        }
-
-    }
-
-    private boolean entitiesExist(NamedObjectType type) {
-        for (OWLOntology ont : getOWLHTMLKit().getOWLServer().getActiveOntologies()){
-            switch (type){
-                case classes: if (!ont.getClassesInSignature().isEmpty()){
-                    return true;
-                }
-                    break;
-                case objectproperties: if (!ont.getObjectPropertiesInSignature().isEmpty()){
-                    return true;
-                }
-                    break;
-                case dataproperties: if (!ont.getDataPropertiesInSignature().isEmpty()){
-                    return true;
-                }
-                    break;
-                case individuals: if (!ont.getIndividualsInSignature().isEmpty()){
-                    return true;
-                }
-                    break;
-                case annotationproperties: if (!ont.getAnnotationPropertiesInSignature().isEmpty()){
-                    return true;
-                }
-                    break;
-                case datatypes: if (!ont.getDatatypesInSignature().isEmpty()){
-                    return true;
-                }
-                    break;
-                case entities: return true;
-                case ontologies: return true;
+            // add the DL Query tab if the reasoner is enabled
+            if (kit.getOWLServer().getProperties().isSet(ServerProperty.optionReasonerEnabled)){
+                HTMLUtils.renderLink(OWLHTMLConstants.DL_QUERY_LABEL,
+                                     kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.DL_QUERY_HTML),
+                                     OWLHTMLConstants.LinkTarget.subnav,
+                                     null,
+                                     singleFrame,
+                                     pageURL,
+                                     out);
+                out.println();
             }
-            // TODO: no more efficient way to ask this?
         }
-        return false;
     }
 
     protected void renderFooter(URL pageURL, PrintWriter out) {

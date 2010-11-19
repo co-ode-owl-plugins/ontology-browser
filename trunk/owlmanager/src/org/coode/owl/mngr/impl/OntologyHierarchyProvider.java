@@ -2,7 +2,6 @@ package org.coode.owl.mngr.impl;
 
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Collections;
@@ -30,24 +29,7 @@ public class OntologyHierarchyProvider implements HierarchyProvider<OWLOntology>
     }
 
     public Set<OWLOntology> getRoots() {
-        Set<OWLOntology> allImported = new HashSet<OWLOntology>();
-        Set<OWLOntology> cycles = new HashSet<OWLOntology>();
-        for (OWLOntology ontology : server.getOntologies()){
-            for (OWLOntology importedOnt : ontology.getDirectImports()){
-                if (hasAncestor(ontology, importedOnt)){
-                    cycles.add(ontology);
-                }
-                else{
-                    allImported.add(importedOnt);
-                }
-            }
-        }
-        Set<OWLOntology> roots = server.getOntologies();
-        roots.removeAll(allImported);
-        if (!cycles.isEmpty()){            // cycle detected
-            roots.addAll(cycles);
-        }
-        return roots;
+        return Collections.singleton(server.getRootOntology());
     }
 
     public boolean isRoot(OWLOntology node) {
@@ -58,25 +40,8 @@ public class OntologyHierarchyProvider implements HierarchyProvider<OWLOntology>
         return getChildren(node).isEmpty();
     }
 
-    public Set<OWLOntology> getParents(OWLOntology node) {
-        Set<OWLOntology> parents = new HashSet<OWLOntology>();
-        for (OWLOntology parent : server.getOntologies()){
-            for (OWLImportsDeclaration decl : parent.getImportsDeclarations()){
-                if (node.equals(server.getOntologyForIRI(decl.getIRI()))){
-                    parents.add(parent);
-                    break;
-                }
-            }
-        }
-        return parents;
-    }
-
     public Set<OWLOntology> getChildren(OWLOntology node) {
-        Set<OWLOntology> imports = new HashSet<OWLOntology>();
-        for (OWLImportsDeclaration decl : node.getImportsDeclarations()){
-            imports.add(server.getOntologyForIRI(decl.getIRI()));
-        }
-        return imports;
+        return node.getDirectImports();
     }
 
     public Set<OWLOntology> getEquivalents(OWLOntology node) {
@@ -85,6 +50,16 @@ public class OntologyHierarchyProvider implements HierarchyProvider<OWLOntology>
 
     public Set<OWLOntology> getDescendants(OWLOntology node) {
         return node.getImports();
+    }
+
+    public Set<OWLOntology> getParents(OWLOntology node) {
+        Set<OWLOntology> parents = new HashSet<OWLOntology>();
+        for (OWLOntology parent : server.getOntologies()){
+            if (parent.getDirectImports().contains(node)){
+                parents.add(parent);
+            }
+        }
+        return parents;
     }
 
     public Set<OWLOntology> getAncestors(OWLOntology node) {

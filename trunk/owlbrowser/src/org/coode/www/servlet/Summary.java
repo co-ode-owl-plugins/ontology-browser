@@ -13,7 +13,7 @@ import org.coode.html.page.OWLDocPage;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.util.ModelUtil;
+import org.coode.owl.util.OWLUtils;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.doclet.XMLResultsDoclet;
 import org.coode.www.exception.OntServerException;
@@ -218,7 +218,7 @@ public class Summary extends AbstractOntologyServerServlet {
         Set<OWLObject> results = new HashSet<OWLObject>();
 
         if (ont != null){ // if ontology specified, just display that one
-            results.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ont));
+            results.addAll(OWLUtils.getOWLEntitiesFromOntology(type, ont));
         }
         else if (type.equals(NamedObjectType.ontologies)){
             results.addAll(kit.getOWLServer().getActiveOntologies());
@@ -226,7 +226,7 @@ public class Summary extends AbstractOntologyServerServlet {
         else{
             // no ontology specified, so display all
             for (OWLOntology ontology : kit.getVisibleOntologies()){
-                results.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ontology));
+                results.addAll(OWLUtils.getOWLEntitiesFromOntology(type, ontology));
             }
         }
         if (type.equals(NamedObjectType.classes)){

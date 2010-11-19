@@ -6,15 +6,15 @@ import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.util.OWLUtils;
 import org.coode.www.OntologyAction;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.mngr.SessionManager;
-import org.coode.www.page.OntologiesPage;
 import org.semanticweb.owlapi.io.UnparsableOntologyException;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyID;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -99,13 +99,15 @@ public class Ontologies extends AbstractOntologyServerServlet {
 
         OWLServer server = kit.getOWLServer();
 
+        OWLOntology ont = null;
+
         if (clear){
             server.clearOntologies();
         }
 
         try{
             if (uri.isAbsolute()){
-                server.loadOntology(uri);
+                ont = server.loadOntology(uri);
                 success.add(uri);
             }
             else{
@@ -136,20 +138,28 @@ public class Ontologies extends AbstractOntologyServerServlet {
         }
 
         if (!success.isEmpty()){
-            SessionManager.labelServerState(kit);
+            SessionManager.createLabel(kit);
         }
 
-        Map<OWLOntologyID, URI> map = server.getLocationsMap();
-
-        if (map.isEmpty()){
+        if (server.getOntologies().isEmpty()){
             throw new RedirectException(kit.getURLScheme().getBaseURL());
         }
 
-        if (map.containsValue(null)){ // missing value in map
-            return new OntologiesPage(kit, pageURL);
+        if (redirect == null){
+
+            // if there is an individual with an IRI matching the ontology that has been loaded
+            OWLNamedIndividual ind = OWLUtils.getIndividual(IRI.create(uri), server.getActiveOntologies());
+            if (ind != null){
+                redirect = kit.getURLScheme().getURLForOWLObject(ind);
+            }
+
+            // else just show the active ontology
+            if (redirect == null && ont != null){
+                redirect = kit.getURLScheme().getURLForOWLObject(ont);
+            }
         }
 
-        throw new RedirectException(redirect != null ? redirect : kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
+        throw new RedirectException(redirect);
     }
 
 
@@ -165,7 +175,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
         else{
             server.removeOntology(ontology);
 
-            SessionManager.labelServerState(kit);
+            SessionManager.createLabel(kit);
 //            sb.append("<p>Removed ");
 //            sb.append(server.getOntologyShortFormProvider().getShortForm(ontology));
 //            sb.append("</p><p>saved session: [");
@@ -173,7 +183,8 @@ public class Ontologies extends AbstractOntologyServerServlet {
 //            sb.append("]</p>");
         }
 
-        return new OntologiesPage(kit, pageURL);
+        throw new RedirectException(kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
+        //return new OntologiesPage(kit, pageURL);
     }
 
 
@@ -195,7 +206,9 @@ public class Ontologies extends AbstractOntologyServerServlet {
             kit.addUserError(sb.toString(), e);
         }
 
-        return new OntologiesPage(kit, pageURL);
+        throw new RedirectException(kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
+
+//        return new OntologiesPage(kit, pageURL);
     }
 
     private URI getURIFromParam(String param) throws URISyntaxException {

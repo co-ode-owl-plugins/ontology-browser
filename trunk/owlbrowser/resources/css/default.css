@@ -133,7 +133,7 @@ h2, .owlselector h4 {
 
 #options{clear: right; float: right;}
 
-#optionActiveOnt {
+#activeOnt {
     display: inline;
     position: relative;
     top: -3px;
@@ -208,7 +208,7 @@ a.permalink {font-size: smaller;}
 ul {margin-top: 1px; margin-bottom: 1px; margin-left: 1.5em; padding-left: 0.5em;}
 ul.minihierarchy {list-style-type: none; margin-left: 0;}
 ul.minihierarchy ul {list-style-type: none;}
-ul.minihierarchy li {white-space: nowrap; color: red;}
+ul.minihierarchy li {white-space: nowrap; color: black;}
 
 li {margin-bottom: 0; margin-top: 2px;}
 

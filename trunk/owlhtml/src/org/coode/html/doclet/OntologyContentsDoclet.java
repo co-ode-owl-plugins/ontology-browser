@@ -7,7 +7,7 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.util.ModelUtil;
+import org.coode.owl.util.OWLUtils;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.PrintWriter;
@@ -44,7 +44,7 @@ public class OntologyContentsDoclet extends AbstractOWLDocDoclet<OWLOntology> {
         out.println("<ul>");
 
         for (NamedObjectType type : NamedObjectType.entitySubtypes()){
-            int count = ModelUtil.getOWLEntitiesFromOntology(type, ont).size();
+            int count = OWLUtils.getOWLEntitiesFromOntology(type, ont).size();
             renderIndexLink(count, type, pageURL, out);
         }
 

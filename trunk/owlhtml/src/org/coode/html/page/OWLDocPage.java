@@ -44,7 +44,7 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
         addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JQUERY_JS));
         addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
-        if (!kit.getOWLServer().getOntologies().isEmpty()){
+        if (kit.isActive()){
             addDoclet(new TabsDoclet(kit));
         }
 

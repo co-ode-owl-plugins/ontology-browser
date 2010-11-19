@@ -147,6 +147,11 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         return properties;
     }
 
+    public void resetProperties() {
+        properties = null;
+        getOWLServer().resetProperties();
+    }
+
 
     public String getID() {
         return id;
@@ -199,10 +204,11 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         properties = null;
         urlScheme = null;
         baseURL = null;
+        label = null;
     }
 
     public boolean isActive() {
-        return !owlServer.isDead() && !owlServer.getOntologies().isEmpty();
+        return !owlServer.isDead();
     }
 
     public void addUserError(String errorMessage) {
