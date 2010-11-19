@@ -15,7 +15,7 @@ import org.coode.html.impl.OWLHTMLConstants;
  */
 public class OntologyBrowserConstants extends OWLHTMLConstants {
 
-    public static String VERSION = "1.4.0";
+    public static String VERSION = "1.4.1";
 
     public static final String SERVER_STATES_DIR = "caches/";
     public static final String SERVER_STATES_EXT = ".saved";
