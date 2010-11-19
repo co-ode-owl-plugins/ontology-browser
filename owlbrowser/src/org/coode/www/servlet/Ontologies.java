@@ -141,7 +141,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
             SessionManager.createLabel(kit);
         }
 
-        if (server.getOntologies().isEmpty()){
+        if (server.getOntologies().size() == 1){
             throw new RedirectException(kit.getURLScheme().getBaseURL());
         }
 
