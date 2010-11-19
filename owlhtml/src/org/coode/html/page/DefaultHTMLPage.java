@@ -127,7 +127,7 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
     }
 
     protected String getTitle() {
-        return OWLHTMLConstants.ONTOLOGY_SERVER_NAME + ": " + title;
+        return OWLHTMLConstants.ONTOLOGY_SERVER_NAME ;//+ ": " + title;
     }
 
     public String getID() {

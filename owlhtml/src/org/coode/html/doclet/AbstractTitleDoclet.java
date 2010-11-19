@@ -13,6 +13,8 @@ import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -56,10 +58,14 @@ public abstract class AbstractTitleDoclet<O extends OWLObject> extends AbstractO
             out.print("<h3>");
             out.print(subtitle);
             try {
-                URL url = new URL(subtitle);
+                // cannot just do new URL() as this allows just about anything
+                URL url = new URI(subtitle).toURL();
                 URLUtils.renderURLLinks(url, kit, pageURL, out);
             }
-            catch (MalformedURLException e) {
+            catch (URISyntaxException e) {
+                // do nothing - no load URL for this entity
+            }
+            catch (MalformedURLException e){
                 // do nothing - no load URL for this entity
             }
             out.println("</h3>");

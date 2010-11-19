@@ -8,9 +8,9 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.url.URLScheme;
 import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.NamedObjectType;
+import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 import org.semanticweb.owlapi.util.AnnotationValueShortFormProvider;
@@ -54,18 +54,29 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
         return searchboxDoclet;
     }
 
-    private HTMLDoclet createActiveOntDoclet(OWLHTMLKit kit) {
+    private HTMLDoclet createActiveOntDoclet(final OWLHTMLKit kit) {
         final ServerPropertiesAdapter<ServerProperty> serverProps = kit.getOWLServer().getProperties();
         return new OptionSelectorDoclet(kit,
                                         ServerProperty.optionActiveOnt.name(),
                                         serverProps.get(ServerProperty.optionActiveOnt),
-                                        serverProps.getAllowedValues(ServerProperty.optionActiveOnt));
+                                        serverProps.getAllowedValues(ServerProperty.optionActiveOnt)){
+
+            @Override
+            public String getID() {
+                return "activeOnt";
+            }
+
+            @Override
+            protected String renderValue(String value) {
+                if (value.equals(kit.getOWLServer().getRootOntology().getOntologyID().getDefaultDocumentIRI().toString())){
+                    return ServerConstants.ROOT_ONTOLOGY_RENDERING;
+                }
+                return super.renderValue(value);
+            }
+        };
     }
 
     protected void renderHeader(URL pageURL, PrintWriter out) {
-
-        final OWLHTMLKit kit = getOWLHTMLKit();
-        final URLScheme urlScheme = kit.getURLScheme();
 
         out.println("\n\n<div id='menu'>");
 

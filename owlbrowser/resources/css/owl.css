@@ -58,12 +58,12 @@ a.Object.Property:hover{
 }
 
 .Data.Property{
-    color: #99ccff;
+    color: #3366ff;
     font-style: italic;
 }
 
 a.Data.Property:hover{
-    color: #3366ff;
+    color: #2852c9;
     font-style: italic;
 }
 

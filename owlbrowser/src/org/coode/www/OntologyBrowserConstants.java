@@ -30,6 +30,8 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
 
     public static final String HTML_FRAG = "html-frag";
 
+    public static final String LABEL_COOKIE_NAME = "label";
+
 
     // supported formats
     public enum RequestFormat{

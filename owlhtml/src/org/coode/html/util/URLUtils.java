@@ -184,7 +184,8 @@ public class URLUtils {
             renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.EXTERNAL_IMAGE), "Attempt to open link in another window", url, OWLHTMLConstants.LinkTarget._blank, "urlOption", true, pageURL, out);
 
             // if the ontology at this location has not already been loaded
-            if (!kit.getOWLServer().getLocationsMap().containsValue(url.toURI())){
+//            final Map<OWLOntologyID, URI> locMap = kit.getOWLServer().getLocationsMap();
+            if (kit.getOWLServer().getOntologyForIRI(IRI.create(url.toURI())) == null){//!locMap.containsValue(url.toURI())){
                 out.println(" ");
                 renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.LOAD_IMAGE), "Attempt to load owl/rdf", loadURL, null, "urlOption", true, pageURL, out);
             }
@@ -221,9 +222,9 @@ public class URLUtils {
 
         if (owlEntity.isOWLNamedIndividual()){
             OWLDataFactory df = onts.iterator().next().getOWLOntologyManager().getOWLDataFactory();
-            OWLDataProperty latProp = df.getOWLDataProperty(IRI.create(ServerConstants.LATITUDE));
-            OWLDataProperty longProp = df.getOWLDataProperty(IRI.create(ServerConstants.LONGITUDE));
-            OWLDataProperty point = df.getOWLDataProperty(IRI.create(ServerConstants.POINT));
+            OWLDataProperty latProp = df.getOWLDataProperty(ServerConstants.LATITUDE);
+            OWLDataProperty longProp = df.getOWLDataProperty(ServerConstants.LONGITUDE);
+            OWLDataProperty point = df.getOWLDataProperty(ServerConstants.POINT);
 
             Loc loc = new Loc();
             for (OWLOntology ont : onts){

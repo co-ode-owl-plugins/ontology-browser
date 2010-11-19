@@ -3,6 +3,9 @@ package org.coode.html.doclet;
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
+
+import java.io.PrintWriter;
+import java.net.URL;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -40,6 +43,14 @@ public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
         super(kit);
     }
 
+    @Override
+    protected void renderHeader(URL pageURL, PrintWriter out) {
+        super.renderHeader(pageURL, out);
+        IRI docIRI = getOWLHTMLKit().getOWLServer().getOWLOntologyManager().getOntologyDocumentIRI(getUserObject());
+        if (!docIRI.equals(getUserObject().getOntologyID().getDefaultDocumentIRI())){
+            out.println("<h3>Loaded from " + docIRI + "</h3>");
+        }
+    }
 
     public String getTitle() {
         return getOWLHTMLKit().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
@@ -47,10 +58,15 @@ public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
 
 
     public String getSubtitle() {
+        if (getUserObject().isAnonymous()){
+            return null;
+        }
+        String s = getUserObject().getOntologyID().getOntologyIRI().toString();
+
         IRI versionIRI = getUserObject().getOntologyID().getVersionIRI();
         if (versionIRI != null){
-            return versionIRI.toString();
+            s += "<br />" + versionIRI.toString();
         }
-        return null;
+        return s;
     }
 }

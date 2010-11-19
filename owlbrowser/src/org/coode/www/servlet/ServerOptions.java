@@ -132,7 +132,7 @@ public class ServerOptions extends AbstractOntologyServerServlet {
             }
 
             if (success){
-                SessionManager.labelServerState(kit);
+                SessionManager.createLabel(kit);
             }
         }
         return success;

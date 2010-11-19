@@ -96,11 +96,10 @@ public class ServerPropertiesImpl implements ServerProperties {
 
 
     public void load(InputStream in) throws IOException {
-        properties.clear();
         properties.load(in);
 
         cleanupDeprecatedNames();
-            }
+    }
 
     public void addDeprecatedNames(Map<String, String> names){
         this.deprecatedNamesMap.putAll(names);
@@ -126,13 +125,13 @@ public class ServerPropertiesImpl implements ServerProperties {
 
 
     public void setAllowedValues(String key, List<String> values) {
-        allowedValues.put(key, values);
+        allowedValues.put(key, Collections.unmodifiableList(values));
     }
 
 
     public List<String> getAllowedValues(String key) {
         List<String> result = allowedValues.get(key);
-        return result != null ? result : new ArrayList<String>();
+        return result != null ? new ArrayList<String>(result) : new ArrayList<String>();
     }
 
 

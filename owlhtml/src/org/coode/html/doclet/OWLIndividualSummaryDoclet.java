@@ -2,7 +2,7 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.renderer.OWLHTMLRenderer;
-import org.coode.owl.util.ModelUtil;
+import org.coode.owl.util.OWLUtils;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
@@ -51,7 +51,7 @@ public class OWLIndividualSummaryDoclet extends AbstractOWLDocDoclet<OWLNamedInd
         super.setUserObject(individual);
         if (individual != null){
             final Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props =
-                    ModelUtil.getPropertyMap(individual, getOWLHTMLKit().getOWLServer().getActiveOntologies());
+                    OWLUtils.getPropertyMap(individual, getOWLHTMLKit().getOWLServer().getActiveOntologies());
             final List<OWLPropertyExpression> orderedProps = new ArrayList<OWLPropertyExpression>(props.keySet());
             Collections.sort(orderedProps, getOWLHTMLKit().getOWLObjectComparator());
             for (final OWLPropertyExpression prop : orderedProps){

@@ -17,6 +17,8 @@ $(document).ready(function(){
     createSlideToggles();
 
     createTreeListeners();
+
+    createOptionListeners();
 });
 
 function scrollTreeToSelection() {
@@ -51,13 +53,15 @@ function createTreeListeners(){
     });
 }
 
-function optionFromSelect(select){
-    Item = select.selectedIndex;
-    Result = select.options[Item].text;
-    optionId = select.form.id; // get the ID of the form
+function createOptionListeners(){
+    $("select.option").change(function(e){
+        var value = $(this).val();
+        var optionId = $("input[name=property]", $(this).parent()).attr("value");
 
-    option(optionId, Result, null);
+        option(optionId, value, null);
+    });
 }
+
 
 // successPage is optional
 // - if specified, this page will be loaded when the option is set successfully

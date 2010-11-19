@@ -9,7 +9,7 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-import org.coode.owl.util.ModelUtil;
+import org.coode.owl.util.OWLUtils;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -98,7 +98,7 @@ public class RestURLScheme extends AbstractURLScheme {
             NamedObjectType type = getType(url);
             int hashCode = getID(url);
             if (type.equals(NamedObjectType.ontologies)){
-                for (OWLOntology ont : kit.getOWLServer().getActiveOntologies()){
+                for (OWLOntology ont : kit.getOWLServer().getOntologies()){
                     if (ont.getOntologyID().hashCode() == hashCode){
                         return ont;
                     }
@@ -107,7 +107,7 @@ public class RestURLScheme extends AbstractURLScheme {
             else{
                 Set<OWLEntity> objs = new HashSet<OWLEntity>();
                 for (OWLOntology ont : kit.getOWLServer().getActiveOntologies()){
-                    objs.addAll(ModelUtil.getOWLEntitiesFromOntology(type, ont));
+                    objs.addAll(OWLUtils.getOWLEntitiesFromOntology(type, ont));
                 }
                 for (OWLEntity obj : objs){
                     if (obj.getIRI().hashCode() == hashCode){
@@ -125,7 +125,7 @@ public class RestURLScheme extends AbstractURLScheme {
 
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            String encodedURI = URLEncoder.encode(ModelUtil.getOntologyIdString(ont), OWLHTMLConstants.DEFAULT_ENCODING);
+            String encodedURI = URLEncoder.encode(OWLUtils.getOntologyIdString(ont), OWLHTMLConstants.DEFAULT_ENCODING);
 
             StringBuilder sb = new StringBuilder(type.toString());
             sb.append(OWLHTMLConstants.SLASH);

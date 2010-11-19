@@ -7,7 +7,6 @@ import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
 import org.coode.www.OntologyBrowserConstants;
-import org.coode.www.doclet.BlurbDoclet;
 import org.coode.www.doclet.LoadDoclet;
 import org.coode.www.exception.OntServerException;
 
@@ -35,7 +34,7 @@ public class StartPage extends AbstractOntologyServerServlet {
 
         OWLDocPage doclet = new OWLDocPage(kit);
 
-        doclet.addDoclet(new BlurbDoclet());
+//        doclet.addDoclet(new BlurbDoclet());
         doclet.addDoclet(new LoadDoclet(kit));
 
         doclet.setAutoFocusedComponent(OntologyBrowserConstants.LOAD_ONTOLOGIES_INPUT_ID);
