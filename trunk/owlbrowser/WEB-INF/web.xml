@@ -79,12 +79,18 @@
         <description>for hierarchy expansion</description>
         <servlet-class>org.coode.www.servlet.Hierarchy</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>TestServlet</servlet-name>
-        <display-name>Test Servlet</display-name>
-        <description>Tests for the TOmcat framework</description>
-        <servlet-class>org.coode.www.test.TestServlet</servlet-class>
-    </servlet>
+    <!--<servlet>-->
+        <!--<servlet-name>TestServlet</servlet-name>-->
+        <!--<display-name>Test Servlet</display-name>-->
+        <!--<description>Tests for the TOmcat framework</description>-->
+        <!--<servlet-class>org.coode.www.test.TestServlet</servlet-class>-->
+    <!--</servlet>-->
+    <!--<servlet>-->
+        <!--<servlet-name>ToggleCookie</servlet-name>-->
+        <!--<display-name>ToggleCookie</display-name>-->
+        <!--<description>ToggleCookie test</description>-->
+        <!--<servlet-class>org.coode.www.servlet.ToggleCookie</servlet-class>-->
+    <!--</servlet>-->
 
     <servlet-mapping>
         <servlet-name>StartPage</servlet-name>
@@ -150,10 +156,10 @@
         <servlet-name>DLQuery</servlet-name>
         <url-pattern>/dlquery/</url-pattern>
     </servlet-mapping>
-        <servlet-mapping>
-        <servlet-name>TestServlet</servlet-name>
-        <url-pattern>/test/</url-pattern>
-    </servlet-mapping>
+        <!--<servlet-mapping>-->
+        <!--<servlet-name>TestServlet</servlet-name>-->
+        <!--<url-pattern>/test/</url-pattern>-->
+    <!--</servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>Summary</servlet-name>
         <url-pattern>/annotationproperties/*</url-pattern>
@@ -174,6 +180,10 @@
         <servlet-name>Hierarchy</servlet-name>
         <url-pattern>/hierarchy/</url-pattern>
     </servlet-mapping>
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>ToggleCookie</servlet-name>-->
+        <!--<url-pattern>/cookie/</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <session-config>
         <session-timeout>10</session-timeout>

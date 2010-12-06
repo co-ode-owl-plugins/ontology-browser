@@ -11,6 +11,7 @@ import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
 import org.coode.html.url.PermalinkURLScheme;
 import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.mngr.ServerConstants;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.ParametersBuilder;
 import org.coode.www.ServletUtils;
@@ -21,10 +22,7 @@ import org.coode.www.exception.RedirectException;
 import org.coode.www.mngr.SessionManager;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -94,8 +92,8 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         try {
             if (!kit.isActive()){
                 throw new OntServerException("<p>This session has timed out.</p>" +
-                                             "<p>Press back in your browser and select a permalink to restore.</p>");// +
-//                                             "<p>TIP: Enable cookies in your browser to avoid this happening again.</p>");
+                                             "<p>Press back in your browser and select a permalink to restore.</p>" +
+                                             "<p>TIP: Enable cookies in your browser to avoid this happening again.</p>");
             }
 
             // the param map is actually multivalued <String, String[]>, but to save hassle we'll simplify it
@@ -109,14 +107,16 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 throw new OntServerException("Could not get renderer for request: " + pageURL);
             }
 
-//            // set the label cookie to the appropriate
-//            if (kit.isActive() && kit.getCurrentLabel() != null){
-//                Cookie cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, kit.getCurrentLabel());
-//                cookie.setPath(request.getContextPath() + "/");
-//                cookie.setMaxAge(-1); // until session expires
-//                response.addCookie(cookie);
-//                System.out.println("Setting cookie " + kit.getCurrentLabel());
-//            }
+            if (ServerConstants.COOKIE_SESSION_RECOVERY){
+                // set the label cookie to the appropriate
+                if (kit.isActive() && kit.getCurrentLabel() != null){
+                    Cookie cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, kit.getCurrentLabel());
+                    cookie.setPath(request.getContextPath() + "/");
+                    cookie.setMaxAge(-1); // until session expires
+                    response.addCookie(cookie);
+//                    System.out.println("Setting cookie " + kit.getCurrentLabel());
+                }
+            }
         }
         catch(RedirectException e){
             redirect = e.getRedirectPage();
@@ -125,18 +125,22 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             handleError(e, kit, pageURL, response);
         }
         finally{
-//            if (!kit.isActive()){
-//                for (Cookie cookie : request.getCookies()){
-//                    if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
-//                        cookie.setValue("");
-//                        cookie.setDomain(pageURL.getHost());
-//                        cookie.setPath(request.getContextPath() + "/");
-//                        cookie.setMaxAge(0);
-//                        response.addCookie(cookie);
-//                        System.out.println("clearing cookie " + kit.getCurrentLabel());
-//                    }
-//                }
-//            }
+            if (ServerConstants.COOKIE_SESSION_RECOVERY){
+                if (!kit.isActive()){
+                    final Cookie[] cookies = request.getCookies();
+                    if (cookies != null){
+                    for (Cookie cookie : cookies){
+                        if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
+//                            System.out.println("clearing cookie " + cookie.getValue());
+                            cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, "");
+                            cookie.setPath(request.getContextPath() + "/");
+                            cookie.setMaxAge(0);
+                            response.addCookie(cookie);
+                        }
+                    }
+                    }
+                }
+            }
             if (redirect != null){
                 handleRedirect(redirect, response);
             }
@@ -151,15 +155,18 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             return label;
         }
 
-//        // and if not, check the cookies
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null){
-//            for (Cookie cookie : cookies){
-//                if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
-//                    return cookie.getValue();
-//                }
-//            }
-//        }
+        if (ServerConstants.COOKIE_SESSION_RECOVERY){
+            // and if not, check the cookies
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null){
+                for (Cookie cookie : cookies){
+                    if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
+//                        System.out.println("recovering session from cookie: " + cookie.getValue());
+                        return cookie.getValue();
+                    }
+                }
+            }
+        }
         return null;
     }
 
