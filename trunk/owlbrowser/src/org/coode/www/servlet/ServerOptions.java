@@ -102,20 +102,20 @@ public class ServerOptions extends AbstractOntologyServerServlet {
                 OWLHTMLProperty property = OWLHTMLProperty.valueOf(propertyName);
                 ServerPropertiesAdapter<OWLHTMLProperty> serverProperties = kit.getHTMLProperties();
                 switch(property){
-                    case optionUseFrames:
-                        if (value.equals(OWLHTMLConstants.NO_FRAMES) || value.equals(Boolean.FALSE.toString())){
-                            if (serverProperties.get(OWLHTMLProperty.optionContentWindow) != null){
-                                serverProperties.set(OWLHTMLProperty.optionContentWindow, null);
-                                success = true;
-                            }
-                        }
-                        else if (value.equals(OWLHTMLConstants.SHOW_FRAMES) || value.equals(Boolean.TRUE.toString())){
-                            if (serverProperties.get(OWLHTMLProperty.optionContentWindow) == null){
-                                serverProperties.set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
-                                success = true;
-                            }
-                        }
-                        break;
+//                    case optionUseFrames:
+//                        if (value.equals(OWLHTMLConstants.NO_FRAMES) || value.equals(Boolean.FALSE.toString())){
+//                            if (serverProperties.get(OWLHTMLProperty.optionContentWindow) != null){
+//                                serverProperties.set(OWLHTMLProperty.optionContentWindow, null);
+//                                success = true;
+//                            }
+//                        }
+//                        else if (value.equals(OWLHTMLConstants.SHOW_FRAMES) || value.equals(Boolean.TRUE.toString())){
+//                            if (serverProperties.get(OWLHTMLProperty.optionContentWindow) == null){
+//                                serverProperties.set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
+//                                success = true;
+//                            }
+//                        }
+//                        break;
                     default:
                         success = serverProperties.set(property, value);
                 }
