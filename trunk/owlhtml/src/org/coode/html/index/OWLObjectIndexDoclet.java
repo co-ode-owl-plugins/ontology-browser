@@ -2,8 +2,6 @@ package org.coode.html.index;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.*;
-import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLProperty;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -61,13 +59,13 @@ public class OWLObjectIndexDoclet<O extends OWLObject> extends AbstractOWLDocDoc
                 return null;//return id + " (" + index.size() + ")";
             }
         };
-        String contentWindow = getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
-        if (contentWindow != null){
-            indexDoclet.setTarget(OWLHTMLConstants.LinkTarget.valueOf(contentWindow));
-        }
-        else{
-            indexDoclet.setTarget(null);
-        }
+//        String contentWindow = getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
+//        if (contentWindow != null){
+//            indexDoclet.setTarget(OWLHTMLConstants.LinkTarget.valueOf(contentWindow));
+//        }
+//        else{
+//            indexDoclet.setTarget(null);
+//        }
         selector.addDoclet(indexDoclet);
 
         addDoclet(selector);

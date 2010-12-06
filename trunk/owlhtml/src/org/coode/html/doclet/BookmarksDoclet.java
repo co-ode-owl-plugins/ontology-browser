@@ -26,7 +26,7 @@ public class BookmarksDoclet extends AbstractOWLElementsDoclet<OWLOntology, OWLE
 
     public BookmarksDoclet(OWLHTMLKit kit) {
         super(OWLHTMLConstants.BOOKMARKS_LABEL, ElementsDoclet.Format.list, kit);
-        setTarget(OWLHTMLConstants.LinkTarget.content);
+//        setTarget(OWLHTMLConstants.LinkTarget.content);
     }
 
     protected Collection<OWLEntity> getElements(Set<OWLOntology> onts) {
