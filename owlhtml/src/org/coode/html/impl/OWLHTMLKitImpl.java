@@ -130,10 +130,10 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
             properties.addDeprecatedNames(OWLHTMLProperty.generateDeprecatedNamesMap());
 
 
-            properties.set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
+//            properties.set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
             properties.set(OWLHTMLProperty.optionIndexAllURL, OWLHTMLConstants.DEFAULT_INDEX_ALL_URL);
             properties.set(OWLHTMLProperty.optionDefaultCSS, OWLHTMLConstants.CSS_DEFAULT);
-            properties.set(OWLHTMLProperty.optionUseFrames, null);
+//            properties.set(OWLHTMLProperty.optionUseFrames, null);
             properties.setBoolean(OWLHTMLProperty.optionRenderSubs, true);
 
 
