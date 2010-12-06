@@ -4,7 +4,6 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.renderer.ElementRenderer;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -25,7 +24,7 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
 
     private OWLHTMLKit kit;
 
-    private OWLHTMLConstants.LinkTarget linkTarget;
+//    private OWLHTMLConstants.LinkTarget linkTarget;
 
     private Set<OWLOntology> ontologies;
 
@@ -44,9 +43,9 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
         this.ontologies = onts;
     }
 
-    public void setTarget(OWLHTMLConstants.LinkTarget target){
-        this.linkTarget = target;
-    }
+//    public void setTarget(OWLHTMLConstants.LinkTarget target){
+//        this.linkTarget = target;
+//    }
 
     protected final Collection<E> getElements(){
         if (ontologies == null){
@@ -61,9 +60,9 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
 
     protected final ElementRenderer<? super E> getElementRenderer() {
         OWLHTMLRenderer ren = new OWLHTMLRenderer(kit);
-        if (linkTarget != null){
-            ren.setContentTargetWindow(linkTarget);
-        }
+//        if (linkTarget != null){
+//            ren.setContentTargetWindow(linkTarget);
+//        }
         return ren;
     }
 

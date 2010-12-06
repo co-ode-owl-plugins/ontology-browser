@@ -1,7 +1,6 @@
 package org.coode.html.renderer;
 
 import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLConstants;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.PrintWriter;
@@ -24,7 +23,7 @@ public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
 
     private OWLHTMLKit kit;
 
-    private OWLHTMLConstants.LinkTarget linkTarget;
+//    private OWLHTMLConstants.LinkTarget linkTarget;
 
 
     public OWLHTMLRenderer(OWLHTMLKit kit) {
@@ -36,7 +35,7 @@ public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
         rendererVisitor.setOntologies(kit.getVisibleOntologies());
         rendererVisitor.setActiveOntology(kit.getOWLServer().getActiveOntology());
         rendererVisitor.setPageURL(pageURL);
-        rendererVisitor.setContentTargetWindow(linkTarget);
+//        rendererVisitor.setContentTargetWindow(linkTarget);
         obj.accept(rendererVisitor);
     }
 
@@ -47,7 +46,7 @@ public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
         return writer.getBuffer().toString();
     }
 
-    public void setContentTargetWindow(OWLHTMLConstants.LinkTarget linkTarget) {
-        this.linkTarget = linkTarget;
-    }
+//    public void setContentTargetWindow(OWLHTMLConstants.LinkTarget linkTarget) {
+//        this.linkTarget = linkTarget;
+//    }
 }

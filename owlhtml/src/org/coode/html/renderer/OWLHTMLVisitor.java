@@ -66,7 +66,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private int indent = 0;
 
-    private OWLHTMLConstants.LinkTarget targetWindow = null;
+//    private OWLHTMLConstants.LinkTarget targetWindow = null;
 
     private boolean writeStats = false;
 
@@ -104,13 +104,13 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 //        this.indent = indent;
 //    }
 
-    /**
-     * Sets the target window of any links - in case frames or popups are required
-     * @param targetWindow
-     */
-    public void setContentTargetWindow(OWLHTMLConstants.LinkTarget targetWindow){
-        this.targetWindow = targetWindow;
-    }
+//    /**
+//     * Sets the target window of any links - in case frames or popups are required
+//     * @param targetWindow
+//     */
+//    public void setContentTargetWindow(OWLHTMLConstants.LinkTarget targetWindow){
+//        this.targetWindow = targetWindow;
+//    }
 
     private void write(String s) {
         out.write(s);
@@ -146,9 +146,9 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             write("<a class='" + cssClass + "'");
             String id = OWLUtils.getOntologyIdString(ontology);
             write(" href=\"" + link + "\" title='" + id + "'");
-            if (targetWindow != null){
-                write(" target=\"" + targetWindow + "\"");
-            }
+//            if (targetWindow != null){
+//                write(" target=\"" + targetWindow + "\"");
+//            }
             write(">");
             write(ontologyIriSFProvider.getShortForm(ontology));
             write("</a>");
@@ -888,9 +888,9 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         if (pageURL == null){
             final URL urlForTarget = urlRenderer.getURLForOWLObject(entity);
             write("<a href=\"" + urlForTarget + "\"");
-            if (targetWindow != null){
-                write(" target=\"" + targetWindow + "\"");
-            }
+//            if (targetWindow != null){
+//                write(" target=\"" + targetWindow + "\"");
+//            }
             writeCSSClasses(cssClasses);
             write(" title=\"" + uri + "\">" + name + "</a>");
         }
@@ -905,9 +905,9 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             else{
                 final URL urlForTarget = urlRenderer.getURLForOWLObject(entity);
                 write("<a href=\"" + URLUtils.createRelativeURL(pageURL, urlForTarget) + "\"");
-                if (targetWindow != null){
-                    write(" target=\"" + targetWindow + "\"");
-                }
+//                if (targetWindow != null){
+//                    write(" target=\"" + targetWindow + "\"");
+//                }
                 writeCSSClasses(cssClasses);
                 write(" title=\"" + uri + "\">" + name + "</a>");
             }
