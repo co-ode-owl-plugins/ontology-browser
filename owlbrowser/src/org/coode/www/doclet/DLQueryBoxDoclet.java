@@ -51,16 +51,17 @@ public class DLQueryBoxDoclet extends OWLSelectorDoclet{
                 out.print("<script type=\"text/javascript\">\n" +
                           "new ExpressionEditor(\"" + DL_QUERY_AC_ID + "\",\n" +
                           "{parser : \"../parse/?format=xml&session=" + getOWLHTMLKit().getCurrentLabel() + "\",\n" +
-                          " autocomplete: \"../autocomplete/?format=xml&session=" + getOWLHTMLKit().getCurrentLabel() + "\",\n" +
-                          " errorHandler: function(e){\n" +
-                          "    var submit = $('#" + DL_QUERY_AC_ID + "Form input[type=submit]');\n" +
-                          "   if (e){\n" +
-                          "      submit.attr('disabled', 'disabled');\n" +
-                          "   }\n" +
-                          "   else{\n" +
-                          "      submit.removeAttr('disabled');\n" +
-                          "   }\n" +
-                          "}" +
+                          " autocomplete: \"../autocomplete/?format=xml&session=" + getOWLHTMLKit().getCurrentLabel() + "\"" +
+//                          ",\n" +
+//                          " errorHandler: function(e){\n" +
+//                          "    var submit = $('#" + DL_QUERY_AC_ID + "Form input[type=submit]');\n" +
+//                          "   if (e){\n" +
+//                          "      submit.attr('disabled', 'disabled');\n" +
+//                          "   }\n" +
+//                          "   else{\n" +
+//                          "      submit.removeAttr('disabled');\n" +
+//                          "   }\n" +
+//                          "}" +
                           "});\n" +
                           "</script>");
             }

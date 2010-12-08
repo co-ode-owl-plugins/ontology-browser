@@ -20,10 +20,10 @@ import java.util.Set;
  * Date: Feb 6, 2008<br><br>
  */
 public enum QueryType {
-    equivalents,
     subclasses,
-    descendants,
     superclasses,
+    equivalents,
+    descendants,
     ancestors,
     instances;
 
