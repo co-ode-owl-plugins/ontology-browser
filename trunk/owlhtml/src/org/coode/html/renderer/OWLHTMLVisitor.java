@@ -888,9 +888,6 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         if (pageURL == null){
             final URL urlForTarget = urlRenderer.getURLForOWLObject(entity);
             write("<a href=\"" + urlForTarget + "\"");
-//            if (targetWindow != null){
-//                write(" target=\"" + targetWindow + "\"");
-//            }
             writeCSSClasses(cssClasses);
             write(" title=\"" + uri + "\">" + name + "</a>");
         }
@@ -905,11 +902,11 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             else{
                 final URL urlForTarget = urlRenderer.getURLForOWLObject(entity);
                 write("<a href=\"" + URLUtils.createRelativeURL(pageURL, urlForTarget) + "\"");
-//                if (targetWindow != null){
-//                    write(" target=\"" + targetWindow + "\"");
-//                }
+
                 writeCSSClasses(cssClasses);
-                write(" title=\"" + uri + "\">" + name + "</a>");
+                write(" title=\"" + uri + "\">");
+                write(name);
+                write("</a>");
             }
         }
     }

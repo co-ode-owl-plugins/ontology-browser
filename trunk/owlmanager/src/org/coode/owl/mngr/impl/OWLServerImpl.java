@@ -220,6 +220,7 @@ public class OWLServerImpl implements OWLServer {
     private void loadedOntology(OWLOntology ont) {
         logger.info("loaded " + OWLUtils.getOntologyIdString(ont));
 
+        clear();
         resetAllowedLabels();
         resetAllowedActiveOntology();
     }
