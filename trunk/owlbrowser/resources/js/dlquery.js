@@ -33,6 +33,10 @@ var queryArray = [
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+$(document).ready(function(){
+    sendQuery();
+});
+
 // have to pass the servlet base in dynamically
 function sendQuery(){
     var expression = getValueOfElementByID("dlQuery");

@@ -57,11 +57,11 @@ public class DLQueryHTMLPage extends OWLDocPage {
 
     public void setQuery(String query){
         
-        String jsAction = "sendQuery();";
-
-        if (query != null && query.length() > 0){
-            addOnLoad(jsAction);
-        }
+//        String jsAction = "sendQuery();";
+//
+//        if (query != null && query.length() > 0){
+//            addOnLoad(jsAction);
+//        }
         acDoclet.setInitialValue(query);
     }
 
