@@ -64,21 +64,8 @@ public class QueryReasoner extends AbstractOntologyServerServlet {
     @Override
     protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         final String query = params.get(OWLHTMLParam.query);
-//        try{
-            final Set<OWLEntity> results = getResults(params, kit);
-            return new ReasonerResultsDoclet(QueryType.valueOf(query), results, kit);
-//        }
-//        catch(OntServerException e){
-//            final Throwable cause = e.getCause();
-//            if (cause != null && cause instanceof ParseException){
-//                getresponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                response.getWriter().println("error=" + cause.getMessage());
-//                response.getWriter().println("offset=" + ((ParseException)cause).getErrorOffset());
-//            }
-//            else{
-//                super.handleError(e, kit, pageURL, response);
-//            }
-//        }
+        final Set<OWLEntity> results = getResults(params, kit);
+        return new ReasonerResultsDoclet(QueryType.valueOf(query), results, kit);
     }
 
     protected HTMLPage handleHTMLPageRequest(Map<OWLHTMLParam, String> params,

@@ -565,6 +565,9 @@ public class
             nameCache.dispose();
             nameCache = null;
         }
+        if (owlEntityChecker != null){
+            owlEntityChecker = null;
+        }
     }
 
 
@@ -649,7 +652,11 @@ public class
         if (nameCache == null){
             nameCache = new CachingBidirectionalShortFormProvider(){
                 protected String generateShortForm(OWLEntity owlEntity) {
-                    return getShortFormProvider().getShortForm(owlEntity);
+                    String shortform = getShortFormProvider().getShortForm(owlEntity);
+                    if (shortform.indexOf(" ") > -1){ // if this is a multiword name
+                        shortform = "\"" + shortform + "\"";
+                    }
+                    return shortform;
                 }
             };
             // TODO: should names also include all standard xsd datatypes - not just the ones referenced?

@@ -159,7 +159,11 @@ public class AutocompleteMOS extends AbstractOntologyServerServlet {
     private <T extends OWLEntity> void addResults(Map<String, List<String>> map, Class<T> cls, Collection<T> matches, ShortFormProvider sfp) {
         List<String> names = new ArrayList<String>();
         for (T match : matches){
-            names.add(sfp.getShortForm(match));
+            String name = sfp.getShortForm(match);
+            if (name.indexOf(" ") > -1){
+                name = "\"" + name + "\"";
+            }
+            names.add(name);
         }
         map.put(cls.getSimpleName(), names);
     }
