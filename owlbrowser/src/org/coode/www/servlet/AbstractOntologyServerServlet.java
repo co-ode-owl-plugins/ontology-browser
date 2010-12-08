@@ -106,17 +106,6 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             else{
                 throw new OntServerException("Could not get renderer for request: " + pageURL);
             }
-
-            if (ServerConstants.COOKIE_SESSION_RECOVERY){
-                // set the label cookie to the appropriate
-                if (kit.isActive() && kit.getCurrentLabel() != null){
-                    Cookie cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, kit.getCurrentLabel());
-                    cookie.setPath(request.getContextPath() + "/");
-                    cookie.setMaxAge(-1); // until session expires
-                    response.addCookie(cookie);
-//                    System.out.println("Setting cookie " + kit.getCurrentLabel());
-                }
-            }
         }
         catch(RedirectException e){
             redirect = e.getRedirectPage();
@@ -126,25 +115,36 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         }
         finally{
             if (ServerConstants.COOKIE_SESSION_RECOVERY){
-                if (!kit.isActive()){
-                    final Cookie[] cookies = request.getCookies();
-                    if (cookies != null){
-                    for (Cookie cookie : cookies){
-                        if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
-//                            System.out.println("clearing cookie " + cookie.getValue());
-                            cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, "");
-                            cookie.setPath(request.getContextPath() + "/");
-                            cookie.setMaxAge(0);
-                            response.addCookie(cookie);
-                        }
-                    }
-                    }
-                }
+                updateCookies(request, response, kit);
             }
             if (redirect != null){
                 handleRedirect(redirect, response);
             }
             response.getWriter().flush();
+        }
+    }
+
+    private void updateCookies(HttpServletRequest request, HttpServletResponse response, OWLHTMLKit kit) {
+        if (kit.isActive() && kit.getCurrentLabel() != null){
+            Cookie cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, kit.getCurrentLabel());
+            cookie.setPath(request.getContextPath() + "/");
+            cookie.setMaxAge(-1); // until session expires
+            response.addCookie(cookie);
+//                    System.out.println("Setting cookie " + kit.getCurrentLabel());
+        }
+        else {
+            final Cookie[] cookies = request.getCookies();
+            if (cookies != null){
+                for (Cookie cookie : cookies){
+                    if (cookie.getName().equals(OntologyBrowserConstants.LABEL_COOKIE_NAME)){
+//                            System.out.println("clearing cookie " + cookie.getValue());
+                        cookie = new Cookie(OntologyBrowserConstants.LABEL_COOKIE_NAME, "");
+                        cookie.setPath(request.getContextPath() + "/");
+                        cookie.setMaxAge(0);
+                        response.addCookie(cookie);
+                    }
+                }
+            }
         }
     }
 

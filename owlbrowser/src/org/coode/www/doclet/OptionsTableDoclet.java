@@ -38,20 +38,20 @@ public class OptionsTableDoclet extends AbstractOWLDocDoclet {
     protected void renderHeader(URL pageURL, PrintWriter out) {
 
         renderProperties(getOWLHTMLKit().getHTMLProperties(),
-                         OWLHTMLProperty.values(),
+                         OWLHTMLProperty.getCurrent(),
                          "Look and Feel",
                          pageURL,
                          out);
 
         renderProperties(getOWLHTMLKit().getOWLServer().getProperties(),
-                         ServerProperty.values(),
+                         ServerProperty.getCurrent(),
                          "Model",
                          pageURL,
                          out);
     }
 
 
-    private <E extends Enum> void renderProperties(ServerPropertiesAdapter<E> properties, E[] keys, String title, URL pageURL, PrintWriter out) {
+    private <E extends Enum> void renderProperties(ServerPropertiesAdapter<E> properties, List<E> keys, String title, URL pageURL, PrintWriter out) {
 
         renderBoxStart(title, out, pageURL);
 
