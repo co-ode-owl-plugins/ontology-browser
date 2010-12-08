@@ -30,7 +30,8 @@ import java.util.*;
  * nick.drummond@cs.manchester.ac.uk<br>
  * www.cs.man.ac.uk/~drummond<br><br>
  */
-public class OWLServerImpl implements OWLServer {
+public class
+        OWLServerImpl implements OWLServer {
 
     private static final Logger logger = Logger.getLogger(OWLServerImpl.class.getName());
 
@@ -122,15 +123,7 @@ public class OWLServerImpl implements OWLServer {
 
         handleCommonBaseMappers(physicalURI);
 
-        OWLOntology ont = mngr.loadOntologyFromOntologyDocument(IRI.create(physicalURI));
-
-        resetRootImports();
-
-        if (!getActiveOntology().equals(rootOntology)){
-            setActiveOntology(ont);
-        }
-
-        return ont;
+        return mngr.loadOntologyFromOntologyDocument(IRI.create(physicalURI));
     }
 
 
@@ -213,16 +206,19 @@ public class OWLServerImpl implements OWLServer {
         resetRootImports();
 
         setActiveOntology(rootOntology);
-
-        clear();
     }
 
     private void loadedOntology(OWLOntology ont) {
         logger.info("loaded " + OWLUtils.getOntologyIdString(ont));
 
-        clear();
-        resetAllowedLabels();
-        resetAllowedActiveOntology();
+        resetRootImports();
+
+        if (!getActiveOntology().equals(rootOntology)){
+            setActiveOntology(ont);
+        }
+        else{
+            clear();
+        }
     }
 
     public OWLOntology getOntologyForIRI(IRI iri) {
@@ -287,7 +283,6 @@ public class OWLServerImpl implements OWLServer {
         properties.removePropertyChangeListener(propertyChangeListener);
         properties = null;
         clear();
-        resetAllowedLabels();
     }
 
 
@@ -540,6 +535,8 @@ public class OWLServerImpl implements OWLServer {
         resetReasoner();
         resetRendererCache();
         resetHierarchies();
+        resetAllowedActiveOntology();
+        resetAllowedLabels();
         comparator = null;
     }
 
@@ -755,8 +752,6 @@ public class OWLServerImpl implements OWLServer {
                 activeOntology = null; // this will force it to be taken from the properties
 
                 clear();
-
-                resetAllowedLabels();
 
                 OWLOntology ont = getActiveOntology();
 

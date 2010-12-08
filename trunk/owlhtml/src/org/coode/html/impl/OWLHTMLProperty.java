@@ -1,6 +1,8 @@
 package org.coode.html.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /*
 * Copyright (C) 2007, University of Manchester
@@ -35,24 +37,30 @@ import java.util.Map;
  */
 public enum OWLHTMLProperty {
 
-    optionContentWindow("Content window", "content-window"),
-    optionIndexAllURL("Index all URL", "index-all-url"),
+    optionContentWindow("Content window", true, "content-window"),
+    optionIndexAllURL("Index all URL", true, "index-all-url"),
     optionDefaultCSS("CSS file", "css"),
-    optionUseFrames("Use frames", "frames"),
+    optionUseFrames("Use frames", true, "frames"),
     optionShowMiniHierarchies("Show hierarchies", "option_show_mini_hierarchies"),
-    optionShowInferredHierarchies("Show inferred hierarchies", "option_show_inferred_hierarchies"),
+    optionShowInferredHierarchies("Show inferred hierarchies", true, "option_show_inferred_hierarchies"),
     optionRenderPermalink("Render permalinks", "option_render_permalink"),
-    optionRenderOntologySummaryCloud("Ontology summary cloud links", "option_render_ontology_summary_cloud"),
-    optionRenderSubs("Render children", "option_render_subs");
+    optionRenderOntologySummaryCloud("Ontology summary cloud links", true, "option_render_ontology_summary_cloud"),
+    optionRenderSubs("Render children", true, "option_render_subs");
 
     private String[] altNames;
 
     private String shortName;
 
+    private boolean deprecated;
 
     OWLHTMLProperty(String shortName, String ... altNames) {
+        this(shortName, false, altNames);
+    }
+
+    OWLHTMLProperty(String shortName, boolean deprecated, String ... altNames) {
         this.shortName = shortName;
         this.altNames = altNames;
+        this.deprecated = deprecated;
     }
 
     public String[] getAlternateNames() {
@@ -72,5 +80,19 @@ public enum OWLHTMLProperty {
     @Override
     public String toString() {
         return shortName;
+    }
+
+    public static List<OWLHTMLProperty> getCurrent() {
+        List<OWLHTMLProperty> current = new ArrayList<OWLHTMLProperty>();
+        for (OWLHTMLProperty p : values()){
+            if (!p.isDeprecated()){
+                current.add(p);
+            }
+        }
+        return current;
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
     }
 }
