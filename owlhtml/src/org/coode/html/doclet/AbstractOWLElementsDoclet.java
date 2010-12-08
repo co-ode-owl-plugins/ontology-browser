@@ -6,9 +6,14 @@ package org.coode.html.doclet;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.renderer.ElementRenderer;
 import org.coode.html.renderer.OWLHTMLRenderer;
+import org.coode.html.util.URLUtils;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Set;
 
@@ -24,9 +29,9 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
 
     private OWLHTMLKit kit;
 
-//    private OWLHTMLConstants.LinkTarget linkTarget;
-
     private Set<OWLOntology> ontologies;
+
+    private boolean inlineMedia = true;
 
 
     public AbstractOWLElementsDoclet(String name, Format format, OWLHTMLKit kit) {
@@ -43,9 +48,9 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
         this.ontologies = onts;
     }
 
-//    public void setTarget(OWLHTMLConstants.LinkTarget target){
-//        this.linkTarget = target;
-//    }
+    public void setInlineMedia(boolean inlineMedia){
+        this.inlineMedia = inlineMedia;
+    }
 
     protected final Collection<E> getElements(){
         if (ontologies == null){
@@ -59,11 +64,36 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
     protected abstract Collection<E> getElements(Set<OWLOntology> ontologies);
 
     protected final ElementRenderer<? super E> getElementRenderer() {
-        OWLHTMLRenderer ren = new OWLHTMLRenderer(kit);
-//        if (linkTarget != null){
-//            ren.setContentTargetWindow(linkTarget);
-//        }
-        return ren;
+        return new OWLHTMLRenderer(kit){
+            @Override
+            public void render(OWLObject obj, URL pageURL, PrintWriter out) {
+                super.render(obj, pageURL, out);
+                if (inlineMedia){
+                    IRI iri = null;
+                    if (obj instanceof OWLEntity){
+                        iri = ((OWLEntity)obj).getIRI();
+                    }
+                    else if (obj instanceof IRI){
+                        iri = (IRI)obj;
+                    }
+                    if (iri != null){
+                        if (URLUtils.isImageURL(iri)){
+                            out.print("<img class=\"thumb\" src=\"");
+                            out.print(iri);
+                            out.println("\" height=\"100\" />");
+                        }
+                        else{
+                            // TODO: make a play button
+//                if (URLUtils.isSoundURL(iri)){
+//                    out.print("<EMBED src=\"");
+//                    out.print(iri);
+//                    out.println("\" autostart=\"true\" hidden=\"true\"/>");
+//                }
+                        }
+                    }
+                }
+            }
+        };
     }
 
     public String getID() {

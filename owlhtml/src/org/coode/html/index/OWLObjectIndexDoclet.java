@@ -59,6 +59,7 @@ public class OWLObjectIndexDoclet<O extends OWLObject> extends AbstractOWLDocDoc
                 return null;//return id + " (" + index.size() + ")";
             }
         };
+        indexDoclet.setInlineMedia(false);
 //        String contentWindow = getOWLHTMLKit().getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
 //        if (contentWindow != null){
 //            indexDoclet.setTarget(OWLHTMLConstants.LinkTarget.valueOf(contentWindow));

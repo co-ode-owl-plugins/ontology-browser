@@ -77,12 +77,6 @@ public class SummaryPageFactory {
         throw new RuntimeException("Cannot find a summary for type: " + cls);
     }
 
-    public <N extends OWLObject> HierarchyDoclet<N> getHierarchy(N owlObject){
-        HierarchyDoclet<N> doclet = getHierarchy((Class<N>)owlObject.getClass());
-        doclet.setUserObject(owlObject);
-        return doclet;
-    }
-
     @SuppressWarnings("unchecked")
     public <N extends OWLObject> HierarchyDoclet<N> getHierarchy(Class<N> cls){
         HierarchyProvider<N> hp = kit.getOWLServer().getHierarchyProvider(cls);
