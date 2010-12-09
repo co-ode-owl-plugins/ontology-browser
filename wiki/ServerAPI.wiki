@@ -1,5 +1,7 @@
 = API =
 
+* 9th Dec 2010 - to be updated - I cannot guarantee these interfaces will work currently *
+
 The server has been written with a RESTful interface such that programmatic or user interaction is possible over HTTP.
 
 For example, an ontology repository (or a user's own HTML pages) could incorporate a link to the browser to show a particular ontology.
