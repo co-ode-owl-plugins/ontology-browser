@@ -4,6 +4,8 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.renderer.ElementRenderer;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.coode.html.util.URLUtils;
@@ -15,6 +17,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -53,15 +57,38 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
     }
 
     protected final Collection<E> getElements(){
-        if (ontologies == null){
-            return getElements(getOWLHTMLKit().getVisibleOntologies());
+        Set<OWLOntology> onts = ontologies;
+        if (onts == null){
+            onts = getOWLHTMLKit().getVisibleOntologies();
         }
-        else{
-            return getElements(ontologies);
+        Set<E> elements = new HashSet<E>();
+        elements.addAll(getAssertedElements(onts));
+        if (showInferences()){
+            elements.addAll(getInferredElements(onts));
         }
+        return elements;
     }
 
-    protected abstract Collection<E> getElements(Set<OWLOntology> ontologies);
+    private boolean showInferences() {
+        return getOWLHTMLKit().getHTMLProperties().isSet(OWLHTMLProperty.optionShowInferences);
+    }
+
+    protected abstract Collection<E> getAssertedElements(Set<OWLOntology> ontologies);
+
+    // TODO: make abstract?
+    protected Collection<E> getInferredElements(Set<OWLOntology> ontologies){
+        return Collections.emptySet();
+    }
+
+    @Override
+    protected String getCSSClass(E object) { // TODO: should we cache to prevent multiple queries?
+        if (showInferences() && !getAssertedElements(getOWLHTMLKit().getVisibleOntologies()).contains(object)){
+            return OWLHTMLConstants.INFERRED_CSS_CLASS;
+        }
+        else{
+            return OWLHTMLConstants.ASSERTED_CSS_CLASS;
+        }
+    }
 
     protected final ElementRenderer<? super E> getElementRenderer() {
         return new OWLHTMLRenderer(kit){

@@ -24,7 +24,7 @@ public class AssertedSuperpropertiesDoclet<O extends OWLProperty> extends Abstra
         super("Superproperties", Format.list, kit);
     }
 
-    protected Collection<O> getElements(Set<OWLOntology> onts) {
+    protected Collection<O> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getSuperProperties(onts);
     }
 }

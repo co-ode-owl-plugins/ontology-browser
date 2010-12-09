@@ -47,7 +47,7 @@ public class DatatypeDefinitionDoclet extends AbstractOWLElementsDoclet<OWLDatat
     }
 
 
-    protected Collection<OWLDataRange> getElements(Set<OWLOntology> ontologies) {
+    protected Collection<OWLDataRange> getAssertedElements(Set<OWLOntology> ontologies) {
         Set<OWLDataRange> ranges = new HashSet<OWLDataRange>();
         for (OWLOntology ont : ontologies){
             for (OWLDatatypeDefinitionAxiom ax : ont.getDatatypeDefinitions(getUserObject())){

@@ -46,7 +46,7 @@ public class AnnotationPropertySuperPropertiesDoclet extends AbstractOWLElements
     }
 
 
-    protected Collection<OWLAnnotationProperty> getElements(Set< OWLOntology > ontologies) {
+    protected Collection<OWLAnnotationProperty> getAssertedElements(Set< OWLOntology > ontologies) {
         Set<OWLAnnotationProperty> superProperties = new HashSet<OWLAnnotationProperty>();
         for (OWLOntology ont : ontologies){
             for (OWLSubAnnotationPropertyOfAxiom ax : ont.getSubAnnotationPropertyOfAxioms(getUserObject())){

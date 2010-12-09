@@ -50,16 +50,22 @@ public class OWLIndividualSummaryDoclet extends AbstractOWLDocDoclet<OWLNamedInd
     public void setUserObject(OWLNamedIndividual individual) {
         super.setUserObject(individual);
         if (individual != null){
-            final Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props =
-                    OWLUtils.getPropertyMap(individual, getOWLHTMLKit().getOWLServer().getActiveOntologies());
-            final List<OWLPropertyExpression> orderedProps = new ArrayList<OWLPropertyExpression>(props.keySet());
+            final Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> assertedProps =
+                    OWLUtils.getAssertedPropertyMap(individual, getOWLHTMLKit().getOWLServer().getActiveOntologies());
+            final List<OWLPropertyExpression> orderedProps = new ArrayList<OWLPropertyExpression>(assertedProps.keySet());
             Collections.sort(orderedProps, getOWLHTMLKit().getOWLObjectComparator());
             for (final OWLPropertyExpression prop : orderedProps){
                 addDoclet(new AbstractOWLElementsDoclet<OWLNamedIndividual, OWLPropertyAssertionObject>(prop.toString(), ElementsDoclet.Format.list, getOWLHTMLKit()){
 
-                    protected Collection<OWLPropertyAssertionObject> getElements(Set<OWLOntology> ontologies) {
-                        return props.get(prop);
+                    protected Collection<OWLPropertyAssertionObject> getAssertedElements(Set<OWLOntology> ontologies) {
+                        return assertedProps.get(prop);
                     }
+
+                    // TODO: inferred elements
+//                    @Override
+//                    protected Collection<OWLPropertyAssertionObject> getInferredElements(Set<OWLOntology> ontologies) {
+//
+//                    }
 
                     protected void renderBoxStart(String name, String id, PrintWriter out, URL pageURL) {
                         name = new OWLHTMLRenderer(getOWLHTMLKit()).render(prop, pageURL);

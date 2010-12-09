@@ -26,7 +26,7 @@ public class DifferentFromDoclet extends AbstractOWLElementsDoclet<OWLNamedIndiv
         super("Different From", Format.csv, kit);
     }
 
-    protected Collection<OWLIndividual> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLIndividual> getAssertedElements(Set<OWLOntology> onts) {
         Set<OWLIndividual> sameAs = new HashSet<OWLIndividual>();
         for (OWLOntology ont : onts){
             sameAs.addAll(getUserObject().getDifferentIndividuals(ont));

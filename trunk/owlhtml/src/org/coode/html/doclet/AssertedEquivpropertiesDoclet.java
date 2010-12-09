@@ -24,7 +24,7 @@ public class AssertedEquivpropertiesDoclet<O extends OWLProperty> extends Abstra
         super("Equivalent Properties", Format.list, kit);
     }
 
-    protected Collection<O> getElements(Set<OWLOntology> onts) {
+    protected Collection<O> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getEquivalentProperties(onts);
     }
 }

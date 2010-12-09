@@ -25,7 +25,7 @@ public class AssertedEquivalentsDoclet extends AbstractOWLElementsDoclet<OWLClas
         super("Equivalents", Format.list, kit);
     }
 
-    protected Collection<OWLClassExpression> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getEquivalentClasses(onts);
     }
 }

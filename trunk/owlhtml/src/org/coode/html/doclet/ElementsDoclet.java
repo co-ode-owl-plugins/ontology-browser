@@ -63,7 +63,14 @@ public abstract class ElementsDoclet<O, E> extends AbstractHTMLDoclet<O> {
                 case list:
                     out.println("<ul>");
                     for (E object : objects){
-                        out.println("<li>");
+                        out.print("<li");
+                        String cls = getCSSClass(object);
+                        if (cls != null){
+                            out.print(" class=\"");
+                            out.print(cls);
+                            out.print("\"");
+                        }
+                        out.println(">");
                         elementRenderer.render(object, pageURL, out);
                         out.println("</li>");
                     }
@@ -71,7 +78,17 @@ public abstract class ElementsDoclet<O, E> extends AbstractHTMLDoclet<O> {
                     break;
                 case csv:
                     for (Iterator<E> i = objects.iterator(); i.hasNext();) {
-                        elementRenderer.render(i.next(), pageURL, out);
+                        E object = i.next();
+                        String cls = getCSSClass(object);
+                        if (cls != null){
+                            out.print("<span class=\"");
+                            out.print(cls);
+                            out.print("\">");
+                        }
+                        elementRenderer.render(object, pageURL, out);
+                        if (cls != null){
+                            out.print("</span>");
+                        }
                         if (i.hasNext()){
                             out.print(", ");
                         }
@@ -81,7 +98,10 @@ public abstract class ElementsDoclet<O, E> extends AbstractHTMLDoclet<O> {
         }
     }
 
-    
+    protected String getCSSClass(E object) {
+        return null;
+    }
+
     protected void renderFooter(URL pageURL, PrintWriter out) {
         if (!getElements().isEmpty()){        
             renderBoxEnd(getID(), out);

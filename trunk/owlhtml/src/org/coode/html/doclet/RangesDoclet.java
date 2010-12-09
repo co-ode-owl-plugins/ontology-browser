@@ -25,7 +25,7 @@ public class RangesDoclet<O extends OWLPropertyExpression> extends AbstractOWLEl
         super("Ranges", Format.list, kit);
     }
 
-    protected Collection<OWLPropertyRange> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLPropertyRange> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getRanges(onts);
     }
 }

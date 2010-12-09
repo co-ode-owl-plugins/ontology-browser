@@ -45,7 +45,8 @@ public enum OWLHTMLProperty {
     optionShowInferredHierarchies("Show inferred hierarchies", true, "option_show_inferred_hierarchies"),
     optionRenderPermalink("Render permalinks", "option_render_permalink"),
     optionRenderOntologySummaryCloud("Ontology summary cloud links", true, "option_render_ontology_summary_cloud"),
-    optionRenderSubs("Render children", true, "option_render_subs");
+    optionRenderSubs("Render children", true, "option_render_subs"),
+    optionShowInferences("Show inferences");
 
     private String[] altNames;
 

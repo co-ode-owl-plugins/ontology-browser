@@ -24,7 +24,7 @@ public class PropertyCharacteristicsDoclet<O extends OWLProperty> extends Abstra
         super("Property Characteristics", ElementsDoclet.Format.list, kit);
     }
 
-    protected Collection<OWLPropertyAxiom> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLPropertyAxiom> getAssertedElements(Set<OWLOntology> onts) {
         Set<OWLPropertyAxiom> axioms = new HashSet<OWLPropertyAxiom>();
         O prop = getUserObject();
         for (OWLOntology ont : onts){

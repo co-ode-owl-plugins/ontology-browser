@@ -25,7 +25,7 @@ public class DomainsDoclet<O extends OWLProperty> extends AbstractOWLElementsDoc
         super("Domains", Format.list, kit);
     }
 
-    protected Collection<OWLClassExpression> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getDomains(onts);
     }
 }

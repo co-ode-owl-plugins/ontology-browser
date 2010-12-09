@@ -26,7 +26,7 @@ public class OntologyImportsDoclet extends AbstractOWLElementsDoclet<OWLOntology
         super("Imports", Format.list, kit);
     }
 
-    protected Collection<IRI> getElements(Set<OWLOntology> onts) {
+    protected Collection<IRI> getAssertedElements(Set<OWLOntology> onts) {
         Set<IRI> iris = new HashSet<IRI>();
         for (OWLImportsDeclaration decl : getUserObject().getImportsDeclarations()){
             iris.add(decl.getIRI());

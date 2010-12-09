@@ -25,7 +25,7 @@ public class DisjointsDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLClas
         super("Disjoints", Format.csv, kit);
     }
 
-    protected Collection<OWLClassExpression> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getDisjointClasses(onts);
     }
 }

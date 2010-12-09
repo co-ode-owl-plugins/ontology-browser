@@ -52,7 +52,7 @@ public class OWLObjectIndexDoclet<O extends OWLObject> extends AbstractOWLDocDoc
         });
 
         indexDoclet = new AbstractOWLElementsDoclet<OWLOntology, O>(id, ElementsDoclet.Format.list, kit) {
-            protected Collection<O> getElements(Set<OWLOntology> onts) {
+            protected Collection<O> getAssertedElements(Set<OWLOntology> onts) {
                 return index;
             }
             public String getID() {

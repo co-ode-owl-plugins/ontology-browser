@@ -46,7 +46,7 @@ public class AnnotationPropertyDomainsDoclet extends AbstractOWLElementsDoclet<O
         super ("Domains", ElementsDoclet.Format.list, kit);
     }
 
-    protected Collection<IRI> getElements(Set<OWLOntology> ontologies) {
+    protected Collection<IRI> getAssertedElements(Set<OWLOntology> ontologies) {
         Set<IRI> domains = new HashSet<IRI>();
         for (OWLOntology ont : ontologies){
             for (OWLAnnotationPropertyDomainAxiom ax : ont.getAnnotationPropertyDomainAxioms(getUserObject())){
