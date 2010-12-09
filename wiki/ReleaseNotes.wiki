@@ -1,5 +1,17 @@
 = Release Notes =
 
+== *v1.4.2 9th Dec 2010 ==
+  
+  * Lots of fixes
+  * updated to OWLAPI v3.1 (more complete OWL2 support)
+  * Session handling changed (cookies, timeouts, redirects etc)
+  * RDF (LOD) support (easy loading, RDF fixes etc)
+  * Google maps, images, sounds, external links
+  * Expandable hierarchies
+  * Expression parsing/autocomplete in DLQuery
+  * Javascript tidyup (using JQuery)
+  * Lots of CSS tidyup (now ignoring backwards compat with java JEditorPane)
+
 == *v1.1.6* 1 Apr 2009 ==
 
   * multiple fixes to the mini hierarchies
