@@ -1,5 +1,6 @@
 package org.coode.www.doclet;
 
+import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractHTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.HTMLUtils;
@@ -18,13 +19,22 @@ import java.net.URL;
  */
 public class TitleDoclet extends AbstractHTMLDoclet {
 
+    private OWLHTMLKit kit;
+
+
+    public TitleDoclet(OWLHTMLKit kit) {
+        this.kit = kit;
+    }
+
     @Override
     protected void renderHeader(URL pageURL, PrintWriter out) {
         HTMLUtils.renderLink("Help", OWLHTMLConstants.HOME_PAGE, OWLHTMLConstants.LinkTarget._blank, "help", true, pageURL, out);
 
-        out.print("<h1>");
+        out.print("<h1><a href=\"");
+        out.print(kit.getURLScheme().getBaseURL());
+        out.print("\">");
         out.print(OntologyBrowserConstants.ONTOLOGY_SERVER_NAME);
-        out.println("</h1>");
+        out.println("</a></h1>");
         out.print(" v");
         out.print(OntologyBrowserConstants.VERSION);
     }
