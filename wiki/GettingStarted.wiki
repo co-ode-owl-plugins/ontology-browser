@@ -56,7 +56,9 @@ A dropdown is implemented to help you with this.
 
 http://ontology-browser.googlecode.com/svn/wiki/images/find.png
 
-=== Loading additional content ===
+----
+
+== Loading additional content ==
 
 Providers of Linked Open Data commonly publish RDF at the location corresponding to the URI of the entity.
 
@@ -74,8 +76,9 @@ However, if we then use the link to pull in content from the Manchester URL we f
 
 http://ontology-browser.googlecode.com/svn/wiki/images/manchesterAfterLoad.png
 
+----
 
-=== Permalinking ===
+== Permalinking ==
 
 At any time you can select or copy the permalink link and bookmark it or send it to your friends.
 
@@ -85,6 +88,7 @@ The permalink takes into account any settings you have updated, and includes poi
 
 [http://owl.cs.manchester.ac.uk/browser/individuals/1182946835/?session=12ccb674365-29-12ccb6a0445 try it]
 
+----
 
 == Display Names ==
 
@@ -97,3 +101,31 @@ The annotation property can be changed as well as the language (in the case wher
 http://ontology-browser.googlecode.com/svn/wiki/images/russian.png
 
 If the labels appear in data property assertions you can also change this in the options.
+
+----
+
+== Active ontology ==
+
+The selector on the top bar determines the current active ontology.
+
+The browser will only show content from the active ontology (and its imports).
+
+http://ontology-browser.googlecode.com/svn/wiki/images/activeOntology.png
+
+In addition, if reasoning is being used (using the DLQuery tab or inferences are shown) then the reasoner will only take into account the active ontology (and its imports).
+
+The default is *All ontologies* - this is a system ontology that imports all of the others.
+
+*Hint* The import structure of the ontologies can be seen in the hierarchy in the ontologies tab.
+
+----
+
+== Ending / Starting again ==
+
+You can clear a session by clicking the red cross at the top left of the screen.
+
+http://ontology-browser.googlecode.com/svn/wiki/images/quit.png
+
+This clears all ontologies and resets the options to their defaults.
+
+Don't worry, any permalinks you have saved will be in exactly the same state as they were.
