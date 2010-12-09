@@ -64,9 +64,9 @@ Providers of Linked Open Data commonly publish RDF at the location corresponding
 
 To keep things running quickly Ontology Browser does not automatically attempt to load additional content as you browse.
 
-The URI for an entity may have 2 icons after it.
-* The first allows you to open the URI in another browser window (useful for html pages)
-* The second (if visible) allows you to attempt to pull in more content from the URL
+The URI for an entity may have 2 icons after it:
+  * The first allows you to open the URI in another browser window (useful for html pages)
+  * The second (if visible) allows you to attempt to pull in more content from the URL
 
 In the example below we have only loaded the City of Salford content so when we navigate to Manchester we find very little.
 
@@ -75,6 +75,8 @@ http://ontology-browser.googlecode.com/svn/wiki/images/manchesterBeforeLoad.png
 However, if we then use the link to pull in content from the Manchester URL we find much more.
 
 http://ontology-browser.googlecode.com/svn/wiki/images/manchesterAfterLoad.png
+
+*Hint* once the content has been loaded the second icon should disappear.
 
 ----
 
