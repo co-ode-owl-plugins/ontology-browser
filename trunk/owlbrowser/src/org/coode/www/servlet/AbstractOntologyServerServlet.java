@@ -210,7 +210,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
     }
 
     private void wrap(HTMLPage ren, OWLHTMLKit kit){
-        ren.addDoclet(new TitleDoclet(), 0);
+        ren.addDoclet(new TitleDoclet(kit), 0);
         if (kit.isActive()){
             ren.addDoclet(new MenuBarDoclet(kit), 1);
         }
