@@ -1,60 +1,99 @@
 = Getting Started =
 
-== Load an ontology ==
+You can find the browser running [http://owl.cs.manchester.ac.uk/browser/ here]
 
-To load an ontology (and its imports) into the browser, enter the physical location of the OWL file. This must be publicly accessible for the server to find it.
+== Load content ==
 
-If you want to load local files or files on an internal network like the example on the right, you will have to [Installation download the server and run it locally].
+To load content into the browser, enter the location of the OWL or RDF file.
 
-<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/load.png" />
+Alternatively try one of the example bookmarks provided.
 
+*Hint* Some LOD providers such as the BBC will use the same URI for html and rdf - this will be resolved by the browser.
 
-== Loading ontologies with imports ==
-
-The server will attempt to find any imported ontologies in the same folder as the root ontology and load these as well. If it cannot find them there, it will default to looking on the web at a URL matching the ontology URI.
-
-If you still have any missing imports, you will be taken straight to the manage page where you can specify a different location for the missing ontologies.
-
-<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/missing-imports.png" />
+http://ontology-browser.googlecode.com/svn/wiki/images/load.png
 
 
-You do not have to load missing imports - everything will behave as expected, and you can carry choose to ignore this step and go straight to browsing.
+All resources must be publicly accessible for the server to find them.
 
-A good place to start is the content page.
+If you want to load local files or files on an internal network you will have to [Installation download the server and run it locally].
+
+
+=== Loading ontologies with imports ===
+
+The server will attempt to find any imports in the same location as the root ontology and load these as well. If it cannot find them there, it will default to looking on the web at a URL matching the ontology URI.
+
+Once the browser has loaded the content you can start browsing.
+
+----
 
 == Finding your way around ==
 
-Once an ontology has been successfully opened you will be presented with the contents page.
+Once content has been successfully opened you will be presented with either a page describing that ontology or if there is an entity with the same URI then it will navigate straight to this.
 
-<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/contents.png" />
+From here it should be easy to navigate around.
 
+Multiple tabs across the top allow you to see entities by type (class, property, individual or datatype).
 
-From here it should be easy to navigate around your ontology by class, property or individual. Alternatively, you can do a search on the name of the entity you are looking for. Autocomplete is implemented to help you with this.
+If a tab is faded out it is because there are no entities of that type in the loaded content.
+
+http://ontology-browser.googlecode.com/svn/wiki/images/cityOfSalford.png
+
+For each type you can navigate around using a hierarchy on the left of the screen.
+
+The tree can be expanded and collapsed as required by using the *+* (but each new page is automatically pruned to show the current selection).
+
+Selecting a name will navigate to that entity.
+
+Current selection will always be shown highlighted in yellow.
+
+=== Find ===
+
+Alternatively, you can do a search on the name of the entity you are looking for.
+
+Use the search box at the top right of the screen and start typing the name of the thing you are looking for.
+
+A dropdown is implemented to help you with this.
+
+http://ontology-browser.googlecode.com/svn/wiki/images/find.png
+
+=== Loading additional content ===
+
+Providers of Linked Open Data commonly publish RDF at the location corresponding to the URI of the entity.
+
+To keep things running quickly Ontology Browser does not automatically attempt to load additional content as you browse.
+
+The URI for an entity may have 2 icons after it.
+* The first allows you to open the URI in another browser window (useful for html pages)
+* The second (if visible) allows you to attempt to pull in more content from the URL
+
+In the example below we have only loaded the City of Salford content so when we navigate to Manchester we find very little.
+
+http://ontology-browser.googlecode.com/svn/wiki/images/manchesterBeforeLoad.png
+
+However, if we then use the link to pull in content from the Manchester URL we find much more.
+
+http://ontology-browser.googlecode.com/svn/wiki/images/manchesterAfterLoad.png
+
 
 === Permalinking ===
 
-Once you have ontologies loaded, at any time you can select or copy the permalink link and bookmark it or send it to your friends. The permalink takes into account any settings you have updated, and includes pointers to where you loaded the ontologies from.
+At any time you can select or copy the permalink link and bookmark it or send it to your friends.
+
+http://ontology-browser.googlecode.com/svn/wiki/images/permalink.png
+
+The permalink takes into account any settings you have updated, and includes pointers to where you loaded the ontologies from.
+
+[http://owl.cs.manchester.ac.uk/browser/individuals/1182946835/?session=12ccb674365-29-12ccb6a0445 try it]
+
 
 == Display Names ==
 
-If your ontology appears with lots of meaningless names (like right), it is possible that the human-intended labels are in annotations.
+If your ontology appears with lots of meaningless names it is possible that the human-intended labels are in annotations.
 
-<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/frag-rendering.png" />
+By default, Ontology Browser looks for rdfs:label annotations with no language set, but you can change this in the options (top right, under the search box).
 
+The annotation property can be changed as well as the language (in the case where multiple alternatives exist)
 
-If this is the case, choose `renderer:label` in the top right of the toolbar.
+http://ontology-browser.googlecode.com/svn/wiki/images/russian.png
 
-By default, this will render entities using their `rdfs:label`.
-
-If you wish to change this, edit `option_label_uri` under more options and press return (see below).
-
-
-== Further Configuration ==
-
-<img src="http://ontology-browser.googlecode.com/svn/trunk/owlbrowser/resources/docs/images/options.png" />
-
-Further options can be changed on this page. For example, options like DL Query can be disabled by setting reasoner.enabled to false or changing the css property to "alt.css" renders using a different stylesheet with larger fonts.
-
-After editing a value, press return for the change to be made.
-
-All options are saved along with the session data that is retrieved when a permalink is used.
+If the labels appear in data property assertions you can also change this in the options.
