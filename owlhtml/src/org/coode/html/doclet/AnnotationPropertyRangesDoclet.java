@@ -46,7 +46,7 @@ public class AnnotationPropertyRangesDoclet extends AbstractOWLElementsDoclet<OW
         super ("Ranges", Format.list, kit);
     }
 
-    protected Collection<IRI> getElements(Set<OWLOntology> ontologies) {
+    protected Collection<IRI> getAssertedElements(Set<OWLOntology> ontologies) {
         Set<IRI> ranges = new HashSet<IRI>();
         for (OWLOntology ont : ontologies){
             for (OWLAnnotationPropertyRangeAxiom ax : ont.getAnnotationPropertyRangeAxioms(getUserObject())){

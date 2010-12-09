@@ -25,7 +25,7 @@ public class OWLClassSelectDoclet extends AbstractOWLElementsDoclet<OWLClass, OW
     }
 
     @Override
-    protected Collection<OWLClass> getElements(Set<OWLOntology> ontologies) {
+    protected Collection<OWLClass> getAssertedElements(Set<OWLOntology> ontologies) {
         Set<OWLClass> elements = new HashSet<OWLClass>();
         for (OWLOntology ont : ontologies){
             elements.addAll(ont.getClassesInSignature());

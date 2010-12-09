@@ -216,6 +216,13 @@ li {margin-bottom: 0; margin-top: 2px;}
 ul.minihierarchy li{}
 ul.minihierarchy li.expandable {}
 
+.inferred{
+    border: dotted gray 1px;
+    opacity: 0.6;
+    -moz-opacity:0.6;
+    filter:alpha(opacity=60);
+}
+
 p.footer {
     font-size: 7pt;
     text-align: right;

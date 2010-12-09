@@ -22,7 +22,7 @@ public class OWLClassSummaryDoclet extends AbstractOWLDocDoclet<OWLClass> {
         addDoclet(new OWLEntityTitleDoclet<OWLClass>(kit));
         addDoclet(new AnnotationsDoclet<OWLClass>(kit));
         addDoclet(new AssertedEquivalentsDoclet(kit));
-        addDoclet(new AssertedSuperclassesDoclet(kit));
+        addDoclet(new SuperclassesDoclet(kit));
         addDoclet(new DisjointsDoclet(kit));
         addDoclet(new MembersDoclet(kit));
         addDoclet(new UsageDoclet<OWLClass>(kit));

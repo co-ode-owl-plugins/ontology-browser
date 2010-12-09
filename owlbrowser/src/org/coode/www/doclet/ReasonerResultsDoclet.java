@@ -31,7 +31,7 @@ public class ReasonerResultsDoclet<O extends OWLClassExpression> extends Abstrac
         this.results = results;
     }
 
-    protected Collection<OWLEntity> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLEntity> getAssertedElements(Set<OWLOntology> onts) {
         return results;
     }
 }

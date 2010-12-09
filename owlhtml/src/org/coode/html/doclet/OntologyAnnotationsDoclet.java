@@ -24,7 +24,7 @@ public class OntologyAnnotationsDoclet extends AbstractOWLElementsDoclet<OWLOnto
         super("Annotations", ElementsDoclet.Format.list, kit);
     }
 
-    protected Collection<OWLAnnotation> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLAnnotation> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getAnnotations();
     }
 }

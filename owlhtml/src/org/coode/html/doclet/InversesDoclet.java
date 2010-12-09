@@ -25,7 +25,7 @@ public class InversesDoclet extends AbstractOWLElementsDoclet<OWLObjectProperty,
         super("Inverses", Format.list, kit);
     }
 
-    protected Collection<OWLObjectPropertyExpression> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLObjectPropertyExpression> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getInverses(onts);
     }
 }

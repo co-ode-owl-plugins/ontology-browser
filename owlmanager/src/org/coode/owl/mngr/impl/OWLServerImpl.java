@@ -438,6 +438,9 @@ public class
                 };
 
                 String lang = getProperties().get(ServerProperty.optionLabelLang);
+                List<String> langs = new ArrayList<String>();
+                langs.add(lang);
+                langs.add(""); // default to no language
 
                 // the property assertion sfp
                 OWLDataProperty dataProp = mngr.getOWLDataFactory().getOWLDataProperty(
@@ -448,7 +451,7 @@ public class
                 final Map<OWLDataPropertyExpression, List<String>> lMap;
                 lMap = new HashMap<OWLDataPropertyExpression, List<String>>();
                 if (lang.length() > 0){
-                    lMap.put(dataProp, Collections.singletonList(lang));
+                    lMap.put(dataProp, langs);
                 }
                 ShortFormProvider pValueProvider = new PropertyAssertionValueShortFormProvider(props,
                                                                                                lMap,
@@ -460,7 +463,7 @@ public class
                         IRI.create(getProperties().get(ServerProperty.optionLabelUri)));
                 final Map<OWLAnnotationProperty, List<String>> langMap = new HashMap<OWLAnnotationProperty, List<String>>();
                 if (lang.length() > 0){
-                    langMap.put(annotProp, Collections.singletonList(lang));
+                    langMap.put(annotProp, langs);
                 }
                 shortFormProvider = new AnnotationValueShortFormProvider(Collections.singletonList(annotProp),
                                                                          langMap,

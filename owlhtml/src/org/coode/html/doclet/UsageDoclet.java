@@ -27,7 +27,7 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
         super("Usage", ElementsDoclet.Format.list, kit);
     }
 
-    protected Collection<OWLObject> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLObject> getAssertedElements(Set<OWLOntology> onts) {
         OWLEntity entity = getUserObject();
         Collection<OWLObject> usage = new HashSet<OWLObject>();
         for (OWLOntology ont : onts){

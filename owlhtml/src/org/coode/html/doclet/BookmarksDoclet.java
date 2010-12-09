@@ -29,7 +29,7 @@ public class BookmarksDoclet extends AbstractOWLElementsDoclet<OWLOntology, OWLE
 //        setTarget(OWLHTMLConstants.LinkTarget.content);
     }
 
-    protected Collection<OWLEntity> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLEntity> getAssertedElements(Set<OWLOntology> onts) {
         Set<OWLEntity> bookmarks = new HashSet<OWLEntity>();
         for (OWLOntology ont : onts){
             bookmarks.addAll(new OntologyBookmarks(getOWLHTMLKit().getOWLServer().getOWLOntologyManager(), ont).getBookmarks());

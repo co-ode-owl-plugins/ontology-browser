@@ -89,7 +89,7 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
         fac.register("annotationproperty.ranges", AnnotationPropertyRangesDoclet.class);
         fac.register("annotationproperty.supers", AnnotationPropertySuperPropertiesDoclet.class);
 
-        fac.register("class.supers.asserted", AssertedSuperclassesDoclet.class);
+        fac.register("class.supers.asserted", SuperclassesDoclet.class);
         fac.register("class.equivalents.asserted", AssertedEquivalentsDoclet.class);
         fac.register("class.disjoints.asserted", DisjointsDoclet.class);
         fac.register("class.members.asserted", MembersDoclet.class);
@@ -129,13 +129,10 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
             properties = new ServerPropertiesAdapterImpl<OWLHTMLProperty>((ServerPropertiesAdapterImpl)getOWLServer().getProperties());
             properties.addDeprecatedNames(OWLHTMLProperty.generateDeprecatedNamesMap());
 
-
-//            properties.set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
             properties.set(OWLHTMLProperty.optionIndexAllURL, OWLHTMLConstants.DEFAULT_INDEX_ALL_URL);
             properties.set(OWLHTMLProperty.optionDefaultCSS, OWLHTMLConstants.CSS_DEFAULT);
-//            properties.set(OWLHTMLProperty.optionUseFrames, null);
             properties.setBoolean(OWLHTMLProperty.optionRenderSubs, true);
-
+            properties.setBoolean(OWLHTMLProperty.optionShowInferences, true);
 
             // Allowed values
             List<String> booleanValues = Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString());
@@ -143,6 +140,7 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
             properties.setAllowedValues(OWLHTMLProperty.optionRenderPermalink, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowMiniHierarchies, booleanValues);
             properties.setAllowedValues(OWLHTMLProperty.optionShowInferredHierarchies, booleanValues);
+            properties.setAllowedValues(OWLHTMLProperty.optionShowInferences, booleanValues);
         }
         return properties;
     }

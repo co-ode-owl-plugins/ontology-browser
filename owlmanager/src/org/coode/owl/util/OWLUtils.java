@@ -2,6 +2,7 @@ package org.coode.owl.util;
 
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -111,7 +112,7 @@ public class OWLUtils {
         return false;
     }
 
-    public static Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> getPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
+    public static Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> getAssertedPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
         Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props = new HashMap<OWLPropertyExpression, Set<OWLPropertyAssertionObject>>();
         for (OWLOntology ont : onts){
             for (OWLAxiom ax : individual.getReferencingAxioms(ont)){
@@ -131,6 +132,32 @@ public class OWLUtils {
         }
         return props;
     }
+//
+//    public static Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> getInferredPropertyMap(OWLNamedIndividual individual, OWLReasoner r) {
+//        Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props = new HashMap<OWLPropertyExpression, Set<OWLPropertyAssertionObject>>();
+//
+//        for (OWLIndividual same : r.getSameIndividuals(individual)){
+//            getAssertedPropertyMap()
+//        }
+//
+//        for (OWLOntology ont : onts){
+//            for (OWLAxiom ax : individual.getReferencingAxioms(ont)){
+//                if (ax instanceof OWLPropertyAssertionAxiom){
+//                    OWLPropertyAssertionAxiom propAssertion = (OWLPropertyAssertionAxiom)ax;
+//                    if (propAssertion.getSubject().equals(individual)){
+//                        OWLPropertyExpression p = propAssertion.getProperty();
+//                        Set<OWLPropertyAssertionObject> objects = props.get(p);
+//                        if (objects == null){
+//                            objects = new HashSet<OWLPropertyAssertionObject>();
+//                            props.put(p, objects);
+//                        }
+//                        objects.add(propAssertion.getObject());
+//                    }
+//                }
+//            }
+//        }
+//        return props;
+//    }
 
     public static OWLNamedIndividual getIndividual(IRI iri, Set<OWLOntology> onts) {
         for (OWLOntology ont : onts){
@@ -139,5 +166,9 @@ public class OWLUtils {
             }
         }
         return null;
+    }
+
+    public static boolean isStructural(OWLReasoner r) {
+        return r.getReasonerName().equals("Structural Reasoner");
     }
 }

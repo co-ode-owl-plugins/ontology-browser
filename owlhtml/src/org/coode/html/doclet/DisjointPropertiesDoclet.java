@@ -25,7 +25,7 @@ public class DisjointPropertiesDoclet<O extends OWLProperty> extends AbstractOWL
         super("Disjoint Properties", Format.csv, kit);
     }
 
-    protected Collection<OWLPropertyExpression> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLPropertyExpression> getAssertedElements(Set<OWLOntology> onts) {
         return getUserObject().getDisjointProperties(onts);
     }
 }

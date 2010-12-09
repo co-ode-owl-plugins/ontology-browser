@@ -4,7 +4,9 @@
 package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
+import org.coode.owl.util.OWLUtils;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,7 +27,7 @@ public class MembersDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLIndivi
         super("Members", Format.csv, kit);
     }
 
-    protected Collection<OWLIndividual> getElements(Set<OWLOntology> onts) {
+    protected Collection<OWLIndividual> getAssertedElements(Set<OWLOntology> onts) {
         Collection<OWLIndividual> members = new HashSet<OWLIndividual>();
         OWLClass cls = getUserObject();
         for (OWLOntology ont : onts){
@@ -34,6 +36,21 @@ public class MembersDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLIndivi
                     ((OWLClassAssertionAxiom)ax).getClassExpression().equals(cls)){
                     members.add(((OWLClassAssertionAxiom)ax).getIndividual());
                 }
+            }
+        }
+        return members;
+    }
+
+    @Override
+    protected Collection<OWLIndividual> getInferredElements(Set<OWLOntology> ontologies) {
+        final OWLReasoner r = getOWLHTMLKit().getOWLServer().getOWLReasoner();
+
+        Set<OWLIndividual> members = new HashSet<OWLIndividual>();
+        members.addAll(r.getInstances(getUserObject(), true).getFlattened());
+
+        if (OWLUtils.isStructural(r)){
+            for (OWLClass equiv : r.getEquivalentClasses(getUserObject())){
+                members.addAll(r.getInstances(equiv, true).getFlattened());
             }
         }
         return members;
