@@ -9,7 +9,6 @@ import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.HTMLUtils;
-import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
@@ -49,7 +48,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
         AutocompleteDoclet searchboxDoclet = new AutocompleteDoclet(kit, "find", true);
         searchboxDoclet.setParamName("input");
         searchboxDoclet.setSubmitName("find");
-        searchboxDoclet.setSubmitURL(kit.getURLScheme().getURLForIndex(NamedObjectType.entities)); // could be more direct
+        searchboxDoclet.setSubmitURL(kit.getURLScheme().getURLForRelativePage("find/"));
         searchboxDoclet.setTarget(OWLHTMLConstants.LinkTarget.content);
         return searchboxDoclet;
     }
