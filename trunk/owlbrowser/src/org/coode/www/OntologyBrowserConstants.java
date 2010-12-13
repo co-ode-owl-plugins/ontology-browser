@@ -5,6 +5,9 @@ package org.coode.www;
 
 import org.coode.html.impl.OWLHTMLConstants;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Author: Nick Drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
@@ -31,6 +34,17 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
     public static final String HTML_FRAG = "html-frag";
 
     public static final String LABEL_COOKIE_NAME = "label";
+
+    public static final URL HELP_PAGE = createURL("http://code.google.com/p/ontology-browser/wiki/GettingStarted");
+
+    private static URL createURL(String s) {
+        try {
+            return new URL(s);
+        }
+        catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     // supported formats
