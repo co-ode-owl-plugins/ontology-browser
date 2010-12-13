@@ -28,7 +28,7 @@ public class TitleDoclet extends AbstractHTMLDoclet {
 
     @Override
     protected void renderHeader(URL pageURL, PrintWriter out) {
-        HTMLUtils.renderLink("Help", OWLHTMLConstants.HOME_PAGE, OWLHTMLConstants.LinkTarget._blank, "help", true, pageURL, out);
+        HTMLUtils.renderLink("Help", OntologyBrowserConstants.HELP_PAGE, OWLHTMLConstants.LinkTarget._blank, "help", true, pageURL, out);
 
         out.print("<h1><a href=\"");
         out.print(kit.getURLScheme().getBaseURL());

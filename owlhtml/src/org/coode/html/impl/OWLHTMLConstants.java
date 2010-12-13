@@ -37,6 +37,11 @@ import java.net.URL;
  */
 public class OWLHTMLConstants extends ServerConstants {
 
+    public static final URL HOME_PAGE = createURL("http://code.google.com/p/ontology-browser/");
+
+    public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
+
+
     public static final String DEFAULT_ENCODING = "UTF-8";
 
     public static final String JS_ROOT = "js/";
@@ -79,10 +84,6 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String BOOKMARKS_LABEL = "Bookmarks";
     public static final String PERMALINK_LABEL = "permalink";
 
-    public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
-
-    public static final URL HOME_PAGE;
-
     public static final String EQUIV_CHAR = "&equiv;";
     public static final String SUBCLASS_CHAR = "&sube;";
 
@@ -100,19 +101,7 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String INFERRED_CSS_CLASS = "inferred";
     public static final String ASSERTED_CSS_CLASS = "asserted";
 
-
-    static {
-        try {
-            HOME_PAGE = new URL("http://code.google.com/p/ontology-browser/");
-        }
-        catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
     public enum LinkTarget{_top, content, nav, subnav, header, _blank}
-
 
     // window modes
     public static final String NO_FRAMES = "no_frames";
@@ -123,4 +112,14 @@ public class OWLHTMLConstants extends ServerConstants {
 
     // non-external values
     public static final String DEFAULT_INDEX_ALL_URL = "index-all" + DEFAULT_EXTENSION;
+
+
+    private static URL createURL(String s) {
+        try {
+            return new URL(s);
+        }
+        catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
