@@ -47,7 +47,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
     private HTMLDoclet  createSearch(OWLHTMLKit kit) {
         AutocompleteDoclet searchboxDoclet = new AutocompleteDoclet(kit, "find", true);
-        searchboxDoclet.setParamName("name");
+        searchboxDoclet.setParamName("input");
         searchboxDoclet.setSubmitName("find");
         searchboxDoclet.setSubmitURL(kit.getURLScheme().getURLForIndex(NamedObjectType.entities)); // could be more direct
         searchboxDoclet.setTarget(OWLHTMLConstants.LinkTarget.content);

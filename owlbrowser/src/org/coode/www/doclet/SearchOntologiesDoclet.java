@@ -32,7 +32,7 @@ public class SearchOntologiesDoclet extends AbstractHTMLDoclet {
     public SearchOntologiesDoclet(OWLHTMLKit kit, String searchBoxId) {
         searchboxDoclet = new AutocompleteDoclet(kit, searchBoxId, true);
         searchboxDoclet.setSubmitURL(kit.getURLScheme().getURLForIndex(NamedObjectType.entities));
-        searchboxDoclet.setParamName("name");
+        searchboxDoclet.setParamName("input");
         searchboxDoclet.setTarget(OWLHTMLConstants.LinkTarget.content);
         addDoclet(searchboxDoclet);
 

@@ -95,7 +95,7 @@ public class Find extends AbstractOntologyServerServlet {
         OWLEntityFinder finder = server.getFinder();
         OWLOntology ont = getOntology(paramOntology, server);
 
-        if (uri != null){
+        if (uri != null && uri.length() > 0){
             try{
                 final URI entityURI = new URI(uri);
                 if (entityURI.isAbsolute()){
@@ -107,12 +107,14 @@ public class Find extends AbstractOntologyServerServlet {
             }
         }
         else{
-            if (!input.endsWith(WILDCARD)){
+            if (input == null){
+                input = WILDCARD;
+            }
+            else if (!input.endsWith(WILDCARD)){
                 input = input + WILDCARD;
             }
-            if (input.length() > 0){
-                results.addAll(finder.getOWLEntities("^" + input.replace(WILDCARD, ".*"), type, ont));
-            }
+
+            results.addAll(finder.getOWLEntities("^" + input.replace(WILDCARD, ".*"), type, ont));
 
             if (results.isEmpty()){
                 results.addAll(finder.getOWLEntities(".*" + input.replace(WILDCARD, ".*"), type, ont));
