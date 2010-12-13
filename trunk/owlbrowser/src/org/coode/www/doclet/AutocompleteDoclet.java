@@ -35,8 +35,10 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
     private String initialValue;
     private String method = "get";
     private OWLHTMLConstants.LinkTarget target = null;
+
     private String paramName = "expression";
     private String submitName = "find";
+
     private String jsAction; //javascript to be run when page loads (will be contained in a 'delimited string so make sure it contains \" for literals )
 
     private static final String ID = "doclet.autocomplete";
@@ -123,6 +125,9 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
             out.println(" id='" + id + "'/>");
         }
 
+        // for storing the selection URI
+        out.println("<input name='uri' type='hidden' value='' />");
+
         out.println("<input name='syntax' id='dlQuerySyntax' type='hidden' value='man' />"); // no harm leaving this in both
         if (getOWLHTMLKit().getCurrentLabel() != null){
             out.println("<input name='session' type='hidden' value='" + getOWLHTMLKit().getCurrentLabel() + "' />");
@@ -151,7 +156,10 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
             out.println(",\n    multiword: true");
         }
         if (autoSubmitOnAccept){
-            out.println(",\n        callback: function (obj){document." + id + "Form.submit();}\n");
+            out.println(",\n        callback: function (obj){");
+            out.println("$(\"#" + id + "Form input[name=uri]\").val(obj.id);"); // set the URI to that of the object
+            out.println("$(\"#" + id + "Form\").submit();");                          // submit the form
+            out.println("}\n");
         }
         out.println("    };\n" +
                     "    var as = new AutoSuggest(\"" + id + "\", options);\n" +
