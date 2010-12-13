@@ -88,8 +88,13 @@ public class Find extends AbstractOntologyServerServlet {
         String input = params.get(OWLHTMLParam.input);
         String uri = params.get(OWLHTMLParam.uri);
         String paramOntology = params.get(OWLHTMLParam.ontology);
-        NamedObjectType type = NamedObjectType.valueOf(params.get(OWLHTMLParam.type));
+        String typeP = params.get(OWLHTMLParam.type);
 
+        NamedObjectType type = NamedObjectType.entities;
+        if (typeP != null){
+            type = NamedObjectType.valueOf(typeP);
+        }
+        
         Set<OWLEntity> results = new HashSet<OWLEntity>();
 
         OWLEntityFinder finder = server.getFinder();
