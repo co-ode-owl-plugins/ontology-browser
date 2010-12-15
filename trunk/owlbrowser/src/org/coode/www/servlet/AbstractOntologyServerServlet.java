@@ -194,9 +194,11 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         }
 
         // get the request type from the request header
-        String mime = request.getHeader(OntologyBrowserConstants.ACCEPT);
-        if (mime != null){
-            format = OntologyBrowserConstants.RequestFormat.get(mime);
+        if (format == null){
+            String mime = request.getHeader(OntologyBrowserConstants.ACCEPT);
+            if (mime != null){
+                format = OntologyBrowserConstants.RequestFormat.get(mime);
+            }
         }
 
         // default to html
