@@ -64,14 +64,14 @@ public class TabsDoclet extends AbstractOWLDocDoclet {
         }
 
         if (entitiesExist){
-//            HTMLUtils.renderLink("Clouds",
-//                                 kit.getURLScheme().getURLForRelativePage("cloud/"),
-//                                 OWLHTMLConstants.LinkTarget.subnav,
-//                                 "",
-//                                 singleFrame,
-//                                 pageURL,
-//                                 out);
-//            out.println();
+            HTMLUtils.renderLink("Clouds",
+                                 kit.getURLScheme().getURLForRelativePage("cloud/"),
+                                 OWLHTMLConstants.LinkTarget.subnav,
+                                 "",
+                                 singleFrame,
+                                 pageURL,
+                                 out);
+            out.println();
 
 
             // add the DL Query tab if the reasoner is enabled

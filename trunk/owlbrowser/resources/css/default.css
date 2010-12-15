@@ -28,7 +28,7 @@ div {
 div.codebox, div.error, div.message {
     border: solid 1px #c7cfd5;
     background: #ffffff;
-    clear: both;
+    /*clear: both;*/
     overflow: hidden;
     position: relative; /* force everything to be contained and positioned inside */
     padding: 5px;
