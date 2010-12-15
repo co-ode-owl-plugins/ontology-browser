@@ -45,7 +45,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     protected Logger logger = Logger.getLogger(getClass().getName());
 
-    private OntologyBrowserConstants.RequestFormat format = OntologyBrowserConstants.RequestFormat.html;
+    protected OntologyBrowserConstants.RequestFormat format = OntologyBrowserConstants.RequestFormat.html;
 
     private HttpSession httpSession = null;
 
@@ -207,7 +207,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         response.setContentType(format.getResponseType());
     }
 
-    private Doclet getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected Doclet getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         switch(format){
             case xml:
                 return handleXMLRequest(params, kit, pageURL);
