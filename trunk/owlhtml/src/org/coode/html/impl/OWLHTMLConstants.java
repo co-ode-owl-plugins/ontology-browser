@@ -41,6 +41,7 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
 
+    public static final String DOCLET_CONFIG = "doclets.config";
 
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -100,6 +101,7 @@ public class OWLHTMLConstants extends ServerConstants {
 
     public static final String INFERRED_CSS_CLASS = "inferred";
     public static final String ASSERTED_CSS_CLASS = "asserted";
+
 
     public enum LinkTarget{_top, content, nav, subnav, header, _blank}
 

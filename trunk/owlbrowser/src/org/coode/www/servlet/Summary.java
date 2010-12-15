@@ -126,6 +126,7 @@ public class Summary extends AbstractOntologyServerServlet {
                         doclet.setUserObject(object);
                         return doclet;
                     }
+                    // TODO: throw 404?
                     throw new OntServerException("Cannot find section: " + section);
                 }
                 return new SummaryPageFactory(kit).getSummaryDoclet(object);
