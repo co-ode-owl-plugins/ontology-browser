@@ -14,10 +14,6 @@ Bugs
   cannot use int as this is not known in the ontology.
   either way we get errors - maybe add xsd datatypes in OWLServerImpl.getNameCache()
 
-- reload photography/index.owl - cannot select another active ontology without reloading again
-  the url contains action=reload
-  the action pages should probably redirect (but how do we provide a message?)
-
 
 Features
 --------

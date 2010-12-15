@@ -48,29 +48,42 @@ a.Class:hover{
 }
 
 .Object.Property{
-    color: #009999;
+    color: #004e4f;
     font-style: italic;
 }
 
 a.Object.Property:hover{
-    color: #006666;
+    color: #006363;
     font-style: italic;
 }
 
 .Data.Property{
-    color: #3366ff;
+    color: #18327a;
     font-style: italic;
 }
 
 a.Data.Property:hover{
-    color: #2852c9;
+    color: #1d3b91;
+    font-style: italic;
+}
+
+
+.Annotation.Property{
+    color: #155700;
+    font-style: italic;
+}
+
+a.Annotation.Property:hover{
+    color: #249400;
     font-style: italic;
 }
 
 .Individual{
     color: #000000;
+    font-style: italic;
 }
 
 a.Individual:hover{
     color: blue;
+    font-style: italic;
 }
