@@ -229,7 +229,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 break;
             case htmlfrag:
                 MessageBoxDoclet errorDoclet = new MessageBoxDoclet("Error", e.getMessage());
-                errorDoclet.renderContent(pageURL, response.getWriter());
+                errorDoclet.renderAll(pageURL, response.getWriter());
                 break;
             case html:
                 kit.addUserError("<p>Error rendering page</p>" +

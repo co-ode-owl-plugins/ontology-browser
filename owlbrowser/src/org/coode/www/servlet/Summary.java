@@ -117,20 +117,24 @@ public class Summary extends AbstractOntologyServerServlet {
             if (object == null){
                 return getIndexRenderer(type, kit, getOntology(ontology, kit));
             }
-            else {
-                String section = getSection(pageURL, kit);
-                
-                if (section != null){
-                    HTMLDoclet doclet = kit.getDocletFactory().getDoclet(section);
-                    if (doclet != null){
-                        doclet.setUserObject(object);
-                        return doclet;
-                    }
-                    // TODO: throw 404?
-                    throw new OntServerException("Cannot find section: " + section);
+
+            String section = getSection(pageURL, kit);
+
+            if (section != null){
+                HTMLDoclet doclet = kit.getDocletFactory().getDoclet(section);
+
+                if (doclet == null){
+                    doclet = kit.getDocletFactory().getDoclet(type.name() + "." + section);
                 }
-                return new SummaryPageFactory(kit).getSummaryDoclet(object);
+                if (doclet != null){
+                    doclet.setUserObject(object);
+                    return doclet;
+                }
+                // TODO: throw 404?
+                throw new OntServerException("Cannot find section: " + section);
             }
+
+            return new SummaryPageFactory(kit).getSummaryDoclet(object);
         }
         throw new RuntimeException("Cannot get here");
     }
