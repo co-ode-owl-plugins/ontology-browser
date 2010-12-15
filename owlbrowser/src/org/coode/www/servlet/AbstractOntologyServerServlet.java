@@ -177,20 +177,34 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     private void handleRequestType(HttpServletRequest request, HttpServletResponse response){
 
-        // TODO: should really get the request type from the request header but how would we specify htmlfrag?
+        // if the format param is specified, use it
         String str = getParameter(request, OWLHTMLParam.format);
-        if (OntologyBrowserConstants.HTML_FRAG.equals(str)){ // convert old requests
-            format = OntologyBrowserConstants.RequestFormat.htmlfrag;
-        }
-        else{
-            try{
-                format = OntologyBrowserConstants.RequestFormat.valueOf(str);
+        if (str != null){
+            if (OntologyBrowserConstants.HTML_FRAG.equals(str)){ // convert old requests
+                format = OntologyBrowserConstants.RequestFormat.htmlfrag;
             }
-            catch (Exception e){
-                format = OntologyBrowserConstants.RequestFormat.html;
+            else{
+                try{
+                    format = OntologyBrowserConstants.RequestFormat.valueOf(str);
+                }
+                catch (Exception e){
+                    // do nothing
+                }
             }
         }
-        response.setContentType(format.getMimeType());
+
+        // get the request type from the request header
+        String mime = request.getHeader(OntologyBrowserConstants.ACCEPT);
+        if (mime != null){
+            format = OntologyBrowserConstants.RequestFormat.get(mime);
+        }
+
+        // default to html
+        if (format == null){
+            format = OntologyBrowserConstants.RequestFormat.html;
+        }
+
+        response.setContentType(format.getResponseType());
     }
 
     private Doclet getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
