@@ -30,8 +30,7 @@ import java.util.*;
  * nick.drummond@cs.manchester.ac.uk<br>
  * www.cs.man.ac.uk/~drummond<br><br>
  */
-public class
-        OWLServerImpl implements OWLServer {
+public class OWLServerImpl implements OWLServer {
 
     private static final Logger logger = Logger.getLogger(OWLServerImpl.class.getName());
 
@@ -40,6 +39,7 @@ public class
     private OWLOntology activeOntology;
 
     private OWLReasoner reasoner;
+
     private Set<OWLReasonerFactory> reasonerFactories = new HashSet<OWLReasonerFactory>();
 
     private ShortFormProvider shortFormProvider;
@@ -701,6 +701,7 @@ public class
 
     private String[] reasonerFactoryNames = {
             "org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory",
+            "jfact.JFactFactory",
 //            "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory",
             "org.semanticweb.HermiT.Reasoner$ReasonerFactory"
             // TODO pellet, etc
@@ -723,6 +724,9 @@ public class
                     selectedReasoner = fac.getReasonerName();
                     getProperties().set(ServerProperty.optionReasoner, selectedReasoner);
                 }
+            }
+            catch (UnsupportedClassVersionError e){
+                e.printStackTrace();
             }
             catch (InstantiationException e) {
                 e.printStackTrace();
