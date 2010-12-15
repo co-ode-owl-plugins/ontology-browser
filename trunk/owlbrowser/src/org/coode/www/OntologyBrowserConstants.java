@@ -31,11 +31,11 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
 
     public static final String DL_QUERY_LABEL = "DL Query";
 
-    public static final String HTML_FRAG = "html-frag";
-
     public static final String LABEL_COOKIE_NAME = "label";
 
     public static final URL HELP_PAGE = createURL("http://code.google.com/p/ontology-browser/wiki/GettingStarted");
+
+    public static final String ACCEPT = "Accept";
 
     private static URL createURL(String s) {
         try {
@@ -46,6 +46,8 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
         }
     }
 
+    // legacy
+    public static final String HTML_FRAG = "html-frag";
 
     // supported formats
     public enum RequestFormat{
@@ -62,10 +64,26 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
         public String getMimeType(){
             return mimeType;
         }
+
+        public String getResponseType(){
+            return mimeType + ";charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
+        }
+
+        public static RequestFormat get(String mime) {
+            int xmlIndex = mime.indexOf(MIME_XML);
+            int htmlIndex = mime.indexOf(MIME_HTML);
+            if (xmlIndex > -1 && xmlIndex <htmlIndex){
+                return xml;
+            }
+            else if (htmlIndex > -1){
+                return html;
+            }
+            return null;
+        }
     }
 
     // and their mime types
-    public static final String MIME_XML = "text/xml;charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
-    public static final String MIME_HTML = "text/html;charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
+    public static final String MIME_XML = "application/xml";
+    public static final String MIME_HTML = "text/html";
 
 }
