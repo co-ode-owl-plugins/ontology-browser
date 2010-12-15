@@ -2,6 +2,8 @@ package org.coode.html.doclet;
 
 import org.coode.html.OWLHTMLKit;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -62,6 +64,35 @@ public class HTMLDocletFactory {
         }
         catch (NoSuchMethodException e) {
             throw new RuntimeException("Cannot register doclet " + id + " as it has not got the correct constructor");
+        }
+    }
+
+    public void load(BufferedReader reader) throws IOException {
+        String line;
+        while((line = reader.readLine()) != null){
+            line = line.trim();
+            if (line.length() == 0 || line.startsWith("//")){
+                // do nothing
+            }
+            else{
+                String[] args = line.split(",");
+                if (args.length == 2){
+                    try {
+                        final Class cls = Class.forName(args[1].trim());
+                        final Class<? extends HTMLDoclet> impl = cls.asSubclass(HTMLDoclet.class);
+                        register(args[0].trim(), impl);
+                    }
+                    catch (ClassNotFoundException e) {
+                        System.err.println("Malformed doclet descriptor (cannot find class): " + line);
+                    }
+                    catch (ClassCastException e){
+                        System.err.println("Malformed doclet descriptor (class does not implement HTMLDoclet): " + line);
+                    }
+                }
+                else{
+                    System.err.println("Malformed doclet descriptor: " + line);
+                }
+            }
         }
     }
 }
