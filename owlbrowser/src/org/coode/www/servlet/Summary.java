@@ -73,7 +73,7 @@ public class Summary extends AbstractOntologyServerServlet {
 
         // if a name or uri is specified then redirect to search
         if (uri != null || entityName != null){
-            performSearch(type, uri, entityName, ontology, kit);
+            performSearch(type, uri, entityName, ontology, kit, OntologyBrowserConstants.RequestFormat.html);
         }
         else{
             OWLObject object = urlScheme.getOWLObjectForURL(pageURL);
@@ -109,8 +109,7 @@ public class Summary extends AbstractOntologyServerServlet {
 
         // if a name or uri is specified then redirect to search
         if (uri != null || entityName != null){
-            throw new OntServerException("Find not implemented for HTML frgament");
-//            performSearch(type, uri, entityName, ontology, kit);
+            performSearch(type, uri, entityName, ontology, kit, OntologyBrowserConstants.RequestFormat.htmlfrag);
         }
         else{
             OWLObject object = urlScheme.getOWLObjectForURL(pageURL);
@@ -132,6 +131,7 @@ public class Summary extends AbstractOntologyServerServlet {
                 return new SummaryPageFactory(kit).getSummaryDoclet(object);
             }
         }
+        throw new RuntimeException("Cannot get here");
     }
 
     private String getSection(URL pageURL, OWLHTMLKit kit) {
@@ -174,10 +174,10 @@ public class Summary extends AbstractOntologyServerServlet {
         return null;
     }
 
-    private void performSearch(NamedObjectType type, String uri, String entityName, String ontology, OWLHTMLKit kit) throws OntServerException {
+    private void performSearch(NamedObjectType type, String uri, String entityName, String ontology, OWLHTMLKit kit, OntologyBrowserConstants.RequestFormat format) throws OntServerException {
         try{
             Map<OWLHTMLParam, String> map = new HashMap<OWLHTMLParam, String>();
-            map.put(OWLHTMLParam.format, OntologyBrowserConstants.RequestFormat.html.name());
+            map.put(OWLHTMLParam.format, format.name());
             map.put(OWLHTMLParam.type, type.toString());
             if (uri != null){
                 map.put(OWLHTMLParam.uri, URLEncoder.encode(uri, OWLHTMLConstants.DEFAULT_ENCODING));
