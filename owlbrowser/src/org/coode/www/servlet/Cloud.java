@@ -142,8 +142,13 @@ public class Cloud extends AbstractOntologyServerServlet {
                 return new ObjectPropsByUsageCloud(kit);
             case datapropusage:
                 return new DataPropsByUsageCloud(kit);
+            case annotpropusage:
+                return new AnnotationPropsByUsageCloud(kit);
             case indusage:
                 return new IndividualsByUsageCloud(kit);
+            case datatypeusage:
+                return new DatatypesByUsageCloud(kit);
+
         }
         return null;
     }
