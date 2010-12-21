@@ -94,8 +94,8 @@ see entities/<br />`*`</td><td></td></tr>
 see entities/<br />`*`</td><td></td></tr>
 
         <tr><td>query/</td><td>
-<em>q</em> = [subclasses|equivalents|instances|reciprocal-subclasses]<br />
-<em>class</em> = the OWL class description<br />`*`</td>
+<em>query</em> = [subclasses|equivalents|superclasses|ancestors|descendants|instances]<br />
+<em>expression</em> = the OWL class description<br />`*`</td>
 
             <td>Reasoner query of the type specified.<br />
 The OWL description can only be an intersection with named classes, existential/universal/value restrictions with named fillers</td></tr>
