@@ -50,5 +50,7 @@ public enum OWLHTMLParam {
     section, // used to specify which doclet is returned in htmlfrag mode
     cls, // used for hierarchy
     parent,
-    redirect, confirm
+    redirect,
+    threshold, // cloud
+    zoom, confirm
 }

@@ -6,6 +6,7 @@ import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.CloudDoclet;
 import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
+import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
@@ -17,7 +18,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 /*
@@ -82,56 +83,56 @@ public class Cloud extends AbstractOntologyServerServlet {
                 }
             });
 
-            CloudType cType = CloudType.valueOf(cloudParam);
+            CloudDoclet cloudRenderer = getCloudRenderer(params, kit, pageURL);
 
-            Set<OWLOntology> ontologies = kit.getVisibleOntologies();
-
-            String ontURIStr = params.get(OWLHTMLParam.ontology);
-
-            if (ontURIStr != null){
-                IRI ontURI = null;
-                try {
-                    ontURI = IRI.create(new URI(ontURIStr));
-                }
-                catch (URISyntaxException e) {
-
-                }
-                if (ontURI != null){
-                    OWLOntology ont = kit.getOWLServer().getOWLOntologyManager().getOntology(ontURI);
-                    if (ont != null){
-                        ontologies = kit.getOWLServer().getActiveOntologies();
-                    }
-                }
+            if (cloudRenderer != null){
+                page.addDoclet(cloudRenderer);
             }
-
-            OWLCloudModel cloudModel = getModelFromType(cType, kit);
-            cloudModel.setOntologies(ontologies);
-
-            CloudDoclet cloudRenderer = new CloudDoclet(kit);
-
-            cloudRenderer.setModel(cloudModel);
-            cloudRenderer.setComparator(kit.getOWLServer().getComparator());
-            cloudRenderer.setThreshold(8);
-            cloudRenderer.setZoom(10);
-
-            title = cloudModel.getTitle();
-
-            page.addDoclet(cloudRenderer);
         }
         return page;
     }
 
     @Override
     protected HTMLDoclet handleHTMLFragmentRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
-        return null; // TODO implement
+        return getCloudRenderer(params, kit, pageURL);
     }
 
-    private Set<String> getCloudTypeRenderings() {
-        Set<String> cloudTypes = new HashSet<String>();
-        for (CloudType cloudType : CloudType.values()){
-            cloudTypes.add(cloudType.toString());
+    private CloudDoclet getCloudRenderer(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) {
+        String cloudParam = params.get(OWLHTMLParam.type);
+        int threshold = OWLHTMLConstants.DEFAULT_CLOUD_THRESHOLD;
+        try{
+            threshold = Integer.parseInt(params.get(OWLHTMLParam.threshold));
         }
-        return cloudTypes;
+        catch (Throwable e){
+
+        }
+        int zoom = OWLHTMLConstants.DEFAULT_CLOUD_ZOOM;
+        try{
+            zoom = Integer.parseInt(params.get(OWLHTMLParam.zoom));
+        }
+        catch (Throwable e){
+
+        }
+
+        if (cloudParam != null){
+            CloudType cType = CloudType.valueOf(cloudParam);
+
+            OWLCloudModel cloudModel = getModelFromType(cType, kit);
+            cloudModel.setOntologies(getOntologies(kit, params));
+
+            CloudDoclet cloudRenderer = new CloudDoclet(kit);
+
+            cloudRenderer.setModel(cloudModel);
+            cloudRenderer.setComparator(kit.getOWLServer().getComparator());
+            cloudRenderer.setThreshold(threshold);
+            cloudRenderer.setZoom(zoom);
+
+            title = cloudModel.getTitle();
+
+            return cloudRenderer;
+        }
+
+        return null;
     }
 
     private OWLCloudModel getModelFromType(CloudType type, OWLHTMLKit kit) {
@@ -151,5 +152,21 @@ public class Cloud extends AbstractOntologyServerServlet {
 
         }
         return null;
+    }
+
+    public Set<OWLOntology> getOntologies(OWLHTMLKit kit, Map<OWLHTMLParam, String> params) {
+
+        String ontURIStr = params.get(OWLHTMLParam.ontology);
+
+        if (ontURIStr != null){
+            try {
+                IRI ontURI = IRI.create(new URI(ontURIStr));
+                return Collections.singleton(kit.getOWLServer().getOWLOntologyManager().getOntology(ontURI));
+            }
+            catch (URISyntaxException e) {
+
+            }
+        }
+        return kit.getVisibleOntologies();
     }
 }
