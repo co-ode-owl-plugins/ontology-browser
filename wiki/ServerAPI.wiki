@@ -9,7 +9,7 @@ For example, an ontology repository (or a user's own HTML pages) could incorpora
 Such a link might look like this:
 
 {{{
-http://owl.cs.manchester.ac.uk/browser/manage/?action=load&clear=true&uri=http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl
+http://owl.cs.manchester.ac.uk/browser/ontologies/?action=load&clear=true&uri=http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl
 }}}
 
 This loads a particular ontology (pizza.owl) from the physical location specified by the uri parameter. This ontology (and its imports) replaces all existing loaded ontologies in this session because of the `clear=true` parameter.
@@ -19,8 +19,8 @@ This loads a particular ontology (pizza.owl) from the physical location specifie
 <table border="1px black solid">
         <tr><th>URL</th><th style="width:300px;">parameters</th><th>usage notes</th></tr>
 
-        <tr><td>manage/</td><td>
-<em>action</em> = [load|remove|reload|browse|hide|unhide] <br />
+        <tr><td>ontologies/</td><td>
+<em>action</em> = [load|remove|reload|browse] <br />
 <em>clear=true</em><br />
 <em>uri</em> = the physical location the ontology (for loading) or the ontology URI otherwise<br />
 <em>clear</em> = true in combination with load to dump all existing loaded ontologies</td>
@@ -51,9 +51,6 @@ see entities/<br />`*`</td><td></td></tr>
 
         <tr><td>individuals/</td><td>
 see entities/<br />`*`</td><td></td></tr>
-
-        <tr><td>ontologies/</td><td>
-<em>uri</em> = the full URI of the ontology<br />`*`</td><td></td></tr>
 
         <tr><td>query/</td><td>
 <em>q</em> = [subclasses|equivalents|instances|reciprocal-subclasses]<br />
