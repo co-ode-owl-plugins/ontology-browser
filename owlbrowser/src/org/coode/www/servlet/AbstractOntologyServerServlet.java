@@ -45,8 +45,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     protected Logger logger = Logger.getLogger(getClass().getName());
 
-    protected OntologyBrowserConstants.RequestFormat format = OntologyBrowserConstants.RequestFormat.html;
-
+    // TODO get rid of these globals
     private HttpSession httpSession = null;
 
     protected abstract Doclet handleXMLRequest(Map<OWLHTMLParam, String> params,
@@ -79,7 +78,8 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
         URL redirect = null;
 
-        handleRequestType(request, response);
+        OntologyBrowserConstants.RequestFormat format = getRequestType(request, response);
+        response.setContentType(format.getResponseType());
 
         httpSession = request.getSession(false);
 
@@ -99,7 +99,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             // the param map is actually multivalued <String, String[]>, but to save hassle we'll simplify it
             final Map<OWLHTMLParam, String> params = new ParametersBuilder().checkAndCreateParams(request, kit, this);
 
-            Doclet ren = getResults(params, kit, pageURL);
+            Doclet ren = getResults(params, kit, pageURL, format);
             if (ren != null){
                 ren.renderAll(pageURL, response.getWriter());
             }
@@ -111,7 +111,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
             redirect = e.getRedirectPage();
         }
         catch (Throwable e) {
-            handleError(e, kit, pageURL, response);
+            handleError(e, kit, pageURL, response, format);
         }
         finally{
             if (ServerConstants.COOKIE_SESSION_RECOVERY){
@@ -175,17 +175,17 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         response.sendRedirect(redirectPage.toString());
     }
 
-    private void handleRequestType(HttpServletRequest request, HttpServletResponse response){
+    private OntologyBrowserConstants.RequestFormat getRequestType(HttpServletRequest request, HttpServletResponse response){
 
         // if the format param is specified, use it
         String str = getParameter(request, OWLHTMLParam.format);
         if (str != null){
             if (OntologyBrowserConstants.HTML_FRAG.equals(str)){ // convert old requests
-                format = OntologyBrowserConstants.RequestFormat.htmlfrag;
+                return OntologyBrowserConstants.RequestFormat.htmlfrag;
             }
             else{
                 try{
-                    format = OntologyBrowserConstants.RequestFormat.valueOf(str);
+                    return OntologyBrowserConstants.RequestFormat.valueOf(str);
                 }
                 catch (Exception e){
                     // do nothing
@@ -194,22 +194,16 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         }
 
         // get the request type from the request header
-        if (format == null){
-            String mime = request.getHeader(OntologyBrowserConstants.ACCEPT);
-            if (mime != null){
-                format = OntologyBrowserConstants.RequestFormat.get(mime);
-            }
+        String mime = request.getHeader(OntologyBrowserConstants.ACCEPT);
+        if (mime != null){
+            return OntologyBrowserConstants.RequestFormat.get(mime);
         }
 
         // default to html
-        if (format == null){
-            format = OntologyBrowserConstants.RequestFormat.html;
-        }
-
-        response.setContentType(format.getResponseType());
+        return OntologyBrowserConstants.RequestFormat.html;
     }
 
-    protected Doclet getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected Doclet getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL, OntologyBrowserConstants.RequestFormat format) throws OntServerException {
         switch(format){
             case xml:
                 return handleXMLRequest(params, kit, pageURL);
@@ -233,7 +227,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         ren.addOnLoad("baseURL=\"" + kit.getURLScheme().getBaseURL() + "\";");
     }
 
-    protected void handleError(Throwable e, OWLHTMLKit kit, URL pageURL, HttpServletResponse response) throws IOException {
+    protected void handleError(Throwable e, OWLHTMLKit kit, URL pageURL, HttpServletResponse response, OntologyBrowserConstants.RequestFormat format) throws IOException {
 
         e.printStackTrace();
 

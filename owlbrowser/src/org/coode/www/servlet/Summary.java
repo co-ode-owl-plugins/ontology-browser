@@ -46,11 +46,11 @@ import java.util.*;
 public class Summary extends AbstractOntologyServerServlet {
 
     @Override
-    protected Doclet getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    protected Doclet getResults(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL, OntologyBrowserConstants.RequestFormat format) throws OntServerException {
         if (format == OntologyBrowserConstants.RequestFormat.html && getSection(pageURL, kit) != null){
             format = OntologyBrowserConstants.RequestFormat.htmlfrag;
         }
-        return super.getResults(params, kit, pageURL);
+        return super.getResults(params, kit, pageURL, format);
     }
 
     protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {
