@@ -14,7 +14,7 @@ http://owl.cs.manchester.ac.uk/browser/ontologies/?action=load&clear=true&uri=ht
 
 This loads a particular ontology (pizza.owl) from the physical location specified by the uri parameter. This ontology (and its imports) replaces all existing loaded ontologies in this session because of the `clear=true` parameter.
 
-Unless the user application has control over the loading of ontologies, when interacting with the server it is advisable to specify a saved session using the *session* parameter
+Unless the user application has control over the loading of ontologies, when interacting with the server it is advisable to specify a saved session using the *session* parameter. You can get this from any permalink in the browser.
 
 session=12d09432c9b-1959-12d094335ef
 
