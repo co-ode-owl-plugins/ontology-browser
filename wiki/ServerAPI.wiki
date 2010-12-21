@@ -41,6 +41,19 @@ Find all individuals in the BBC species ontology starting with the letter B:
 </results>
 }}}
 
+Get all pizzas with a spicy topping:
+
+{{{http://owl.cs.manchester.ac.uk/browser/query/?query=subclasses&expression=hasTopping+some+%28hasSpiciness+some+Hot%29&format=xml&syntax=man&session=12d0976b82b-1966-12d0976f189}}}
+
+{{{
+<?xml version="1.0" encoding="UTF-8" ?>
+<results>
+<rs id="http://www.co-ode.org/ontologies/pizza/pizza.owl#AmericanHot" info="">AmericanHot</rs>
+<rs id="http://www.co-ode.org/ontologies/pizza/pizza.owl#PolloAdAstra" info="">PolloAdAstra</rs>
+<rs id="http://www.co-ode.org/ontologies/pizza/pizza.owl#Cajun" info="">Cajun</rs>
+<rs id="http://www.co-ode.org/ontologies/pizza/pizza.owl#SloppyGiuseppe" info="">SloppyGiuseppe</rs>
+</results>
+}}}
 
 == Parameters ==
 
