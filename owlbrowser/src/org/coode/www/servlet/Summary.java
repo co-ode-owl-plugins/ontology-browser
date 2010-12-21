@@ -149,6 +149,10 @@ public class Summary extends AbstractOntologyServerServlet {
 
     private String getSection(URL pageURL, OWLHTMLKit kit) {
         String relativeURL = URLUtils.createRelativeURL(kit.getBaseURL(), pageURL);
+        int qStart = relativeURL.indexOf("?");
+        if (qStart >= 0){
+            relativeURL = relativeURL.substring(0, qStart); // remove the query
+        }
         String[] path = relativeURL.split(OWLHTMLConstants.SLASH);
         if (path.length >= 3){
             return path[2]; // always the 3rd element
