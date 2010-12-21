@@ -85,4 +85,24 @@ html creates a full html page, with CSS and title etc
 
 html-frag creates just the bit of html required to add to an existing page (useful for AJAX)
 
-json may be supported in the future as an alternative to XML
+== Examples ==
+
+
+Find all individuals in the BBC species ontology starting with the letter B:
+
+{{{http://owl.cs.manchester.ac.uk/browser/find/?input=B&type=individuals&format=xml&session=12d09432c9b-1959-12d094335ef}}}
+
+{{{
+<?xml version="1.0" encoding="UTF-8" ?>
+<results>
+<rs id="http://www.bbc.co.uk/nature/life/Blackcap#species" info="">Blackcap</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Eurasian_Bittern#species" info="">Bittern</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Blackbuck#species" info="">Blackbuck</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Bharal#species" info="">Bharal</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Common_Blackbird#species" info="">Blackbird</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Bongo_(antelope)#species" info="">Bongo</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Bonobo#species" info="">Bonobo</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Blackberry#species" info="">Blackberry</rs>
+<rs id="http://www.bbc.co.uk/nature/life/European_Badger#species" info="">Badger</rs>
+</results>
+}}}
