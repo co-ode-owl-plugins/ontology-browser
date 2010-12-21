@@ -2,7 +2,7 @@
 
 * 9th Dec 2010 - to be updated - I cannot guarantee these interfaces will work currently *
 
-The server has been written with a RESTful interface such that programmatic or user interaction is possible over HTTP.
+The server has been written with an HTTP interface such that programmatic or user interaction is possible.
 
 For example, an ontology repository (or a user's own HTML pages) could incorporate a link to the browser to show a particular ontology.
 
@@ -13,6 +13,34 @@ http://owl.cs.manchester.ac.uk/browser/ontologies/?action=load&clear=true&uri=ht
 }}}
 
 This loads a particular ontology (pizza.owl) from the physical location specified by the uri parameter. This ontology (and its imports) replaces all existing loaded ontologies in this session because of the `clear=true` parameter.
+
+Unless the user application has control over the loading of ontologies, when interacting with the server it is advisable to specify a saved session using the *session* parameter
+
+session=12d09432c9b-1959-12d094335ef
+
+
+== Examples ==
+
+
+Find all individuals in the BBC species ontology starting with the letter B:
+
+{{{http://owl.cs.manchester.ac.uk/browser/find/?input=B&type=individuals&format=xml&session=12d09432c9b-1959-12d094335ef}}}
+
+{{{
+<?xml version="1.0" encoding="UTF-8" ?>
+<results>
+<rs id="http://www.bbc.co.uk/nature/life/Blackcap#species" info="">Blackcap</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Eurasian_Bittern#species" info="">Bittern</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Blackbuck#species" info="">Blackbuck</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Bharal#species" info="">Bharal</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Common_Blackbird#species" info="">Blackbird</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Bongo_(antelope)#species" info="">Bongo</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Bonobo#species" info="">Bonobo</rs>
+<rs id="http://www.bbc.co.uk/nature/life/Blackberry#species" info="">Blackberry</rs>
+<rs id="http://www.bbc.co.uk/nature/life/European_Badger#species" info="">Badger</rs>
+</results>
+}}}
+
 
 == Parameters ==
 
@@ -60,9 +88,9 @@ see entities/<br />`*`</td><td></td></tr>
 The OWL description can only be an intersection with named classes, existential/universal/value restrictions with named fillers</td></tr>
 
         <tr><td>cloud/</td><td>
-<em>type</em> = [class-usage|objprop-usage]</td><td>More to follow</td></tr>
+<em>type</em> = [classusage|objpropusage|datapropusage|annotpropusage|indusage, datatypeusage]</td><td>Tag clouds for entities</td></tr>
 
-        <tr><td>signout.html</td><td></td><td>Kill this session, clearing all ontologies.</td></tr>
+        <tr><td>signout.html</td><td>confirm = true to do this without prompting</td><td>Kill this session, clearing all ontologies.</td></tr>
         <tr><td>option</td><td>
 <em>opt</em> = [option]<br />
 <em>value</em> = [value]</td>
@@ -84,25 +112,3 @@ XML is of the form:
 html creates a full html page, with CSS and title etc
 
 html-frag creates just the bit of html required to add to an existing page (useful for AJAX)
-
-== Examples ==
-
-
-Find all individuals in the BBC species ontology starting with the letter B:
-
-{{{http://owl.cs.manchester.ac.uk/browser/find/?input=B&type=individuals&format=xml&session=12d09432c9b-1959-12d094335ef}}}
-
-{{{
-<?xml version="1.0" encoding="UTF-8" ?>
-<results>
-<rs id="http://www.bbc.co.uk/nature/life/Blackcap#species" info="">Blackcap</rs>
-<rs id="http://www.bbc.co.uk/nature/life/Eurasian_Bittern#species" info="">Bittern</rs>
-<rs id="http://www.bbc.co.uk/nature/life/Blackbuck#species" info="">Blackbuck</rs>
-<rs id="http://www.bbc.co.uk/nature/life/Bharal#species" info="">Bharal</rs>
-<rs id="http://www.bbc.co.uk/nature/life/Common_Blackbird#species" info="">Blackbird</rs>
-<rs id="http://www.bbc.co.uk/nature/life/Bongo_(antelope)#species" info="">Bongo</rs>
-<rs id="http://www.bbc.co.uk/nature/life/Bonobo#species" info="">Bonobo</rs>
-<rs id="http://www.bbc.co.uk/nature/life/Blackberry#species" info="">Blackberry</rs>
-<rs id="http://www.bbc.co.uk/nature/life/European_Badger#species" info="">Badger</rs>
-</results>
-}}}
