@@ -72,13 +72,11 @@ Get all pizzas with a spicy topping:
 <em>input</em> = name search string<br />`*`</td><td></td></tr>
 
         <tr><td>entities/</td><td>
-<em>uri</em> = the full URI of the entity<br />
-<em>baseURI</em> = the base URI of the entity (without the #)<br />
-<em>name</em> = the rendered name of the entity or the URI fragment of its identifier<br />
+<em>uri</em> = the full URI of the entity (should be escaped - particularly # = %23)<br />
+<em>name</em> = the rendered name of the entity<br />
 <em>ontology</em> = the URI of the ontology to produce an index for<br />`*`</td>
 
 <td>If no parameters are specified, an index of all entities will be shown.<br />
-If the baseURI is only specified, an index of all entities with that baseURI will be shown (NOT IMPLEMENTED YET).<br />
 If the name is specified on its own the entity(ies) with that rendering will be shown.</td></tr>
 
         <tr><td>classes/</td><td>
