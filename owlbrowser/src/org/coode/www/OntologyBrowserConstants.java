@@ -72,7 +72,7 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
         public static RequestFormat get(String mime) {
             int xmlIndex = mime.indexOf(MIME_XML);
             int htmlIndex = mime.indexOf(MIME_HTML);
-            if (xmlIndex > -1 && xmlIndex <htmlIndex){
+            if (xmlIndex > -1 && (htmlIndex == -1 || xmlIndex < htmlIndex)){
                 return xml;
             }
             else if (htmlIndex > -1){
