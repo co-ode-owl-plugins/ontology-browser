@@ -112,14 +112,24 @@ The OWL description can only be an intersection with named classes, existential/
 
 
 
-`*` indicates that a format for the results can be specified: `[xml|html|html-frag]`
+`*` indicates that a format for the results can be specified (see below)
 
-XML is of the form:
+== Content type ==
+
+An optional format param can be specified in the request URL.
+The valid values are:
+
+  * `xml` of the form:
 {{{
 <results>
  <rs id="[entity url]" info="[for future use]">[entity name]<rs>
 </results>
 }}}
-html creates a full html page, with CSS and title etc
+  * `html` creates a full html page, with CSS and title etc
+  * `html-frag` creates just the bit of html required to add to an existing page (useful for AJAX calls for extra content)
 
-html-frag creates just the bit of html required to add to an existing page (useful for AJAX)
+If no format param is used in the URL, the browser uses (very simple) content negotiation on the http requests Accept header to decide what format the response is in. Options are simply:
+  * application/xml
+  * text/html
+
+If you require html-frag you must ask for it in the requested URL.
