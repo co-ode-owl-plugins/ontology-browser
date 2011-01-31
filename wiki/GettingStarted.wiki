@@ -7,6 +7,8 @@ Once you have the browser in front of you, you can try it with any content you c
 
 To load content into the browser, enter the location of the OWL or RDF file.
 
+*Please note that because we use the OWLAPI under the hood, only RDF that can forms a valid OWL2 model can be loaded. This is still a lot of RDF.*
+
 Alternatively try one of the example bookmarks provided.
 
 *Hint* Some LOD providers such as the BBC will use the same URI for html and rdf - this will be resolved by the browser.
