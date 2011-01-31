@@ -1,6 +1,9 @@
 You can find an instance of the browser hosted on a very old linux box sat under my desk [http://owl.cs.manchester.ac.uk/browser/ here].
 
-Once you have the browser in front of you, you can try it with any content you can find on the web. The steps below over the basics and should only take a couple of minutes to walk through:
+Once you have the browser in front of you, you can try it with any content you can find on the web.
+
+The steps below cover the basics and should only take a couple of minutes to walk through:
+
 <wiki:toc max_depth="3" />
 
 ----
