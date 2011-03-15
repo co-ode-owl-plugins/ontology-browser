@@ -23,9 +23,6 @@ public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
 
     private OWLHTMLKit kit;
 
-//    private OWLHTMLConstants.LinkTarget linkTarget;
-
-
     public OWLHTMLRenderer(OWLHTMLKit kit) {
         this.kit = kit;
     }
@@ -35,7 +32,6 @@ public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
         rendererVisitor.setOntologies(kit.getVisibleOntologies());
         rendererVisitor.setActiveOntology(kit.getOWLServer().getActiveOntology());
         rendererVisitor.setPageURL(pageURL);
-//        rendererVisitor.setContentTargetWindow(linkTarget);
         obj.accept(rendererVisitor);
     }
 
@@ -45,8 +41,4 @@ public class OWLHTMLRenderer implements ElementRenderer<OWLObject>{
         writer.flush();
         return writer.getBuffer().toString();
     }
-
-//    public void setContentTargetWindow(OWLHTMLConstants.LinkTarget linkTarget) {
-//        this.linkTarget = linkTarget;
-//    }
 }

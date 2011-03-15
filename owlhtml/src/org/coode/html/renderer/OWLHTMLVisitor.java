@@ -66,8 +66,6 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private int indent = 0;
 
-//    private OWLHTMLConstants.LinkTarget targetWindow = null;
-
     private boolean writeStats = false;
 
     private OWLHTMLKit kit;
@@ -96,27 +94,13 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         this.activeOntology = activeOnt;
     }
 
-//    /**
-//     * Sets the indentation level of subsequent lines used when wrapping some expressions
-//     * @param indent
-//     */
-//    public void setIndentation(int indent){
-//        this.indent = indent;
-//    }
-
-//    /**
-//     * Sets the target window of any links - in case frames or popups are required
-//     * @param targetWindow
-//     */
-//    public void setContentTargetWindow(OWLHTMLConstants.LinkTarget targetWindow){
-//        this.targetWindow = targetWindow;
-//    }
-
     private void write(String s) {
         out.write(s);
     }
 
+
     ////////// Ontology
+
     public void visit(OWLOntology ontology) {
         final URL urlForOntology = urlRenderer.getURLForOWLObject(ontology);
         String link = urlForOntology.toString();
@@ -583,35 +567,6 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         write(" ");
         annotation.getValue().accept(this);
     }
-
-//    public void visit(OWLStringLiteral node) {
-//        write("<span class='" + CSS_LITERAL + "'>\"");
-//        writeLiteralContents(node.getLiteral());
-//        write("\"");
-//        final String lang = node.getLang();
-//        if (lang != null){
-//            write(" <span style='color: black;'>(" + lang + ")</span>");
-//        }
-//        write("</span>");
-//    }
-//
-//    public void visit(OWLTypedLiteral node) {
-//        write("<span class='" + CSS_LITERAL + "'>");
-//        final OWLDatatype dt = node.getDatatype();
-//        if (dt.isInteger() || dt.isFloat()){
-//            writeLiteralContents(node.getLiteral());
-//            write("</span>");
-//        }
-//        else{
-//            write("\"");
-//            writeLiteralContents(node.getLiteral());
-//            write("\"");
-//            write("</span>");
-//            write("(");
-//            dt.accept(this);
-//            write(")");
-//        }
-//    }
 
 // OWLAPI v3.1
     public void visit(OWLLiteral node) {

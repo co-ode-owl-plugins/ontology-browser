@@ -102,9 +102,9 @@ public class Find extends AbstractOntologyServerServlet {
 
         if (uri != null && uri.length() > 0){
             try{
-                final URI entityURI = new URI(uri);
-                if (entityURI.isAbsolute()){
-                    results = new HashSet<OWLEntity>(finder.getOWLEntities(entityURI, type, ont));
+                final IRI iri = IRI.create(new URI(uri));
+                if (iri.isAbsolute()){
+                    results = new HashSet<OWLEntity>(finder.getOWLEntities(iri, type, ont));
                 }
             }
             catch(URISyntaxException e){
