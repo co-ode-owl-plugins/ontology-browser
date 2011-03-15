@@ -112,6 +112,22 @@ public class OWLUtils {
         return false;
     }
 
+    public static Map<OWLAnnotationProperty, Set<OWLAnnotationValue>> getAnnotationPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
+        Map<OWLAnnotationProperty, Set<OWLAnnotationValue>> props = new HashMap<OWLAnnotationProperty, Set<OWLAnnotationValue>>();
+        for (OWLOntology ont : onts){
+            for (OWLAnnotationAssertionAxiom ax : individual.getAnnotationAssertionAxioms(ont)){
+                OWLAnnotationProperty p = ax.getProperty();
+                Set<OWLAnnotationValue> objects = props.get(p);
+                if (objects == null){
+                    objects = new HashSet<OWLAnnotationValue>();
+                    props.put(p, objects);
+                }
+                objects.add(ax.getAnnotation().getValue());
+            }
+        }
+        return props;
+    }
+
     public static Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> getAssertedPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
         Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props = new HashMap<OWLPropertyExpression, Set<OWLPropertyAssertionObject>>();
         for (OWLOntology ont : onts){

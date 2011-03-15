@@ -9,6 +9,7 @@ import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.renderer.ElementRenderer;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.coode.html.util.URLUtils;
+import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -91,39 +92,87 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
     }
 
     protected final ElementRenderer<? super E> getElementRenderer() {
-        return new OWLHTMLRenderer(kit){
-            @Override
-            public void render(OWLObject obj, URL pageURL, PrintWriter out) {
+        return new MyOWLHTMLRenderer(kit);
+    }
+
+    public String getID() {
+        return super.getID() + " (" + getElements().size() + ")";
+    }
+
+    /**
+     * A special version of the OWLHTMLRenderer that performs extra rendering tasks
+     * - it renders IRIs with matching entities as entities
+     * - it inlines images (and sounds)
+     */
+    private class MyOWLHTMLRenderer extends OWLHTMLRenderer {
+
+        public MyOWLHTMLRenderer(OWLHTMLKit kit) {
+            super(kit);
+        }
+
+        @Override
+        public void render(OWLObject obj, URL pageURL, PrintWriter out) {
+            if (obj instanceof IRI){
+                handleIRI((IRI)obj, pageURL, out);
+            }
+            else{
                 super.render(obj, pageURL, out);
-                if (inlineMedia){
-                    IRI iri = null;
-                    if (obj instanceof OWLEntity){
-                        iri = ((OWLEntity)obj).getIRI();
-                    }
-                    else if (obj instanceof IRI){
-                        iri = (IRI)obj;
-                    }
-                    if (iri != null){
-                        if (URLUtils.isImageURL(iri)){
-                            out.print("<img class=\"thumb\" src=\"");
-                            out.print(iri);
-                            out.println("\" height=\"100\" />");
-                        }
-                        else{
-                            // TODO: make a play button
+            }
+
+            if (inlineMedia){
+                tryInlineMedia(obj, pageURL, out);
+            }
+        }
+
+        private void tryInlineMedia(OWLObject obj, URL pageURL, PrintWriter out) {
+            IRI iri = null;
+            if (obj instanceof OWLEntity){
+                iri = ((OWLEntity)obj).getIRI();
+            }
+            else if (obj instanceof IRI){
+                iri = (IRI)obj;
+            }
+            if (iri != null){
+                if (URLUtils.isImageURL(iri)){
+                    out.print("<img class=\"thumb\" src=\"");
+                    out.print(iri);
+                    out.println("\" height=\"100\" />");
+                }
+                else{
+                    // TODO: make a play button
 //                if (URLUtils.isSoundURL(iri)){
 //                    out.print("<EMBED src=\"");
 //                    out.print(iri);
 //                    out.println("\" autostart=\"true\" hidden=\"true\"/>");
 //                }
-                        }
-                    }
                 }
             }
-        };
-    }
+        }
 
-    public String getID() {
-        return super.getID() + " (" + getElements().size() + ")";
+        // if an annotation value is an IRI with matching entities, write the entity links instead
+        private void handleIRI(IRI value, URL pageURL, PrintWriter out) {
+            Set<? extends OWLEntity> entities = kit.getOWLServer().getFinder().getOWLEntities(value, NamedObjectType.entities);
+            if (entities.isEmpty()){
+                super.render(value, pageURL, out);
+            }
+            else if (entities.size() == 1){
+                super.render(entities.iterator().next(), pageURL, out);
+            }
+            else{
+                boolean started = false;
+                for (OWLEntity entity : entities){
+                    if (started){
+                        out.print(", ");
+                    }
+                    else{
+                        started = true;
+                    }
+                    super.render(entity, pageURL, out);
+                    out.print(" (");
+                    out.print(NamedObjectType.getType(entity).getPluralRendering());
+                    out.print(" )");
+                }
+            }
+        }
     }
 }

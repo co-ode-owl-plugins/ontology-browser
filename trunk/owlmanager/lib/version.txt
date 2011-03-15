@@ -1,22 +1,17 @@
 OWL API
 -------
-release 3.1.0 b1626 (9 Dec 2010)
-
-locally modified and built to fix imports bug
-see https://sourceforge.net/tracker/?func=detail&aid=3110834&group_id=90989&atid=595534
+custom build v3.2.2 (15th Mar 2011)
 
 Pellet
 ------
-release 1.5.2 (May 01, 2008)
+release 1.5.2 (1st May 2008)
 
-FaCT++
+JFaCT
 ------
-pre-release of version 1.1.12 - revision 274 (Jun 12, 2008)
-No change to binaries.
-FaCTPlusPlus.jar updated to set sync even on fail and ignore disjoints with 1 operand.
+v0.1 (2nd MAr 2011)
 
 HermiT
 ------
-nightly build 05/08/2010
+nightly build (5th Aug 2010)
 
 NOTE: The HermiT.jar is not the jar contained in the distribution (as this contains all of the libraries compiled up in one package) but the result of building the ant HermiT-standalone-no-libraries target.

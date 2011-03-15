@@ -75,6 +75,7 @@ public class ManagerTestCase extends TestCase {
         }
     }
 
+
 //    public void testPelletReload(){
 //        OWLOntologyManager mngr = OWLManager.createOWLOntologyManager();
 //        try {

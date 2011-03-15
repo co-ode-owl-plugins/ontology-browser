@@ -87,7 +87,7 @@ public class OWLServerImpl implements OWLServer {
         }
 
         public void finishedLoadingOntology(LoadingFinishedEvent loadingFinishedEvent) {
-            if (loadingFinishedEvent.isSuccessful()){
+            if (loadingFinishedEvent.isSuccessful() && !loadingFinishedEvent.isImported()){
                 OWLOntologyID id = loadingFinishedEvent.getOntologyID();
                 OWLOntology ont = mngr.getOntology(id);
                 if (ont == null){
@@ -123,7 +123,7 @@ public class OWLServerImpl implements OWLServer {
 
         handleCommonBaseMappers(physicalURI);
 
-        return mngr.loadOntologyFromOntologyDocument(IRI.create(physicalURI));
+        return mngr.loadOntologyFromOntologyDocument(iri);
     }
 
 
@@ -209,7 +209,9 @@ public class OWLServerImpl implements OWLServer {
     }
 
     private void loadedOntology(OWLOntology ont) {
-        logger.info("loaded " + OWLUtils.getOntologyIdString(ont));
+        if (ont != null){
+            logger.info("loaded " + OWLUtils.getOntologyIdString(ont));
+        }
 
         resetRootImports();
 
@@ -426,49 +428,9 @@ public class OWLServerImpl implements OWLServer {
 
         if (shortFormProvider == null){
             String ren = getProperties().get(ServerProperty.optionRenderer);
-            if (ren.equals(ServerConstants.RENDERER_FRAG)){
-                shortFormProvider = new MySimpleShortFormProvider();
-            }
-            else if (ren.equals(ServerConstants.RENDERER_LABEL)){
-
-                final OWLOntologySetProvider activeOntologiesSetProvider = new OWLOntologySetProvider() {
-                    public Set<OWLOntology> getOntologies() {
-                        return getActiveOntologies();
-                    }
-                };
-
-                String lang = getProperties().get(ServerProperty.optionLabelLang);
-                List<String> langs = new ArrayList<String>();
-                langs.add(lang);
-                langs.add(""); // default to no language
-
-                // the property assertion sfp
-                OWLDataProperty dataProp = mngr.getOWLDataFactory().getOWLDataProperty(
-                        IRI.create(getProperties().get(ServerProperty.optionLabelPropertyUri)));
-                List<OWLPropertyExpression> props = new ArrayList<OWLPropertyExpression>();
-                props.add(dataProp);
-
-                final Map<OWLDataPropertyExpression, List<String>> lMap;
-                lMap = new HashMap<OWLDataPropertyExpression, List<String>>();
-                if (lang.length() > 0){
-                    lMap.put(dataProp, langs);
-                }
-                ShortFormProvider pValueProvider = new PropertyAssertionValueShortFormProvider(props,
-                                                                                               lMap,
-                                                                                               activeOntologiesSetProvider,
-                                                                                               new MySimpleShortFormProvider());
-
-                // the annotation label sfp
-                OWLAnnotationProperty annotProp = mngr.getOWLDataFactory().getOWLAnnotationProperty(
-                        IRI.create(getProperties().get(ServerProperty.optionLabelUri)));
-                final Map<OWLAnnotationProperty, List<String>> langMap = new HashMap<OWLAnnotationProperty, List<String>>();
-                if (lang.length() > 0){
-                    langMap.put(annotProp, langs);
-                }
-                shortFormProvider = new AnnotationValueShortFormProvider(Collections.singletonList(annotProp),
-                                                                         langMap,
-                                                                         activeOntologiesSetProvider,
-                                                                         pValueProvider);
+            shortFormProvider = new MySimpleShortFormProvider();
+            if (ren.equals(ServerConstants.RENDERER_LABEL)){
+                shortFormProvider = new LabelShortFormProvider(this, shortFormProvider);
             }
         }
         return shortFormProvider;
@@ -701,7 +663,7 @@ public class OWLServerImpl implements OWLServer {
 
     private String[] reasonerFactoryNames = {
             "org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory",
-            "jfact.JFactFactory",
+            "uk.ac.manchester.cs.jfact.JFactFactory",
 //            "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory",
             "org.semanticweb.HermiT.Reasoner$ReasonerFactory"
             // TODO pellet, etc

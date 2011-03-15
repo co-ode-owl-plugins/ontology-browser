@@ -6,7 +6,6 @@ import org.coode.owl.mngr.OWLServer;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -116,17 +115,17 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
         return results;
     }
 
-    public Set<OWLEntity> getOWLEntities(URI uri, NamedObjectType type) {
-        if (!uri.isAbsolute()){
+    public Set<OWLEntity> getOWLEntities(IRI iri, NamedObjectType type) {
+        if (!iri.isAbsolute()){
             throw new IllegalArgumentException("URI must be absolute");
         }
 
         switch(type){
             case entities:
                 Set<OWLEntity> results = new HashSet<OWLEntity>();
-                for (OWLOntology ont : server.getActiveOntologies()){
-                    for (NamedObjectType subType : NamedObjectType.entitySubtypes()){
-                        OWLEntity entity = subType.getOWLEntity(IRI.create(uri), server.getOWLOntologyManager().getOWLDataFactory());
+                for (NamedObjectType subType : NamedObjectType.entitySubtypes()){
+                    OWLEntity entity = subType.getOWLEntity(iri, server.getOWLOntologyManager().getOWLDataFactory());
+                    for (OWLOntology ont : server.getActiveOntologies()){
                         if (ont.containsEntityInSignature(entity)){
                             results.add(entity);
                         }
@@ -136,7 +135,7 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
             case ontologies:
                 throw new RuntimeException("Cannot get entities of type ontology");
             default:
-                OWLEntity entity = type.getOWLEntity(IRI.create(uri), server.getOWLOntologyManager().getOWLDataFactory());
+                OWLEntity entity = type.getOWLEntity(iri, server.getOWLOntologyManager().getOWLDataFactory());
                 for (OWLOntology ont : server.getActiveOntologies()){
                     if (ont.containsEntityInSignature(entity)){
                         return Collections.singleton(entity);
@@ -147,8 +146,8 @@ public class OWLEntityFinderImpl implements OWLEntityFinder {
         return Collections.emptySet();
     }
 
-    public Set<OWLEntity> getOWLEntities(URI uri, NamedObjectType type, OWLOntology ont) {
-        final Set<OWLEntity> results = getOWLEntities(uri, type);
+    public Set<OWLEntity> getOWLEntities(IRI iri, NamedObjectType type, OWLOntology ont) {
+        final Set<OWLEntity> results = getOWLEntities(iri, type);
         if (ont != null){
             for (OWLEntity result : results){
                 if (!ont.containsEntityInSignature(result)){

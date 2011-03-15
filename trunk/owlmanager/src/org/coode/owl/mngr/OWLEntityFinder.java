@@ -2,7 +2,6 @@ package org.coode.owl.mngr;
 
 import org.semanticweb.owlapi.model.*;
 
-import java.net.URI;
 import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
@@ -64,12 +63,11 @@ public interface OWLEntityFinder {
 
     /**
      *
-     * @param uri
-     * @param type
-     * @return can return a set if the type is entities (an individual and a class could be returned)
+     * @param iri
+     *@param type  @return can return a set if the type is entities (an individual and a class could be returned)
      */
-    Set<? extends OWLEntity> getOWLEntities(URI uri, NamedObjectType type);
-    Set<? extends OWLEntity> getOWLEntities(URI uri, NamedObjectType type, OWLOntology ont);
+    Set<? extends OWLEntity> getOWLEntities(IRI iri, NamedObjectType type);
+    Set<? extends OWLEntity> getOWLEntities(IRI iri, NamedObjectType type, OWLOntology ont);
 
     void dispose();
 }
