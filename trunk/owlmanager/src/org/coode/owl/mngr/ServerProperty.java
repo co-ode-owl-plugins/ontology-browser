@@ -39,13 +39,15 @@ public enum ServerProperty {
 
     optionReasonerEnabled("Reasoner enabled", "reasoner.enabled"),
     optionReasoner("Reasoner", "option_reasoner"),
-    optionReasonerUrl("DIG reasoner URL", true, "option_reaoner_url"), // for DIG reasoners
+//    optionReasonerUrl("DIG reasoner URL", true, "option_reaoner_url"), // for DIG reasoners
     optionRenderer("Renderer type", "ren"),
     optionLabelUri("Label annotation", "option_label_uri"),
     optionLabelLang("Label language", "option_label_lang"),
     optionLabelPropertyUri("Label property"),
     optionActiveOnt("Active ontology", "option_active_ont"),
-    optionShowOntologies("Show", true);
+    optionShowOntologies("Show", true);//,
+    // TODO: enable OWLLink
+//    optionRemote("Reasoner URL");
 
 
     private String[] altNames;

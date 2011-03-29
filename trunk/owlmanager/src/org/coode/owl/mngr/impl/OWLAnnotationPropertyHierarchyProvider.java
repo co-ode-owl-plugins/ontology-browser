@@ -1,8 +1,8 @@
 package org.coode.owl.mngr.impl;
 
+import org.coode.owl.mngr.ActiveOntologyProvider;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.OWLServerListener;
 import org.semanticweb.owlapi.model.*;
 
 import java.util.Collections;
@@ -24,7 +24,7 @@ public class OWLAnnotationPropertyHierarchyProvider implements HierarchyProvider
 
     private Set<OWLAnnotationProperty> implicitRoots;
 
-    private OWLServerListener serverListener = new OWLServerListener(){
+    private ActiveOntologyProvider.Listener serverListener = new ActiveOntologyProvider.Listener(){
         public void activeOntologyChanged(OWLOntology ont) {
             reset();
         }
@@ -47,7 +47,7 @@ public class OWLAnnotationPropertyHierarchyProvider implements HierarchyProvider
 
     public OWLAnnotationPropertyHierarchyProvider(OWLServer server) {
         this.server = server;
-        server.addServerListener(serverListener);
+        server.addActiveOntologyListener(serverListener);
         server.getOWLOntologyManager().addOntologyChangeListener(ontologyListener);
     }
 
@@ -111,7 +111,7 @@ public class OWLAnnotationPropertyHierarchyProvider implements HierarchyProvider
 
     public void dispose() {
         server.getOWLOntologyManager().removeOntologyChangeListener(ontologyListener);
-        server.removeServerListener(serverListener);
+        server.removeActiveOntologyListener(serverListener);
         server = null;
     }
 

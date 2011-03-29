@@ -9,8 +9,6 @@ import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.util.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
@@ -38,9 +36,9 @@ public class OWLServerImpl implements OWLServer {
 
     private OWLOntology activeOntology;
 
-    private OWLReasoner reasoner;
+    private SynchronizedOWLReasoner reasoner;
 
-    private Set<OWLReasonerFactory> reasonerFactories = new HashSet<OWLReasonerFactory>();
+    private OWLReasonerManager reasonerManager;
 
     private ShortFormProvider shortFormProvider;
 
@@ -62,7 +60,7 @@ public class OWLServerImpl implements OWLServer {
 
     private ServerPropertiesAdapter<ServerProperty> properties;
 
-    private final Set<OWLServerListener> listeners = new HashSet<OWLServerListener>();
+    private final Set<Listener> listeners = new HashSet<Listener>();
 
     private boolean serverIsDead = false;
 
@@ -99,11 +97,10 @@ public class OWLServerImpl implements OWLServer {
     };
 
     public OWLServerImpl(OWLOntologyManager mngr) {
+
         this.mngr = mngr;
 
         createRootOntology();
-
-        loadReasonerFactories();
 
         mngr.addOntologyLoaderListener(ontLoadListener);
 
@@ -111,6 +108,9 @@ public class OWLServerImpl implements OWLServer {
         mngr.addIRIMapper(new NonMappingOntologyIRIMapper());
 
         setActiveOntology(rootOntology);
+
+        reasonerManager = new OWLReasonerManagerImpl(this);
+        getProperties().setAllowedValues(ServerProperty.optionReasoner, reasonerManager.getAvailableReasonerNames());                    
     }
 
     public OWLOntology loadOntology(URI physicalURI) throws OWLOntologyCreationException {
@@ -244,14 +244,6 @@ public class OWLServerImpl implements OWLServer {
         return getAnonymousOntology(iri.toString());
     }
 
-    public void addServerListener(OWLServerListener l) {
-        listeners.add(l);
-    }
-
-    public void removeServerListener(OWLServerListener l) {
-        listeners.remove(l);
-    }
-
     public ServerPropertiesAdapter<ServerProperty> getProperties() {
         if (properties == null){
 
@@ -304,6 +296,14 @@ public class OWLServerImpl implements OWLServer {
         return activeOntology;
     }
 
+    public void addActiveOntologyListener(Listener l) {
+        listeners.add(l);
+    }
+
+    public void removeActiveOntologyListener(Listener l) {
+        listeners.add(l);
+    }
+
     private OWLOntology getAnonymousOntology(String id) {
         for (OWLOntology ontology : getOntologies()){
             if (id.equals(ontology.getOntologyID().toString())){
@@ -340,16 +340,29 @@ public class OWLServerImpl implements OWLServer {
         if (isDead()){
             throw new RuntimeException("Cannot getOWLReasoner - server is dead");
         }
+
         if (reasoner == null){
 
+            // TODO: enable OWLLink
+            
+//            try {
+//                reasonerManager.setRemote(getProperties().getURL(ServerProperty.optionRemote));
+//            }
+//            catch (MalformedURLException e) {
+//                reasonerManager.setRemote(null);
+//            }
+
             final String selectedReasoner = getProperties().get(ServerProperty.optionReasoner);
-
+            
             try {
-                logger.debug("Creating reasoner");
+                logger.debug("Creating reasoner: " + selectedReasoner);
 
-                OWLReasonerFactory fac = getReasonerFactory(selectedReasoner);
+                OWLReasoner r = reasonerManager.getReasoner(selectedReasoner);
 
-                OWLReasoner r = fac.createReasoner(getActiveOntology());
+                if (r == null){
+                    getProperties().set(ServerProperty.optionReasoner, OWLReasonerManagerImpl.STRUCTURAL);
+                    throw new RuntimeException("Cannot create reasoner: " + selectedReasoner + ". Setting the reasoner back to " + OWLReasonerManagerImpl.STRUCTURAL);
+                }
 
                 reasoner = new SynchronizedOWLReasoner(r);
             }
@@ -497,7 +510,6 @@ public class OWLServerImpl implements OWLServer {
     }
 
     public void clear() {
-        resetReasoner();
         resetRendererCache();
         resetHierarchies();
         resetAllowedActiveOntology();
@@ -508,7 +520,7 @@ public class OWLServerImpl implements OWLServer {
 
     private void resetReasoner() {
         if (reasoner != null){
-            reasoner.dispose();
+            reasonerManager.dispose(reasoner.getDelegate());
             reasoner = null;
         }
     }
@@ -649,59 +661,6 @@ public class OWLServerImpl implements OWLServer {
         }
     }
 
-    private OWLReasonerFactory getReasonerFactory(String name) {
-        for (OWLReasonerFactory fac : reasonerFactories){
-            if (fac.getReasonerName().equals(name)){
-                return fac;
-            }
-        }
-
-        logger.warn("Couldn't find a reasoner factory for " + name + ". Using structural reasoner.");
-        return new StructuralReasonerFactory(); //
-    }
-
-
-    private String[] reasonerFactoryNames = {
-            "org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory",
-            "uk.ac.manchester.cs.jfact.JFactFactory",
-//            "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory",
-            "org.semanticweb.HermiT.Reasoner$ReasonerFactory"
-            // TODO pellet, etc
-    };
-
-    // TODO: error handling should be better
-    private void loadReasonerFactories() {
-
-        String selectedReasoner = null;
-
-        List<String> reasonerNames = new ArrayList<String>();
-        for (String reasonerFactoryName : reasonerFactoryNames){
-            try {
-                final OWLReasonerFactory fac = (OWLReasonerFactory) Class.forName(reasonerFactoryName).newInstance();
-                reasonerNames.add(fac.getReasonerName());
-                reasonerFactories.add(fac);
-
-                // set the first reasoner factory as default
-                if (selectedReasoner == null){
-                    selectedReasoner = fac.getReasonerName();
-                    getProperties().set(ServerProperty.optionReasoner, selectedReasoner);
-                }
-            }
-            catch (UnsupportedClassVersionError e){
-                e.printStackTrace();
-            }
-            catch (InstantiationException e) {
-                e.printStackTrace();
-            }
-            catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        getProperties().setAllowedValues(ServerProperty.optionReasoner, reasonerNames);
-    }
 
     private void handlePropertyChange(ServerProperty p, Object newValue) {
 
@@ -731,7 +690,7 @@ public class OWLServerImpl implements OWLServer {
 
                 OWLOntology ont = getActiveOntology();
 
-                for (OWLServerListener l : listeners){
+                for (Listener l : listeners){
                     l.activeOntologyChanged(ont);
                 }
                 break;

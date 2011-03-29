@@ -6,7 +6,13 @@ import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.impl.OWLServerImpl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
+import org.semanticweb.owlapi.owllink.OWLlinkReasoner;
+import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -71,6 +77,26 @@ public class ManagerTestCase extends TestCase {
         }
         catch (Exception e) {
             logger.error(e);
+            fail();
+        }
+    }
+
+    public void testOWLLinkConnection(){
+        try {
+            OWLOntologyManager mngr = OWLManager.createOWLOntologyManager();
+            OWLOntology ont = mngr.loadOntologyFromOntologyDocument(IRI.create("http://www.co-ode.org/ontologies/pizza/pizza.owl"));
+
+            assertNotNull(ont);
+
+            OWLReasonerConfiguration conf = new OWLlinkReasonerConfiguration(new URL("http://localhost:1234"));
+            OWLlinkReasoner r = new OWLlinkHTTPXMLReasonerFactory().createReasoner(ont, conf);
+
+            for (Node node : r.getSubClasses(mngr.getOWLDataFactory().getOWLThing(), true)){
+                System.out.println("node = " + node);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
             fail();
         }
     }

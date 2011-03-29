@@ -10,6 +10,8 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -78,6 +80,10 @@ public class ServerPropertiesAdapterImpl<E extends Enum> implements ServerProper
 
     public boolean isSet(E key) {
         return delegate.isSet(key.name());
+    }
+
+    public URL getURL(E key) throws MalformedURLException {
+        return delegate.getURL(key.name());
     }
 
 

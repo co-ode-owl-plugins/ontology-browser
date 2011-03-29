@@ -1,0 +1,44 @@
+Change Log
+==========
+
+OWLlink API 1.1 (November 10, 2010)
+----------------------------------
+
+* UPDATED: OWL API 3.1 support (OWLAPI 3.0 is no longer supported)
+
+* UPDATED: Protege 4.1 support
+
+OWLlink API 1.0.1 (May 19, 2010)
+------------------------------
+
+* ADDED: Protege 4.1 preliminary support
+
+* FIXED: Start script for pellet-server-OWLAPI3 (library path adjustments)
+
+
+OWLlink API 1.0 (May 07, 2010)
+--------------------------------
+
+* ADDED: Configuration for OWLlink servers
+
+* ADDED: Support for OWLlink Retraction Extension (client and server)
+
+* ADDED: Registry for user-defined requests/responses for HTTP/XML Binding
+
+* ENHANCED: HTTP/XML performance improved
+
+* FIXED: Some parser bugs on server side
+
+* FIXED: Names of all element handlers for HTTP/XML server now end with "ElementHandler"
+
+* FIXED: Removed empty packages
+
+* FIXED: Renamed script directories for OWLlink servers (OWLAPIvX --> OWLAPIX)
+
+* FIXED: add target="1.5" for ant script compile task
+
+
+OWLlink API 0.9 (Feb. 26, 2010)
+--------------------------------
+
+* ADDED: Full OWL API 3.0 support

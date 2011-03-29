@@ -4,6 +4,8 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 /*
@@ -44,6 +46,8 @@ public interface ServerPropertiesAdapter<E extends Enum> {
     boolean set(E key, String value);
 
     boolean isSet(E key);
+
+    URL getURL(E key) throws MalformedURLException;
 
     void remove(E key);
 

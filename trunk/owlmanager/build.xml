@@ -14,8 +14,7 @@
 	</target>
 	
 	<target name="compile" depends="init">
-		<javac srcdir="./src" excludes="**/test/*.java" destdir="${classes}"
-		                   debug="true">
+		<javac srcdir="./src" excludes="**/test/*.java" destdir="${classes}" debug="true">
 			<classpath>
 				<fileset dir="${lib}">
 					<include name="*.jar"/>
