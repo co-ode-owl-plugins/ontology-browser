@@ -10,6 +10,8 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -33,6 +35,10 @@ public class ServerPropertiesImpl implements ServerProperties {
 
     public String get(String key) {
         return properties.getProperty(key);
+    }
+
+    public URL getURL(String key) throws MalformedURLException {
+        return new URL(properties.getProperty(key));
     }
 
 

@@ -1,8 +1,8 @@
 package org.coode.owl.mngr.impl;
 
+import org.coode.owl.mngr.ActiveOntologyProvider;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.OWLServerListener;
 import org.semanticweb.owlapi.model.*;
 
 import java.util.*;
@@ -21,7 +21,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
 
     private Map<OWLClassExpression, Set<OWLIndividual>> cache;
 
-    private OWLServerListener serverListener = new OWLServerListener(){
+    private ActiveOntologyProvider.Listener serverListener = new ActiveOntologyProvider.Listener(){
         public void activeOntologyChanged(OWLOntology ont) {
             reset();
         }
@@ -44,7 +44,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
 
     public OWLIndividualByClassHierarchyProvider(OWLServer server) {
         this.server = server;
-        server.addServerListener(serverListener);
+        server.addActiveOntologyListener(serverListener);
         server.getOWLOntologyManager().addOntologyChangeListener(ontologyListener);
         reset();
     }
@@ -120,7 +120,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
 
     public void dispose() {
         server.getOWLOntologyManager().removeOntologyChangeListener(ontologyListener);
-        server.removeServerListener(serverListener);
+        server.removeActiveOntologyListener(serverListener);
         server = null;
     }
 

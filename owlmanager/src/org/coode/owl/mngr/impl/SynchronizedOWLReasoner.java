@@ -25,6 +25,10 @@ public class SynchronizedOWLReasoner implements OWLReasoner {
         this.r = r;
     }
 
+    public OWLReasoner getDelegate() {
+        return r;
+    }
+
     public synchronized void dispose() {
         r.dispose();
     }

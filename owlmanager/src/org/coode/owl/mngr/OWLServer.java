@@ -23,7 +23,7 @@ import java.util.Set;
  * code made available under Mozilla Public License (http://www.mozilla.org/MPL/MPL-1.1.html)<br>
  * copyright 2006, The University of Manchester<br>
  */
-public interface OWLServer {
+public interface OWLServer extends ActiveOntologyProvider {
 
     OWLOntology getActiveOntology();
     /**
@@ -51,10 +51,6 @@ public interface OWLServer {
      * @return an Ontology if one matches or null if none is found
      */
     OWLOntology getOntologyForIRI(IRI iri);
-
-    void addServerListener(OWLServerListener l);
-
-    void removeServerListener(OWLServerListener l);
 
     OWLOntologyManager getOWLOntologyManager();
 
