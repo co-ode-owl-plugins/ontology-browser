@@ -69,15 +69,18 @@ public class OntologyBrowserConstants extends OWLHTMLConstants {
             return mimeType + ";charset=" + OWLHTMLConstants.DEFAULT_ENCODING;
         }
 
+        // we can't do proper checking because Webkit asks for application/xml first!
         public static RequestFormat get(String mime) {
-            int xmlIndex = mime.indexOf(MIME_XML);
             int htmlIndex = mime.indexOf(MIME_HTML);
-            if (xmlIndex > -1 && (htmlIndex == -1 || xmlIndex < htmlIndex)){
-                return xml;
-            }
-            else if (htmlIndex > -1){
+            if (htmlIndex > -1){
                 return html;
             }
+
+            int xmlIndex = mime.indexOf(MIME_XML);
+            if (xmlIndex > -1){
+                return xml;
+            }
+
             return null;
         }
     }
