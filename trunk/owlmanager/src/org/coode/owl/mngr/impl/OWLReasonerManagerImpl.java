@@ -36,8 +36,7 @@ public class OWLReasonerManagerImpl implements OWLReasonerManager {
             "org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory",
             "uk.ac.manchester.cs.jfact.JFactFactory",
             "org.semanticweb.HermiT.Reasoner$ReasonerFactory",
-            // TODO: enable OWLLink            
-//            OWLLINK = "org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory",
+            OWLLINK = "org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory",
             "uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory",
             "com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory"
     };

@@ -1,8 +1,38 @@
-----------------------------------
-OWLlink API
-Release 1.1
-----------------------------------
-
 Documentation can be found at http://owllink-owlapi.sourceforge.net
 
-The OWLlink API 1.1 is based on the OWL API 3.1.
+----------------------------------------------------------------------
+Release 1.1.1
+----------------------------------------------------------------------
+This version of the API includes the following bug fixes:
+- support for OWL API 3.2 (3257278). Fixed.
+ 
+----------------------------------------------------------------------
+Release 1.1.0 (November 10, 2010)
+----------------------------------------------------------------------
+This version of the API includes the following updates:
+- OWL API 3.1 support (OWL API 3.0 is no longer supported)
+- Protege 4.1 support
+
+----------------------------------------------------------------------
+Release 1.0.1 (May 19, 2010)
+----------------------------------------------------------------------
+This version of the API includes the following updates and bug fixes:
+- Protege 4.1 preliminary support
+- Start script for pellet-server-OWLAPI 3 (library path adjustments). Fixed.
+
+----------------------------------------------------------------------
+Release 1.0.0 (May 07, 2010)
+----------------------------------------------------------------------
+This version of the API includes the following enhancements and bug fixes:
+- OWLlink servers are configurable
+- OWLlink retraction extension added to client and server mode
+- Registry for user-defined requests/responses for HTTP/XML binding added.
+- HTTP/XML performance increased
+- Parser bugs on server side. Fixed.
+- Names of all element handler classes for HTTP/XML server should end with "ElementHandler". Fixed
+- Ant compile task should compile with target="1.5". Fixed
+
+----------------------------------------------------------------------
+Release 0.9 (Feb. 26, 2010)
+----------------------------------------------------------------------
+- Full OWL API 3.0 support

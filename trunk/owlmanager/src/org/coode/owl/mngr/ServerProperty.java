@@ -45,9 +45,8 @@ public enum ServerProperty {
     optionLabelLang("Label language", "option_label_lang"),
     optionLabelPropertyUri("Label property"),
     optionActiveOnt("Active ontology", "option_active_ont"),
-    optionShowOntologies("Show", true);//,
-    // TODO: enable OWLLink
-//    optionRemote("Reasoner URL");
+    optionShowOntologies("Show", true),
+    optionRemote("Reasoner URL");
 
 
     private String[] altNames;

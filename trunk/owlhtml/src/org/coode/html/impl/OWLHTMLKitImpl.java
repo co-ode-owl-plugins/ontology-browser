@@ -67,6 +67,8 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     private List<String> errorMessages = new ArrayList<String>();
 
+    private Date timestamp;
+
 
     public OWLHTMLKitImpl(String id, URL baseURL) {
         this(id, new OWLServerImpl(OWLManager.createOWLOntologyManager()), baseURL);
@@ -74,6 +76,7 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
 
     public OWLHTMLKitImpl(String id, OWLServer server, URL baseURL) {
+        this.timestamp = new Date(System.currentTimeMillis());
         this.id = id;
         this.owlServer = server;
         this.baseURL = baseURL;
@@ -218,5 +221,13 @@ public class OWLHTMLKitImpl implements OWLHTMLKit {
 
     public void clearUserErrors() {
         errorMessages.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "OWLHTMLKitImpl{" +
+               "id='" + id + '\'' +
+               ", timestamp=" + timestamp +
+               '}';
     }
 }

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -319,6 +320,10 @@ public class SessionManager {
         properties.setBoolean(OWLHTMLProperty.optionShowMiniHierarchies, true);
 
         properties.setBoolean(OWLHTMLProperty.optionShowInferredHierarchies, false);
+    }
+
+    public static Collection<OWLHTMLKit> getRunningKits() {
+        return activeServers.values();
     }
 
     /**
