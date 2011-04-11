@@ -12,7 +12,7 @@ import org.coode.html.util.HTMLUtils;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
-import org.semanticweb.owlapi.util.AnnotationValueShortFormProvider;
+import org.coode.owl.mngr.impl.LabelShortFormProvider;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 
 import java.io.PrintWriter;
@@ -121,7 +121,7 @@ public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
     private boolean isRenderLabels() {
         final ShortFormProvider sfp = getOWLHTMLKit().getOWLServer().getShortFormProvider();
-        return sfp.getClass().equals(AnnotationValueShortFormProvider.class);
+        return sfp.getClass().equals(LabelShortFormProvider.class);
     }
 
     public String getID() {
