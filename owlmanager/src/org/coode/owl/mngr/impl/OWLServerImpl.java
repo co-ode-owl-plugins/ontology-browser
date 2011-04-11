@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -342,15 +343,13 @@ public class OWLServerImpl implements OWLServer {
         }
 
         if (reasoner == null){
-
-            // TODO: enable OWLLink
             
-//            try {
-//                reasonerManager.setRemote(getProperties().getURL(ServerProperty.optionRemote));
-//            }
-//            catch (MalformedURLException e) {
-//                reasonerManager.setRemote(null);
-//            }
+            try {
+                reasonerManager.setRemote(getProperties().getURL(ServerProperty.optionRemote));
+            }
+            catch (MalformedURLException e) {
+                reasonerManager.setRemote(null);
+            }
 
             final String selectedReasoner = getProperties().get(ServerProperty.optionReasoner);
             

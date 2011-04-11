@@ -7,6 +7,12 @@
     <distributable/>
 
     <servlet>
+        <servlet-name>Stats</servlet-name>
+        <display-name>Stats</display-name>
+        <servlet-class>org.coode.www.servlet.Stats</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>Ontologies</servlet-name>
         <display-name>Load Ontology</display-name>
         <servlet-class>org.coode.www.servlet.Ontologies</servlet-class>
@@ -92,6 +98,10 @@
         <!--<servlet-class>org.coode.www.servlet.ToggleCookie</servlet-class>-->
     <!--</servlet>-->
 
+    <servlet-mapping>
+        <servlet-name>Stats</servlet-name>
+        <url-pattern>/stats/</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StartPage</servlet-name>
         <url-pattern>/index.html</url-pattern>
