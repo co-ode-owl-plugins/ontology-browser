@@ -130,7 +130,7 @@ public class OWLReasonerManagerImpl implements OWLReasonerManager {
     // TODO progress monitor?
     private OWLReasonerConfiguration getConfiguration(OWLReasonerFactory fac) {
 
-        if (fac.getClass().getCanonicalName().equals(OWLLINK)){
+        if (fac.getClass().getName().equals(OWLLINK)){
 
             URL remote = getRemote();
             if (remote == null){
