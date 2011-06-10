@@ -111,7 +111,9 @@ public class OWLServerImpl implements OWLServer {
         setActiveOntology(rootOntology);
 
         reasonerManager = new OWLReasonerManagerImpl(this);
-        getProperties().setAllowedValues(ServerProperty.optionReasoner, reasonerManager.getAvailableReasonerNames());                    
+
+        getProperties().set(ServerProperty.optionReasoner, OWLReasonerManagerImpl.STRUCTURAL);
+        getProperties().setAllowedValues(ServerProperty.optionReasoner, reasonerManager.getAvailableReasonerNames());
     }
 
     public OWLOntology loadOntology(URI physicalURI) throws OWLOntologyCreationException {
@@ -343,7 +345,7 @@ public class OWLServerImpl implements OWLServer {
         }
 
         if (reasoner == null){
-            
+
             try {
                 reasonerManager.setRemote(getProperties().getURL(ServerProperty.optionRemote));
             }
@@ -351,22 +353,28 @@ public class OWLServerImpl implements OWLServer {
                 reasonerManager.setRemote(null);
             }
 
-            final String selectedReasoner = getProperties().get(ServerProperty.optionReasoner);
-            
+            String selectedReasoner = getProperties().get(ServerProperty.optionReasoner);
+
             try {
                 logger.debug("Creating reasoner: " + selectedReasoner);
 
                 OWLReasoner r = reasonerManager.getReasoner(selectedReasoner);
 
-                if (r == null){
-                    getProperties().set(ServerProperty.optionReasoner, OWLReasonerManagerImpl.STRUCTURAL);
-                    throw new RuntimeException("Cannot create reasoner: " + selectedReasoner + ". Setting the reasoner back to " + OWLReasonerManagerImpl.STRUCTURAL);
+                if (r == null || !r.isConsistent()){
+                    // set the reasoner back to Structural
+                    selectedReasoner = OWLReasonerManagerImpl.STRUCTURAL;
+                    getProperties().set(ServerProperty.optionReasoner, selectedReasoner);
+                    r = reasonerManager.getReasoner(selectedReasoner);
+                    if (r == null){
+                        throw new RuntimeException("Cannot create " + OWLReasonerManagerImpl.STRUCTURAL);
+                    }
+//                    throw new RuntimeException("Could not create reasoner: " + selectedReasoner + ". Setting the reasoner back to " + OWLReasonerManagerImpl.STRUCTURAL);
                 }
 
                 reasoner = new SynchronizedOWLReasoner(r);
             }
             catch (Throwable e) {
-                throw new RuntimeException(selectedReasoner + ": " + e.getMessage(), e);
+                throw new RuntimeException(selectedReasoner + ": " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);
             }
         }
         return reasoner;
