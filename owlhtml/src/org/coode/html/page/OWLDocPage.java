@@ -48,6 +48,10 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
             addDoclet(new TabsDoclet(kit));
         }
 
+        if (!kit.getOWLServer().getOWLReasoner().isConsistent()){
+            kit.addUserError("Inconsistent Ontology! Only the structural reasoner can be used.");
+        }
+
         for (String error : kit.getUserErrors()){
             final MessageBoxDoclet messageDoclet = new MessageBoxDoclet(null, error);
             messageDoclet.setClass("error");
