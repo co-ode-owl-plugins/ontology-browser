@@ -87,6 +87,14 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
         final String label = getLabel(request);
 
+        if (label == null){
+            response.addHeader("Cache-Control", "max-age=0, must-revalidate");
+            response.addHeader("Expires", "0");
+        }
+        else{
+            // we could put a longer cache length on permalinks
+        }
+
         final OWLHTMLKit kit = getOWLHTMLKit(request, label, pageURL);
 
         try {

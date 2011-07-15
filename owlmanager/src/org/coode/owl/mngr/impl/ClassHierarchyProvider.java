@@ -1,5 +1,6 @@
 package org.coode.owl.mngr.impl;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
@@ -30,6 +31,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
     public ClassHierarchyProvider(OWLServer server) {
         this.server = server;
+        logger.setLevel(Level.WARN);
     }
 
     public Class<? extends OWLClass> getNodeClass() {
@@ -59,7 +61,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     }
 
     public Set<OWLClass> getChildren(OWLClass node) {
-//        logger.debug("getChildren(" + node + ")");
+        logger.debug("getChildren(" + node + ")");
         try {
             Set<OWLClass> children = new HashSet<OWLClass>();
 
@@ -78,7 +80,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     }
 
     public Set<OWLClass> getEquivalents(OWLClass node) {
-//        logger.debug("getEquivalents(" + node + ")");
+        logger.debug("getEquivalents(" + node + ")");
         try{
             return getReasoner().getEquivalentClasses(node).getEntitiesMinus(node);
         }
@@ -89,7 +91,7 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     }
 
     public Set<OWLClass> getDescendants(OWLClass node) {
-//        logger.debug("getDescendants(" + node + ")");
+        logger.debug("getDescendants(" + node + ")");
         try {
             return getReasoner().getSubClasses(node, false).getFlattened();
         }
@@ -131,50 +133,4 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
     private OWLClass getOWLThing() {
         return server.getOWLOntologyManager().getOWLDataFactory().getOWLThing();
     }
-
-//    // OWL API bug fixed
-//    // see https://sourceforge.net/tracker/?func=detail&aid=3037035&group_id=90989&atid=595534
-//    private Set<OWLClass> getImplicitRoots() {
-//        if (implicitRoots == null){
-//            implicitRoots = new HashSet<OWLClass>();
-//            for (OWLOntology ont : getOntologies()){
-//                implicitRoots.addAll(ont.getClassesInSignature());
-//            }
-//            implicitRoots.remove(getOWLThing());
-//            for (OWLOntology ont : getOntologies()){
-//                for (OWLSubClassOfAxiom ax : ont.getAxioms(AxiomType.SUBCLASS_OF)){
-//                    if (!ax.getSubClass().isAnonymous()){
-//                        if (isImplicitNamedClass(ax.getSuperClass())){
-//                            implicitRoots.remove(ax.getSubClass().asOWLClass());
-//                        }
-//                    }
-//                }
-//                for (OWLEquivalentClassesAxiom ax : ont.getAxioms(AxiomType.EQUIVALENT_CLASSES)){
-//                    Set<OWLClass> names = new HashSet<OWLClass>();
-//                    boolean remove = false;
-//                    for (OWLClassExpression cls : ax.getClassExpressions()){
-//                        if (!cls.isAnonymous()){
-//                            names.add(cls.asOWLClass());
-//                        }
-//                        else if (isImplicitNamedClass(cls)){
-//                            remove = true;
-//                        }
-//                    }
-//                    if (remove){
-//                        implicitRoots.removeAll(names);
-//                    }
-//                }
-//            }
-//        }
-//        return new HashSet<OWLClass>(implicitRoots);
-//    }
-//
-//    private boolean isImplicitNamedClass(OWLClassExpression superClass) {
-//        for (OWLClassExpression op : superClass.asConjunctSet()){
-//            if (!op.isAnonymous()){
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 }
