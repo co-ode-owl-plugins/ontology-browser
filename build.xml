@@ -14,6 +14,7 @@
     <property name="html" location="owlhtml"/>
     <property name="browser" location="owlbrowser"/>
     <property name="out" location="build"/>
+    <property name="classes" location="${out}/classes/"/>
     <property name="war" location="${out}/browser.war"/>
 
     <mkdir dir="${out}"/>
@@ -38,7 +39,9 @@
     </target>
 
     <target name="compile" depends="modules">
-        <javac srcdir="${browser}/src" >
+        <mkdir dir="${classes}"/>
+
+        <javac srcdir="${browser}/src" destdir="${classes}">
             <classpath refid="cp"/>
             <classpath>
                 <fileset dir="${tomcat}/lib">
@@ -48,7 +51,7 @@
         </javac>
     </target>
 
-    <target name="war" depends="modules">
+    <target name="war" depends="compile">
         <war destfile="${war}" webxml="${browser}/WEB-INF/web.xml">
             <mappedresources>
                 <restrict>
@@ -63,7 +66,7 @@
 
             <fileset dir="${browser}/resources"/>
             <metainf file="${browser}/META-INF/context.xml"/>
-            <classes dir="${browser}/src"/>
+            <classes dir="${classes}"/>
         </war>
     </target>
 

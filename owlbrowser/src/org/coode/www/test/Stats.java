@@ -1,4 +1,4 @@
-package org.coode.www.servlet;
+package org.coode.www.test;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.Doclet;
@@ -10,6 +10,7 @@ import org.coode.html.page.OWLDocPage;
 import org.coode.html.renderer.ElementRenderer;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.mngr.SessionManager;
+import org.coode.www.servlet.AbstractOntologyServerServlet;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -24,7 +25,7 @@ import java.util.Map;
  * Bio Health Informatics Group<br>
  * Date: Apr 11, 2011<br><br>
  */
-public class Stats extends AbstractOntologyServerServlet{
+public class Stats extends AbstractOntologyServerServlet {
 
     @Override
     protected Doclet handleXMLRequest(Map<OWLHTMLParam, String> params, OWLHTMLKit kit, URL pageURL) throws OntServerException {

@@ -4,6 +4,7 @@ import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.URLScheme;
+import org.coode.html.util.URLUtils;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -28,12 +29,12 @@ public class SignoutDoclet extends AbstractOWLDocDoclet {
         final URLScheme urlScheme = getOWLHTMLKit().getURLScheme();
 
         out.print("<a id='signout' href='");
-        out.print(urlScheme.getURLForRelativePage(OWLHTMLConstants.SIGNOUT_HTML));
+        out.print(URLUtils.createRelativeURL(pageURL, urlScheme.getURLForRelativePage(OWLHTMLConstants.SIGNOUT_HTML)));
         out.print("' target='");
         out.print(OWLHTMLConstants.LinkTarget._top);
         out.print("'>");
         out.print("<img src='");
-        out.print(urlScheme.getURLForRelativePage("images/close.png"));
+        out.print(URLUtils.createRelativeURL(pageURL, urlScheme.getURLForRelativePage("images/close.png")));
         out.print("' width='16' height='16' title='close' />");
         out.println("</a>");
     }

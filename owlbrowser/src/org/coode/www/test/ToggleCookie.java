@@ -1,4 +1,4 @@
-package org.coode.www.servlet;
+package org.coode.www.test;
 
 import org.coode.www.OntologyBrowserConstants;
 
