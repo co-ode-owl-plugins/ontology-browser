@@ -26,6 +26,7 @@
 				<pathelement location="${owlmanager.lib}"/>
 		    </classpath>
 		</javac>
+        <copy file="resources/doclets.config" todir="${classes}"/>
 	</target>
 
 	<target name="jar" depends="compile">
