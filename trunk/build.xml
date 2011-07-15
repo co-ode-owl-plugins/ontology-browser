@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="OWL Browser" default="deploy">
+
+    <!--
+      make sure that $CATALINA_HOME is set on your system before running!
+    -->
+
+    <property environment="env"/>
+    <property name="tomcat" location="${env.CATALINA_HOME}"/>
+
+    <echo message="CATALINA_HOME = ${tomcat}"/>
+
+    <property name="manager" location="owlmanager"/>
+    <property name="html" location="owlhtml"/>
+    <property name="browser" location="owlbrowser"/>
+    <property name="out" location="build"/>
+    <property name="war" location="${out}/browser.war"/>
+
+    <mkdir dir="${out}"/>
+
+    <path id="cp">
+        <path location="${manager}/build/owlmanager.jar"/>
+
+        <path location="${html}/build/owlhtml.jar"/>
+
+        <fileset dir="${manager}/lib" >
+            <include name="**/*.jar"/>
+        </fileset>
+
+        <fileset dir="${browser}/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="modules">
+        <ant dir="${manager}" target="jar"/>
+        <ant dir="${html}" target="jar"/>
+    </target>
+
+    <target name="compile" depends="modules">
+        <javac srcdir="${browser}/src" >
+            <classpath refid="cp"/>
+            <classpath>
+                <fileset dir="${tomcat}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="war" depends="modules">
+        <war destfile="${war}" webxml="${browser}/WEB-INF/web.xml">
+            <mappedresources>
+                <restrict>
+                    <path refid="cp"/>
+                    <type type="file"/>
+                </restrict>
+                <chainedmapper>
+                    <flattenmapper/>
+                    <globmapper from="*" to="WEB-INF/lib/*"/>
+                </chainedmapper>
+            </mappedresources>
+
+            <fileset dir="${browser}/resources"/>
+            <metainf file="${browser}/META-INF/context.xml"/>
+            <classes dir="${browser}/src"/>
+        </war>
+    </target>
+
+    <target name="deploy" depends="war">
+        <copy file="${war}" todir="${tomcat}/webapps/"/>
+    </target>
+</project>
