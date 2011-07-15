@@ -9,9 +9,8 @@
     <servlet>
         <servlet-name>Stats</servlet-name>
         <display-name>Stats</display-name>
-        <servlet-class>org.coode.www.servlet.Stats</servlet-class>
+        <servlet-class>org.coode.www.test.Stats</servlet-class>
     </servlet>
-
     <servlet>
         <servlet-name>Ontologies</servlet-name>
         <display-name>Load Ontology</display-name>
@@ -95,7 +94,7 @@
         <!--<servlet-name>ToggleCookie</servlet-name>-->
         <!--<display-name>ToggleCookie</display-name>-->
         <!--<description>ToggleCookie test</description>-->
-        <!--<servlet-class>org.coode.www.servlet.ToggleCookie</servlet-class>-->
+        <!--<servlet-class>org.coode.www.test.ToggleCookie</servlet-class>-->
     <!--</servlet>-->
 
     <servlet-mapping>

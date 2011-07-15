@@ -232,7 +232,8 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         if (kit.isActive()){
             ren.addDoclet(new MenuBarDoclet(kit), 1);
         }
-        ren.addOnLoad("baseURL=\"" + kit.getURLScheme().getBaseURL() + "\";");
+        // TODO get rid of this as the hardcoding makes it difficult for proxies
+        ren.addOnLoad("baseURL=\"" + kit.getURLScheme().getBaseURL().getPath() + "\";");
     }
 
     protected void handleError(Throwable e, OWLHTMLKit kit, URL pageURL, HttpServletResponse response, OntologyBrowserConstants.RequestFormat format) throws IOException {

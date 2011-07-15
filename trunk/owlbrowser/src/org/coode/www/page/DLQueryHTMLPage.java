@@ -37,7 +37,8 @@ public class DLQueryHTMLPage extends OWLDocPage {
 
         setAutoFocusedComponent(acDoclet.getID());
 
-        addOnLoad("queryURL=\"" + kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.QUERY_HTML) + "\";");
+        // TODO get rid of this as the hardcoding makes it difficult for proxies
+        addOnLoad("queryURL=\"" + kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.QUERY_HTML).getPath() + "\";");
 
         addDoclet(new AbstractHTMLDoclet(){
 

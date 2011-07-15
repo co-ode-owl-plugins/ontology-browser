@@ -181,13 +181,17 @@ public class URLUtils {
                                   "&redirect=" +
                                   URLEncoder.encode(pageURL.toString(), OWLHTMLConstants.DEFAULT_ENCODING));
             out.println(" ");
-            renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.EXTERNAL_IMAGE), "Attempt to open link in another window", url, OWLHTMLConstants.LinkTarget._blank, "urlOption", true, pageURL, out);
+            renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.EXTERNAL_IMAGE),
+                            "Attempt to open link in another window",
+                            url, OWLHTMLConstants.LinkTarget._blank, "urlOption", true, pageURL, out);
 
             // if the ontology at this location has not already been loaded
 //            final Map<OWLOntologyID, URI> locMap = kit.getOWLServer().getLocationsMap();
             if (kit.getOWLServer().getOntologyForIRI(IRI.create(url.toURI())) == null){//!locMap.containsValue(url.toURI())){
                 out.println(" ");
-                renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.LOAD_IMAGE), "Attempt to load owl/rdf", loadURL, null, "urlOption", true, pageURL, out);
+                renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.LOAD_IMAGE),
+                                "Attempt to load owl/rdf",
+                                loadURL, null, "urlOption", true, pageURL, out);
             }
         }
         catch (Exception e) {
@@ -209,7 +213,7 @@ public class URLUtils {
             }
 
             out.print(" ><img src=\"");
-            out.print(imageURL);
+            out.print(URLUtils.createRelativeURL(pageURL, imageURL));
             out.print("\" title=\"");
             out.print(altText);
             out.print("\" /></a>");

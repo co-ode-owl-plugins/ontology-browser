@@ -935,9 +935,12 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private void writeCardinality(OWLCardinalityRestriction desc, String cardinalityType) {
         desc.getProperty().accept(this);
-        writeKeyword(" " + cardinalityType + " ", cardinalityType);
-        write(desc.getCardinality() + " ");
+        write(" ");
+        writeKeyword(cardinalityType, cardinalityType);
+        write(" ");
+        write(Integer.toString(desc.getCardinality()));
         if (desc.getFiller() != null){
+            write(" ");
             writeOp(desc.getFiller(), true);
         }
     }

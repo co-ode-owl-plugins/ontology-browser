@@ -74,9 +74,9 @@ public class DefaultHTMLPage<O> extends AbstractHTMLDoclet<O> implements HTMLPag
             out.println("</script>");
         }
 
-        out.println("</head>\n\n");
+        out.println("</head>\n");
 
-        out.print("<body>");
+        out.println("<body>");
     }
 
     @Override

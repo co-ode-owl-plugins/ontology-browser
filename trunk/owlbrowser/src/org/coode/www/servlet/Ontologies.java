@@ -142,7 +142,8 @@ public class Ontologies extends AbstractOntologyServerServlet {
         }
 
         if (server.getOntologies().size() == 1){
-            throw new RedirectException(kit.getURLScheme().getBaseURL());
+            // TODO fix the redirect - can it be relative?
+            throw new RedirectException(kit.getBaseURL());
         }
 
         if (redirect == null){
@@ -159,6 +160,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
             }
         }
 
+        // TODO fix the redirect - can it be relative?
         throw new RedirectException(redirect);
     }
 

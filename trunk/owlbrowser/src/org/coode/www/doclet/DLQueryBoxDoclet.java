@@ -5,6 +5,7 @@ import org.coode.html.doclet.AbstractTitleDoclet;
 import org.coode.html.doclet.MessageBoxDoclet;
 import org.coode.html.doclet.OWLSelectorDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.www.OntologyBrowserConstants;
 
@@ -38,7 +39,7 @@ public class DLQueryBoxDoclet extends OWLSelectorDoclet{
             protected void renderHeader(URL pageURL, PrintWriter out) {
                 // show the active reasoner
                 out.print("<p>Reasoner: <a href=\"");
-                out.print(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
+                out.print(URLUtils.createRelativeURL(pageURL, getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML)));
                 out.print("\">");
                 out.print(getOWLHTMLKit().getOWLServer().getProperties().get(ServerProperty.optionReasoner));
                 out.print("</a></p>");

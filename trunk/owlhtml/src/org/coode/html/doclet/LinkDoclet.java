@@ -45,10 +45,16 @@ public class LinkDoclet<O extends OWLEntity> implements HTMLDoclet<O>{
         String shortName = kit.getOWLServer().getShortFormProvider().getShortForm(object);
         URL href = kit.getURLScheme().getURLForOWLObject(object);
 
-        out.print("<a href='" + URLUtils.createRelativeURL(pageURL, href) + "'");
+        out.print("<a href='");
+        out.print(URLUtils.createRelativeURL(pageURL, href));
+        out.print("'");
 
         for (String attr : attributes.keySet()){
-            out.print(" " + attr + "='" + attributes.get(attr) + "'");
+            out.print(" ");
+            out.print(attr);
+            out.print("='");
+            out.print(attributes.get(attr));
+            out.print("'");
         }
         if (target != null && !isSingleFrameNavigation()){
             out.print(" target='" + target + "'");
