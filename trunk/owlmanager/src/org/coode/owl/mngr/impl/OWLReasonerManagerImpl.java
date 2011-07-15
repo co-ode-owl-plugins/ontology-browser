@@ -116,7 +116,7 @@ public class OWLReasonerManagerImpl implements OWLReasonerManager {
             if (fac != null){
                 OWLReasonerConfiguration config = getConfiguration(fac);
                 if (config != null){
-                    reasoner = fac.createReasoner(activeOntProvider.getActiveOntology(), config);
+                    reasoner = fac.createNonBufferingReasoner(activeOntProvider.getActiveOntology(), config);
                 }
             }
         }
