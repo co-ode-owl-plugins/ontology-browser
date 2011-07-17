@@ -3,8 +3,6 @@
 */
 package org.coode.www.exception;
 
-import java.net.URL;
-
 /**
  * Author: Nick Drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
@@ -12,16 +10,18 @@ import java.net.URL;
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
  * Date: Jan 11, 2008<br><br>
+ *
+ * A redirect can be relative to the current request page
  */
 public class RedirectException extends OntServerException {
 
-    private URL page;
+    private String page;
 
-    public RedirectException(URL page) {
+    public RedirectException(String page) {
         this.page = page;
     }
 
-    public URL getRedirectPage(){
+    public String getRedirectPage(){
         return page;
     }
 }

@@ -76,7 +76,7 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     private void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        URL redirect = null;
+        String redirect = null;
 
         OntologyBrowserConstants.RequestFormat format = getRequestType(request, response);
         response.setContentType(format.getResponseType());
@@ -178,9 +178,9 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         return null;
     }
 
-    private void handleRedirect(URL redirectPage, HttpServletResponse response) throws IOException {
+    private void handleRedirect(String redirectPage, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(OWLHTMLConstants.DEFAULT_ENCODING);
-        response.sendRedirect(redirectPage.toString());
+        response.sendRedirect(redirectPage);
     }
 
     private OntologyBrowserConstants.RequestFormat getRequestType(HttpServletRequest request, HttpServletResponse response){

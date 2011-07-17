@@ -7,6 +7,7 @@ import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.index.OWLObjectIndexDoclet;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
+import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.OWLEntityFinder;
 import org.coode.owl.mngr.OWLServer;
@@ -60,7 +61,7 @@ public class Find extends AbstractOntologyServerServlet {
         if (results.size() == 1){
             // just go directly to that page
             OWLNamedObject result = results.iterator().next();
-            throw new RedirectException(kit.getURLScheme().getURLForOWLObject(result));
+            throw new RedirectException(URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForOWLObject(result)));
         }
         else{
             // show a list of matches
