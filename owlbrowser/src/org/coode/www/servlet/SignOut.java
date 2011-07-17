@@ -7,6 +7,7 @@ import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
+import org.coode.html.util.URLUtils;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.mngr.SessionManager;
@@ -75,7 +76,7 @@ public class SignOut extends AbstractOntologyServerServlet {
             if (Boolean.parseBoolean(confirm)){
                 performSignout();
             }
-            throw new RedirectException(baseURL);
+            throw new RedirectException(URLUtils.createRelativeURL(pageURL, baseURL));
         }
     }
 

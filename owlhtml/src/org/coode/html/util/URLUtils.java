@@ -174,20 +174,27 @@ public class URLUtils {
 
     public static void renderURLLinks(URL url, OWLHTMLKit kit, URL pageURL, PrintWriter out) {
         try{
-            URL loadURL = new URL(kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies),
-                                  "?" + OWLHTMLParam.action + "=load&" +
-                                  OWLHTMLParam.uri + "=" +
-                                  URLEncoder.encode(url.toString(), OWLHTMLConstants.DEFAULT_ENCODING) +
-                                  "&redirect=" +
-                                  URLEncoder.encode(pageURL.toString(), OWLHTMLConstants.DEFAULT_ENCODING));
+            final URL loadBaseURL = kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies);
+
+            // need the redirect to be relative to the load URL
+            final String relRedirect = URLUtils.createRelativeURL(loadBaseURL, pageURL);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(loadBaseURL);
+            sb.append("?").append(OWLHTMLParam.action).append("=load");
+            sb.append("&").append(OWLHTMLParam.uri).append("=").append(URLEncoder.encode(url.toString(), OWLHTMLConstants.DEFAULT_ENCODING));
+            sb.append("&").append(OWLHTMLParam.redirect).append("=").append(URLEncoder.encode(relRedirect, OWLHTMLConstants.DEFAULT_ENCODING));
+
+            final URL loadURL = new URL(sb.toString());
+            
             out.println(" ");
+            
             renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.EXTERNAL_IMAGE),
                             "Attempt to open link in another window",
                             url, OWLHTMLConstants.LinkTarget._blank, "urlOption", true, pageURL, out);
 
             // if the ontology at this location has not already been loaded
-//            final Map<OWLOntologyID, URI> locMap = kit.getOWLServer().getLocationsMap();
-            if (kit.getOWLServer().getOntologyForIRI(IRI.create(url.toURI())) == null){//!locMap.containsValue(url.toURI())){
+            if (kit.getOWLServer().getOntologyForIRI(IRI.create(url.toURI())) == null){
                 out.println(" ");
                 renderImageLink(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.LOAD_IMAGE),
                                 "Attempt to load owl/rdf",

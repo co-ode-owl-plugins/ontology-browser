@@ -8,6 +8,7 @@ import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
+import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.www.doclet.OptionsTableDoclet;
@@ -77,7 +78,7 @@ public class ServerOptions extends AbstractOntologyServerServlet {
 
         if (success){
 
-            throw new RedirectException(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML));
+            throw new RedirectException(URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.OPTIONS_HTML)));
         }
         else{
             OWLDocPage page = new OWLDocPage(kit);

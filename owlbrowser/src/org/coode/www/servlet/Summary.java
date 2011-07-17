@@ -81,7 +81,7 @@ public class Summary extends AbstractOntologyServerServlet {
 
         // if a name or uri is specified then redirect to search
         if (uri != null || entityName != null){
-            performSearch(type, uri, entityName, ontology, kit, OntologyBrowserConstants.RequestFormat.html);
+            performSearch(type, uri, entityName, ontology, kit, OntologyBrowserConstants.RequestFormat.html, pageURL);
         }
         else{
             OWLObject object = urlScheme.getOWLObjectForURL(pageURL);
@@ -117,7 +117,7 @@ public class Summary extends AbstractOntologyServerServlet {
 
         // if a name or uri is specified then redirect to search
         if (uri != null || entityName != null){
-            performSearch(type, uri, entityName, ontology, kit, OntologyBrowserConstants.RequestFormat.htmlfrag);
+            performSearch(type, uri, entityName, ontology, kit, OntologyBrowserConstants.RequestFormat.htmlfrag, pageURL);
         }
         else{
             OWLObject object = urlScheme.getOWLObjectForURL(pageURL);
@@ -165,19 +165,19 @@ public class Summary extends AbstractOntologyServerServlet {
         final URLScheme urlScheme = kit.getURLScheme();
         switch(urlScheme.getType(pageURL)){
             case classes:
-                throw new RedirectException(urlScheme.getURLForOWLObject(df.getOWLThing()));
+                throw new RedirectException(URLUtils.createRelativeURL(pageURL, urlScheme.getURLForOWLObject(df.getOWLThing())));
             case objectproperties:
-                throw new RedirectException(urlScheme.getURLForOWLObject(df.getOWLTopObjectProperty()));
+                throw new RedirectException(URLUtils.createRelativeURL(pageURL, urlScheme.getURLForOWLObject(df.getOWLTopObjectProperty())));
             case dataproperties:
-                throw new RedirectException(urlScheme.getURLForOWLObject(df.getOWLTopDataProperty()));
+                throw new RedirectException(URLUtils.createRelativeURL(pageURL, urlScheme.getURLForOWLObject(df.getOWLTopDataProperty())));
             case annotationproperties:
                 final OWLAnnotationProperty prop = getFirstAnnotationProperty(kit);
                 if (prop != null){
-                    throw new RedirectException(urlScheme.getURLForOWLObject(prop));
+                    throw new RedirectException(URLUtils.createRelativeURL(pageURL, urlScheme.getURLForOWLObject(prop)));
                 }
                 break;
             case datatypes:
-                throw new RedirectException(urlScheme.getURLForOWLObject(df.getTopDatatype()));
+                throw new RedirectException(URLUtils.createRelativeURL(pageURL, urlScheme.getURLForOWLObject(df.getTopDatatype())));
         }
     }
 
@@ -191,7 +191,7 @@ public class Summary extends AbstractOntologyServerServlet {
         return null;
     }
 
-    private void performSearch(NamedObjectType type, String uri, String entityName, String ontology, OWLHTMLKit kit, OntologyBrowserConstants.RequestFormat format) throws OntServerException {
+    private void performSearch(NamedObjectType type, String uri, String entityName, String ontology, OWLHTMLKit kit, OntologyBrowserConstants.RequestFormat format, URL pageURL) throws OntServerException {
         try{
             Map<OWLHTMLParam, String> map = new HashMap<OWLHTMLParam, String>();
             map.put(OWLHTMLParam.format, format.name());
@@ -210,7 +210,7 @@ public class Summary extends AbstractOntologyServerServlet {
             StringBuilder sb = new StringBuilder("find/");
             sb.append(URLUtils.renderParams(map));
 
-            throw new RedirectException(kit.getURLScheme().getURLForRelativePage(sb.toString()));
+            throw new RedirectException(URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForRelativePage(sb.toString())));
         }
         catch (UnsupportedEncodingException e) {
             throw new OntServerException(e);

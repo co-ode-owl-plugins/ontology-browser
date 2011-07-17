@@ -5,6 +5,7 @@ import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
+import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.util.OWLUtils;
 import org.coode.www.OntologyAction;
@@ -16,7 +17,6 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -47,7 +47,8 @@ public class Ontologies extends AbstractOntologyServerServlet {
         final String actionValue = params.get(OWLHTMLParam.action);
 
         if (actionValue == null){
-            throw new RedirectException(kit.getURLScheme().getURLForOWLObject(kit.getOWLServer().getActiveOntology()));
+            URL redirect = kit.getURLScheme().getURLForOWLObject(kit.getOWLServer().getActiveOntology());
+            throw new RedirectException(URLUtils.createRelativeURL(pageURL, redirect));
         }
 
         try{
@@ -71,15 +72,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
             switch(action){
                 case load:
                     boolean clear = Boolean.parseBoolean(params.get(OWLHTMLParam.clear));
-                    URL redirect = null;
-                    if (params.get(OWLHTMLParam.redirect) != null){
-                        try {
-                            redirect = new URL(params.get(OWLHTMLParam.redirect));
-                        }
-                        catch (MalformedURLException e) {
-                            logger.warn("Cannot redirect to " + params.get(OWLHTMLParam.redirect));
-                        }
-                    }
+                    String redirect = params.get(OWLHTMLParam.redirect);
                     return handleLoad(getURIFromParam(params.get(OWLHTMLParam.uri)), clear, redirect, kit, pageURL);
                 case remove:
                     return handleRemove(getOntologyFromParam(params.get(OWLHTMLParam.uri), server), kit, pageURL);
@@ -93,7 +86,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
         throw new RuntimeException("Missing action handler!!");
     }
 
-    private HTMLPage handleLoad(URI uri, boolean clear, URL redirect, OWLHTMLKit kit, URL pageURL) throws OntServerException {
+    private HTMLPage handleLoad(URI uri, boolean clear, String redirect, OWLHTMLKit kit, URL pageURL) throws OntServerException {
         Set<URI> success = new HashSet<URI>();
         Map<URI, Throwable> fail = new HashMap<URI, Throwable>();
 
@@ -143,7 +136,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
 
         if (server.getOntologies().size() == 1){
             // TODO fix the redirect - can it be relative?
-            throw new RedirectException(kit.getBaseURL());
+            throw new RedirectException(URLUtils.createRelativeURL(pageURL, kit.getBaseURL()));
         }
 
         if (redirect == null){
@@ -151,12 +144,12 @@ public class Ontologies extends AbstractOntologyServerServlet {
             // if there is an individual with an IRI matching the ontology that has been loaded
             OWLNamedIndividual ind = OWLUtils.getIndividual(IRI.create(uri), server.getActiveOntologies());
             if (ind != null){
-                redirect = kit.getURLScheme().getURLForOWLObject(ind);
+                redirect = URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForOWLObject(ind));
             }
 
             // else just show the active ontology
             if (redirect == null && ont != null){
-                redirect = kit.getURLScheme().getURLForOWLObject(ont);
+                redirect = URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForOWLObject(ont));
             }
         }
 
@@ -185,7 +178,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
 //            sb.append("]</p>");
         }
 
-        throw new RedirectException(kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
+        throw new RedirectException(URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForOWLObject(server.getActiveOntology())));
         //return new OntologiesPage(kit, pageURL);
     }
 
@@ -208,7 +201,7 @@ public class Ontologies extends AbstractOntologyServerServlet {
             kit.addUserError(sb.toString(), e);
         }
 
-        throw new RedirectException(kit.getURLScheme().getURLForOWLObject(server.getActiveOntology()));
+        throw new RedirectException(URLUtils.createRelativeURL(pageURL, kit.getURLScheme().getURLForOWLObject(server.getActiveOntology())));
 
 //        return new OntologiesPage(kit, pageURL);
     }
