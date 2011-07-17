@@ -61,12 +61,8 @@ public class SignOut extends AbstractOntologyServerServlet {
             sb.append("<p>This will clear all ontologies you are browsing.");
             sb.append(" All permalinks you have bookmarked or sent to friends will continue to work.</p>");
             sb.append("<p>Are you sure you wish to quit?</p>");
-            sb.append("<p><a href='");
-            sb.append(pageURL);
-            sb.append("?confirm=true'>Yes</a>");
-            sb.append(" <a href='");
-            sb.append(pageURL);
-            sb.append("?confirm=false'>No</a></p>");
+            sb.append("<p><a href='?confirm=true'>Yes</a>");
+            sb.append(" <a href='?confirm=false'>No</a></p>");
 
             kit.addUserError(sb.toString());
             return new OWLDocPage(kit);
