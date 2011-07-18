@@ -10,6 +10,7 @@ import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.html.page.OWLDocPage;
 import org.coode.html.url.PermalinkURLScheme;
+import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.OWLServer;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.www.OntologyBrowserConstants;
@@ -19,10 +20,14 @@ import org.coode.www.doclet.MenuBarDoclet;
 import org.coode.www.doclet.TitleDoclet;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
+import org.coode.www.exception.SignOutException;
 import org.coode.www.mngr.SessionManager;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -45,9 +50,6 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
     protected Logger logger = Logger.getLogger(getClass().getName());
 
-    // TODO get rid of these globals
-    private HttpSession httpSession = null;
-
     protected abstract Doclet handleXMLRequest(Map<OWLHTMLParam, String> params,
                                                OWLHTMLKit kit,
                                                URL pageURL) throws OntServerException;
@@ -61,12 +63,10 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                                                             URL pageURL) throws OntServerException;
 
     protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        System.out.println("AbstractOntologyServerServlet.doGet");
         doRequest(request, response);
     }
 
     protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        System.out.println("AbstractOntologyServerServlet.doPost");
         doRequest(request, response);
     }
 
@@ -80,8 +80,6 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
         OntologyBrowserConstants.RequestFormat format = getRequestType(request, response);
         response.setContentType(format.getResponseType());
-
-        httpSession = request.getSession(false);
 
         final URL pageURL = ServletUtils.getPageURL(request);
 
@@ -117,6 +115,10 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
         }
         catch(RedirectException e){
             redirect = e.getRedirectPage();
+        }
+        catch(SignOutException e){
+            redirect = URLUtils.createRelativeURL(pageURL, kit.getBaseURL());
+            SessionManager.closeSession(request.getSession(false));
         }
         catch (Throwable e) {
             handleError(e, kit, pageURL, response, format);
@@ -259,10 +261,6 @@ public abstract class AbstractOntologyServerServlet extends HttpServlet {
                 errorPage.renderAll(pageURL, response.getWriter());
                 break;
         }
-    }
-
-    protected HttpSession getHttpSession() {
-        return httpSession;
     }
 
     protected String getParameter(HttpServletRequest request, OWLHTMLParam param) {

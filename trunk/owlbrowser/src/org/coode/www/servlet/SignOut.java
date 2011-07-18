@@ -10,9 +10,8 @@ import org.coode.html.page.OWLDocPage;
 import org.coode.html.util.URLUtils;
 import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
-import org.coode.www.mngr.SessionManager;
+import org.coode.www.exception.SignOutException;
 
-import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Map;
@@ -36,8 +35,7 @@ public class SignOut extends AbstractOntologyServerServlet {
         final String confirm = params.get(OWLHTMLParam.confirm);
         final String result;
         if (confirm != null && Boolean.parseBoolean(confirm)){
-            performSignout();
-            result = "<quit result=\"true\"/>";
+            throw new SignOutException();
         }
         else{
             result = "<quit result=\"false\"/>";
@@ -68,17 +66,11 @@ public class SignOut extends AbstractOntologyServerServlet {
             return new OWLDocPage(kit);
         }
         else{
-            final URL baseURL = kit.getBaseURL();
             if (Boolean.parseBoolean(confirm)){
-                performSignout();
+                throw new SignOutException(); // hack to avoid instance variables
             }
-            throw new RedirectException(URLUtils.createRelativeURL(pageURL, baseURL));
+            throw new RedirectException(URLUtils.createRelativeURL(pageURL, kit.getBaseURL()));
         }
-    }
-
-    private void performSignout() {
-        HttpSession session = getHttpSession();
-        SessionManager.closeSession(session);
     }
 
     @Override
