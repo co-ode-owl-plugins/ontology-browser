@@ -3,12 +3,25 @@
 */
 package org.coode.html.bookmarks;
 
-import org.apache.log4j.Logger;
-import org.semanticweb.owlapi.model.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
+import org.semanticweb.owlapi.model.AddOntologyAnnotation;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAnnotationValue;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.RemoveOntologyAnnotation;
 
 /**
  * Author: Nick Drummond<br>
@@ -104,17 +117,12 @@ public class OntologyBookmarks {
 
     private void parseAnnotation(String s) {
         for (String value : s.split("\n")){
-            try {
-                IRI iri = IRI.create(new URI(value));
+            IRI iri = IRI.create(value);
                 OWLEntity e = getEntityFromIRI(iri);
                 if (e != null){
                     bookmarks.add(e);
                 }
             }
-            catch (URISyntaxException e) {
-                Logger.getLogger(OntologyBookmarks.class).error(e);
-            }
-        }
     }
 
     private OWLEntity getEntityFromIRI(IRI iri) {

@@ -1,6 +1,12 @@
 package org.coode.html.url;
 
-import org.apache.log4j.Logger;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.owl.mngr.NamedObjectType;
@@ -11,13 +17,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
-
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -40,7 +41,8 @@ import java.util.Map;
  */
 public class StaticFilesURLScheme extends AbstractURLScheme {
 
-    private static final Logger logger = Logger.getLogger(StaticFilesURLScheme.class.getName());
+    private static final Logger logger = LoggerFactory
+            .getLogger(StaticFilesURLScheme.class.getName());
 
     private ShortFormProvider shortFormProvider;
     private OntologyIRIShortFormProvider ontologyShortFormProvider;
@@ -59,6 +61,7 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
         this.ontologyShortFormProvider = new OntologyIRIShortFormProvider();
     }
 
+    @Override
     public URL getURLForOWLObject(OWLObject owlObject) {
 
         URL url = obj2UrlMap.get(owlObject);
@@ -73,7 +76,8 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
 
                 }
                 else if (owlObject instanceof OWLOntology){
-                    IRI iri = ((OWLOntology)owlObject).getOntologyID().getOntologyIRI();
+                    IRI iri = ((OWLOntology) owlObject).getOntologyID()
+                            .getOntologyIRI().orNull();
                     String name = ontologyShortFormProvider.getShortForm(iri) + ID_SPLITTER + iri.hashCode();
                     name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
                     url = new URL(getBaseURL(), NamedObjectType.ontologies + OWLHTMLConstants.SLASH + name + OWLHTMLConstants.DEFAULT_EXTENSION);
@@ -86,25 +90,27 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
             }
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         catch (UnsupportedEncodingException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
 
         return url;
     }
 
+    @Override
     public OWLObject getOWLObjectForURL(URL url) {
         return url2ObjMap.get(url);
     }
 
+    @Override
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
             return new URL(getBaseURL(), type + OWLHTMLConstants.SLASH + INDEX_PREFIX + ontologyShortFormProvider.getShortForm(ont) + OWLHTMLConstants.DEFAULT_EXTENSION);
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         return null;
     }
@@ -115,6 +121,7 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
      * @param type
      * @return
      */
+    @Override
     public URL getURLForIndex(NamedObjectType type) {
         try {
             return new URL(super.getURLForIndex(type) + OWLHTMLConstants.INDEX_HTML);
@@ -125,10 +132,12 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
         return null;
     }
 
+    @Override
     public void setAdditionalLinkArguments(String s) {
         // do nothing
     }
 
+    @Override
     public void clearAdditionalLinkArguments() {
         // do nothing
     }

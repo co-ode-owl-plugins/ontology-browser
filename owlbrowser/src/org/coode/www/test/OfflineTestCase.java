@@ -1,7 +1,12 @@
 package org.coode.www.test;
 
+import java.net.URI;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Set;
+
 import junit.framework.TestCase;
-import org.apache.log4j.Logger;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.renderer.OWLHTMLRenderer;
@@ -10,12 +15,8 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.util.NamespaceUtil;
-
-import java.net.URI;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: drummond<br>
@@ -28,7 +29,8 @@ import java.util.Set;
  */
 public class OfflineTestCase extends TestCase {
 
-    private static final Logger logger = Logger.getLogger(OfflineTestCase.class.getName());
+    private static final Logger logger = LoggerFactory
+            .getLogger(OfflineTestCase.class.getName());
 
     public void testUnmodifiable(){
         Set s = Collections.unmodifiableSet(null);
@@ -55,16 +57,11 @@ public class OfflineTestCase extends TestCase {
             assertEquals(2, mngr.getOntologies().size());
         }
         catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
 
-    public void testNamespaceGeneration(){
-        String ontURI = "http://cohse.semanticweb.org/ontologies/people";
-        String ns = new NamespaceUtil().generatePrefix(ontURI);
-        assertEquals("people", ns);
-    }
 
     public void testRenderHTMLToString(){
         try {
@@ -83,7 +80,7 @@ public class OfflineTestCase extends TestCase {
             logger.debug("str = " + str);
         }
         catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }

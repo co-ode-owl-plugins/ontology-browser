@@ -1,9 +1,5 @@
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLKit;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLOntology;
-
 import java.io.PrintWriter;
 import java.net.URL;
 /*
@@ -29,6 +25,10 @@ import java.net.URL;
 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+
 /**
  * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
@@ -52,18 +52,21 @@ public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
         }
     }
 
+    @Override
     public String getTitle() {
         return getOWLHTMLKit().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
     }
 
 
+    @Override
     public String getSubtitle() {
         if (getUserObject().isAnonymous()){
             return null;
         }
         String s = getUserObject().getOntologyID().getOntologyIRI().toString();
 
-        IRI versionIRI = getUserObject().getOntologyID().getVersionIRI();
+        IRI versionIRI = getUserObject().getOntologyID().getVersionIRI()
+                .orNull();
         if (versionIRI != null){
             s += "<br />" + versionIRI.toString();
         }

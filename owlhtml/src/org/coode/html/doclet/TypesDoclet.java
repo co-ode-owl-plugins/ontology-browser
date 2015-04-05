@@ -3,16 +3,18 @@
 */
 package org.coode.html.doclet;
 
+import static org.semanticweb.owlapi.search.EntitySearcher.getTypes;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.owl.util.OWLUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -28,8 +30,9 @@ public class TypesDoclet extends AbstractOWLElementsDoclet<OWLNamedIndividual, O
         super("Types", Format.list, kit);
     }
 
+    @Override
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return getUserObject().getTypes(onts);
+        return getTypes(getUserObject(), onts);
     }
 
     @Override

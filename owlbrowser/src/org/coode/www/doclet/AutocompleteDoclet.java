@@ -3,17 +3,18 @@
 */
 package org.coode.www.doclet;
 
-import org.apache.log4j.Logger;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.List;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.url.PermalinkURLScheme;
 import org.coode.html.util.URLUtils;
-
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.List;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -25,7 +26,8 @@ import java.util.Set;
  */
 public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
-    private static final Logger logger = Logger.getLogger(AutocompleteDoclet.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(AutocompleteDoclet.class);
 
 
     private String id;
@@ -88,6 +90,7 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         this.method = method;
     }
 
+    @Override
     protected void renderHeader(URL pageURL, PrintWriter out) {
         String actionStr = "";
         if (submitURL != null){
@@ -143,6 +146,7 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
         out.println("</form>");
     }
 
+    @Override
     protected void renderFooter(URL pageURL, PrintWriter out) {
 
         String findURL = URLUtils.createRelativeURL(pageURL, new PermalinkURLScheme(getOWLHTMLKit().getURLScheme()).getURLForRelativePage("find/?format=xml&type=entities")) + "&";
@@ -166,16 +170,19 @@ public class AutocompleteDoclet extends AbstractOWLDocDoclet {
                     "</script>");
     }
 
+    @Override
     public String getID() {
         return ID;
     }
 
+    @Override
     public Set<URL> getRequiredCSS() {
         Set<URL> css = super.getRequiredCSS();
         css.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_CSS));
         return css;
     }
 
+    @Override
     public List<URL> getRequiredJS() {
         List<URL> js = super.getRequiredJS();
         js.add(getOWLHTMLKit().getURLScheme().getURLForRelativePage(OWLHTMLConstants.AUTO_SUGGEST_JS));

@@ -1,7 +1,20 @@
 package org.coode.html;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.coode.html.doclet.OWLOntologySummaryDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
@@ -15,16 +28,17 @@ import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerConstants;
 import org.coode.owl.mngr.ServerProperty;
-import org.semanticweb.owlapi.model.*;
-
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -45,7 +59,8 @@ import java.util.Set;
  */
 public class OntologyExporter {
 
-    private static Logger logger = Logger.getLogger(OntologyExporter.class);
+    private static Logger logger = LoggerFactory
+            .getLogger(OntologyExporter.class);
 
     private OWLHTMLKit kit;
 
@@ -84,7 +99,6 @@ public class OntologyExporter {
                     }
                     else if (argPair[0].equals("-v")){
                         logger.info("Verbose");
-                        logger.setLevel(Level.DEBUG);
                     }
                     else{
                         // must be an ontology file
@@ -109,11 +123,11 @@ public class OntologyExporter {
             }
 
             if (!outputDirectory.isDirectory()){
-                logger.fatal("The output location specified is not a directory");
+                logger.error("The output location specified is not a directory");
                 System.exit(1);
             }
             if (kit.getOWLServer().getOntologies().isEmpty()){
-                logger.fatal("No ontologies loaded!");
+                logger.error("No ontologies loaded!");
                 System.exit(1);
             }
 

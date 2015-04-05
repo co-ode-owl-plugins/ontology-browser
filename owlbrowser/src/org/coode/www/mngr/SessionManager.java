@@ -1,6 +1,25 @@
 package org.coode.www.mngr;
 
-import org.apache.log4j.Logger;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
@@ -14,18 +33,11 @@ import org.coode.owl.util.OWLUtils;
 import org.coode.www.OntologyBrowserConstants;
 import org.coode.www.exception.OntServerException;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -48,7 +60,8 @@ import java.util.Map;
  */
 public class SessionManager {
 
-    private static Logger logger = Logger.getLogger(SessionManager.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(SessionManager.class
+            .getName());
 
     private static final String ID = "ID";
 
@@ -246,7 +259,7 @@ public class SessionManager {
             logger.debug("started " + id + " - active servers: " + activeServers.size());
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -255,7 +268,10 @@ public class SessionManager {
         OWLHTMLKit kit = new OWLHTMLKitImpl(id, basePath);
 
         // set silent error handling for missing imports
-        kit.getOWLServer().getOWLOntologyManager().setSilentMissingImportsHandling(true);
+        OWLOntologyManager m = kit.getOWLServer().getOWLOntologyManager();
+        m.setOntologyLoaderConfiguration(m.getOntologyLoaderConfiguration()
+                .setMissingImportHandlingStrategy(
+                        MissingImportHandlingStrategy.SILENT));
 
         // use a servlet URL scheme which encodes the names in params
         kit.setURLScheme(new RestURLScheme(kit));

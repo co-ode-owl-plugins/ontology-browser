@@ -3,13 +3,16 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
-
-import java.util.Collection;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -19,13 +22,16 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jan 25, 2008<br><br>
  */
-public class RangesDoclet<O extends OWLPropertyExpression> extends AbstractOWLElementsDoclet<O, OWLPropertyRange> {
+public class RangesDoclet<O extends OWLPropertyExpression, E extends OWLPropertyRange>
+        extends AbstractOWLElementsDoclet<O, E> {
 
     public RangesDoclet(OWLHTMLKit kit) {
         super("Ranges", Format.list, kit);
     }
 
-    protected Collection<OWLPropertyRange> getAssertedElements(Set<OWLOntology> onts) {
-        return getUserObject().getRanges(onts);
+    @Override
+    protected Collection<E> getAssertedElements(Set<OWLOntology> onts) {
+        O userObject = getUserObject();
+        return (Collection<E>) EntitySearcher.getRanges(userObject, onts);
     }
 }

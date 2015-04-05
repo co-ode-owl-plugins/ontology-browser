@@ -3,14 +3,15 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -26,10 +27,11 @@ public class AnnotationsDoclet<O extends OWLEntity> extends AbstractOWLElementsD
         super("Annotations", ElementsDoclet.Format.list, kit);
     }
 
+    @Override
     protected Collection<OWLAnnotation> getAssertedElements(Set<OWLOntology> onts) {
         Set<OWLAnnotation> annots = new HashSet<OWLAnnotation>();
         for (OWLOntology ont : onts){
-            annots.addAll(getUserObject().getAnnotations(ont));
+            annots.addAll(EntitySearcher.getAnnotations(getUserObject(), ont));
         }
         return annots;
     }

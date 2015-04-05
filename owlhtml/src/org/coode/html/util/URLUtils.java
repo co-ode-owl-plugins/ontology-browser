@@ -1,17 +1,30 @@
 package org.coode.html.util;
 
-import org.apache.log4j.Logger;
+import static org.semanticweb.owlapi.search.EntitySearcher.getDataPropertyValues;
+
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerConstants;
-import org.semanticweb.owlapi.model.*;
-
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.*;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -27,7 +40,8 @@ import java.util.*;
  */
 public class URLUtils {
 
-    private static final Logger logger = Logger.getLogger(URLUtils.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(URLUtils.class
+            .getName());
 
 //    public static String createRelativeURL(URL current, URL target) {
 //        try {
@@ -54,8 +68,8 @@ public class URLUtils {
             }
         }
         catch(Throwable e){
-            logger.debug(current);
-            logger.debug(target);
+            logger.debug(current.toString());
+            logger.debug(target.toString());
         }
 
         List<String> currentPath = new ArrayList<String>(Arrays.asList(current.getPath().split("/")));
@@ -239,7 +253,8 @@ public class URLUtils {
 
             Loc loc = new Loc();
             for (OWLOntology ont : onts){
-                for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(point, ont)){
+                for (OWLLiteral val : getDataPropertyValues(
+                        owlEntity.asOWLNamedIndividual(), point, ont)) {
                     String[] latLong = val.getLiteral().trim().split("\\s+");
                     if (latLong.length == 2){
                         loc.latitude = latLong[0];
@@ -247,11 +262,13 @@ public class URLUtils {
                         return loc;
                     }
                 }
-                for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(latProp, ont)){
+                for (OWLLiteral val : getDataPropertyValues(
+                        owlEntity.asOWLNamedIndividual(), latProp, ont)) {
                     loc.latitude = val.getLiteral().trim();
                     break; // use the first value
                 }
-                for (OWLLiteral val : owlEntity.asOWLNamedIndividual().getDataPropertyValues(longProp, ont)){
+                for (OWLLiteral val : getDataPropertyValues(
+                        owlEntity.asOWLNamedIndividual(), longProp, ont)) {
                     loc.longitude = val.getLiteral().trim();
                     break; // use the first value
                 }

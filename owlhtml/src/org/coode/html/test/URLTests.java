@@ -1,9 +1,5 @@
 package org.coode.html.test;
 
-import junit.framework.TestCase;
-import org.apache.log4j.Logger;
-import org.coode.html.util.URLUtils;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 /*
@@ -29,6 +25,12 @@ import java.net.URL;
 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+import junit.framework.TestCase;
+
+import org.coode.html.util.URLUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
@@ -39,7 +41,8 @@ import java.net.URL;
  */
 public class URLTests extends TestCase {
 
-    private static final Logger logger = Logger.getLogger(URLTests.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(URLTests.class);
 
 
     public void testRelativeURLBothEndingWithPage(){
@@ -50,7 +53,7 @@ public class URLTests extends TestCase {
             assertEquals("../classes/Beef.html", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
@@ -63,7 +66,7 @@ public class URLTests extends TestCase {
             assertEquals("../Beef.html", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
@@ -76,7 +79,7 @@ public class URLTests extends TestCase {
             assertEquals("classes/Beef.html", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
@@ -89,7 +92,7 @@ public class URLTests extends TestCase {
             assertEquals("/", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
@@ -102,7 +105,7 @@ public class URLTests extends TestCase {
             assertEquals("Beef.html", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
@@ -115,7 +118,7 @@ public class URLTests extends TestCase {
             assertEquals("./?name=Domain&base=http://www.co-ode.org/ontologies/", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
@@ -129,7 +132,7 @@ public class URLTests extends TestCase {
             assertEquals("../classes/", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }
@@ -143,7 +146,7 @@ public class URLTests extends TestCase {
             assertEquals("../classes/?name=Monkey&base=http://www.co-ode.org/ontologies/", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }

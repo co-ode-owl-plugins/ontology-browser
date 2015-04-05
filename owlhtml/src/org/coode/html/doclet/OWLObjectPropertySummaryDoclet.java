@@ -1,10 +1,11 @@
 package org.coode.html.doclet;
 
-import org.coode.html.OWLHTMLKit;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-
 import java.io.PrintWriter;
 import java.net.URL;
+
+import org.coode.html.OWLHTMLKit;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * Author: drummond<br>
@@ -23,7 +24,7 @@ public class OWLObjectPropertySummaryDoclet extends AbstractOWLDocDoclet<OWLObje
         addDoclet(new AnnotationsDoclet<OWLObjectProperty>(kit));
         addDoclet(new PropertyCharacteristicsDoclet<OWLObjectProperty>(kit));
         addDoclet(new DomainsDoclet<OWLObjectProperty>(kit));
-        addDoclet(new RangesDoclet<OWLObjectProperty>(kit));
+        addDoclet(new RangesDoclet<OWLObjectProperty, OWLClassExpression>(kit));
         addDoclet(new InversesDoclet(kit));
         addDoclet(new AssertedSuperpropertiesDoclet<OWLObjectProperty>(kit));
         addDoclet(new AssertedEquivpropertiesDoclet<OWLObjectProperty>(kit));
@@ -41,6 +42,7 @@ public class OWLObjectPropertySummaryDoclet extends AbstractOWLDocDoclet<OWLObje
         out.write("</div> <!-- summary -->");
     }
 
+    @Override
     public String getID() {
         return "doclet.summary.objectproperty";
     }

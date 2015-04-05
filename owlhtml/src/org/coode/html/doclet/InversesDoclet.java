@@ -3,13 +3,14 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Collection;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -25,7 +26,8 @@ public class InversesDoclet extends AbstractOWLElementsDoclet<OWLObjectProperty,
         super("Inverses", Format.list, kit);
     }
 
+    @Override
     protected Collection<OWLObjectPropertyExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return getUserObject().getInverses(onts);
+        return EntitySearcher.getInverses(getUserObject(), onts);
     }
 }

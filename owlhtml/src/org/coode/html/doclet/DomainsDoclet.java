@@ -3,13 +3,14 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLProperty;
-
-import java.util.Collection;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -25,7 +26,10 @@ public class DomainsDoclet<O extends OWLProperty> extends AbstractOWLElementsDoc
         super("Domains", Format.list, kit);
     }
 
+    @Override
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return getUserObject().getDomains(onts);
+        O userObject = getUserObject();
+        return EntitySearcher.getDomains(userObject.asOWLDataProperty(),
+                onts);
     }
 }

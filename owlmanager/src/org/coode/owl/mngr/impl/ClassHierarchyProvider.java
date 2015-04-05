@@ -1,7 +1,9 @@
 package org.coode.owl.mngr.impl;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -10,10 +12,8 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerRuntimeException;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: drummond<br>
@@ -25,41 +25,47 @@ import java.util.Set;
  */
 public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
 
-    private Logger logger = Logger.getLogger(ClassHierarchyProvider.class);
+    private Logger logger = LoggerFactory
+            .getLogger(ClassHierarchyProvider.class);
 
     private OWLServer server;
 
     public ClassHierarchyProvider(OWLServer server) {
         this.server = server;
-        logger.setLevel(Level.WARN);
     }
 
+    @Override
     public Class<? extends OWLClass> getNodeClass() {
         return OWLClass.class;
     }
 
+    @Override
     public Set<OWLClass> getRoots() {
         return Collections.singleton(getOWLThing());
     }
 
+    @Override
     public boolean isRoot(OWLClass node) {
         return node.equals(getOWLThing());
     }
 
+    @Override
     public boolean isLeaf(OWLClass node) {
         return getChildren(node).isEmpty();
     }
 
+    @Override
     public Set<OWLClass> getParents(OWLClass node) {
         try {
             return getReasoner().getSuperClasses(node, true).getFlattened();
         }
         catch (OWLReasonerRuntimeException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         return Collections.emptySet();
     }
 
+    @Override
     public Set<OWLClass> getChildren(OWLClass node) {
         logger.debug("getChildren(" + node + ")");
         try {
@@ -74,47 +80,52 @@ public class ClassHierarchyProvider implements HierarchyProvider<OWLClass>{
             return children;
         }
         catch (OWLReasonerRuntimeException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         return Collections.emptySet();
     }
 
+    @Override
     public Set<OWLClass> getEquivalents(OWLClass node) {
         logger.debug("getEquivalents(" + node + ")");
         try{
             return getReasoner().getEquivalentClasses(node).getEntitiesMinus(node);
         }
         catch (OWLReasonerRuntimeException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         return Collections.emptySet();
     }
 
+    @Override
     public Set<OWLClass> getDescendants(OWLClass node) {
         logger.debug("getDescendants(" + node + ")");
         try {
             return getReasoner().getSubClasses(node, false).getFlattened();
         }
         catch (OWLReasonerRuntimeException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         return Collections.emptySet();
     }
 
+    @Override
     public Set<OWLClass> getAncestors(OWLClass node) {
         try{
             return getReasoner().getSuperClasses(node, false).getFlattened();
         }
         catch (OWLReasonerRuntimeException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         return Collections.emptySet();
     }
 
+    @Override
     public boolean hasAncestor(OWLClass node, OWLClass ancestor) {
         return getAncestors(node).contains(ancestor);
     }
 
+    @Override
     public void dispose() {
     }
 

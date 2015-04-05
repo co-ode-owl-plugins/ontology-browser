@@ -3,12 +3,25 @@
 */
 package org.coode.owl.mngr.impl;
 
+import static org.semanticweb.owlapi.search.EntitySearcher.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.coode.owl.mngr.ActiveOntologyProvider;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owlapi.model.*;
-
-import java.util.*;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
+import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.OWLSubPropertyAxiom;
 
 /**
  * Author: Nick Drummond<br>
@@ -25,6 +38,7 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
     private Set<P> implicitRoots;
 
     private ActiveOntologyProvider.Listener serverListener = new ActiveOntologyProvider.Listener(){
+        @Override
         public void activeOntologyChanged(OWLOntology ont) {
             reset();
         }
@@ -32,6 +46,7 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
 
     private OWLOntologyChangeListener ontologyListener = new OWLOntologyChangeListener(){
 
+        @Override
         public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
             for (OWLOntologyChange change : changes){
                 if (change.isAxiomChange()){
@@ -59,22 +74,27 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
         return server;
     }
 
+    @Override
     public Set<P> getRoots() {
         return Collections.singleton(getTopProperty());
     }
 
+    @Override
     public boolean isRoot(P node) {
         return node.equals(getTopProperty());
     }
 
+    @Override
     public boolean isLeaf(P node) {
         return getChildren(node).isEmpty();
     }
 
+    @Override
     public boolean hasAncestor(P node, P ancestor) {
         return getAncestors(node).contains(ancestor);
     }
 
+    @Override
     public Set<P> getParents(P node) {
         Set<P> supers;
         if (isRoot(node)){
@@ -82,7 +102,15 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
         }
         else{
             supers = new HashSet<P>();
-            for (Object pe : node.getSuperProperties(getOntologies())){
+            Collection properties;
+            if (node.isDataPropertyExpression()) {
+                properties = getSuperProperties(node.asOWLDataProperty(),
+                        getOntologies());
+            } else {
+                properties = getSuperProperties(node.asOWLObjectProperty(),
+                        getOntologies());
+            }
+            for (Object pe : properties) {
                 if (pe instanceof OWLProperty){
                     supers.add((P)pe); // it must be a P
                 }
@@ -95,14 +123,22 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
     }
 
 
+    @Override
     public Set<P> getChildren(P node) {
         if (isRoot(node)){
             return getImplicitRoots();
         }
 
         Set<P> subs = new HashSet<P>();
-
-        for (Object pe : node.getSubProperties(getOntologies())){
+        Collection properties;
+        if (node.isDataPropertyExpression()) {
+            properties = getSubProperties(node.asOWLDataProperty(),
+                    getOntologies());
+        } else {
+            properties = getSubProperties(node.asOWLObjectProperty(),
+                    getOntologies());
+        }
+        for (Object pe : properties) {
                 subs.add((P)pe);
         }
 
@@ -110,15 +146,25 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
     }
 
 
+    @Override
     public Set<P> getEquivalents(P node) {
         Set<P> equivs = new HashSet<P>();
-        for (Object pe : node.getEquivalentProperties(getOntologies())){
+        Collection properties;
+        if (node.isDataPropertyExpression()) {
+            properties = getEquivalentProperties(node.asOWLDataProperty(),
+                    getOntologies());
+        } else {
+            properties = getEquivalentProperties(node.asOWLObjectProperty(),
+                    getOntologies());
+        }
+        for (Object pe : properties) {
                 equivs.add((P)pe);
         }
         return equivs;
     }
 
 
+    @Override
     public Set<P> getDescendants(P node) {
         if (isRoot(node)){
             return getAllReferencedProperties();
@@ -139,6 +185,7 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
         return descendants;
     }
 
+    @Override
     public Set<P> getAncestors(P node) {
         if (isRoot(node)){
             return Collections.emptySet();
@@ -168,6 +215,7 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
         return server.getActiveOntologies();
     }
 
+    @Override
     public void dispose() {
         server.getOWLOntologyManager().removeOntologyChangeListener(ontologyListener);
         server.removeActiveOntologyListener(serverListener);
@@ -192,11 +240,17 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
             implicitRoots.removeAll(getRoots());
             for (Iterator i=implicitRoots.iterator(); i.hasNext();){
                 P p = (P)i.next();
-                final Set supers = p.getSuperProperties(getOntologies());
-                if (supers.isEmpty()){
-                    // do nothing
+                Collection properties;
+                if (p.isDataPropertyExpression()) {
+                    properties = getSuperProperties(p.asOWLDataProperty(),
+                            getOntologies());
+                } else {
+                    properties = getSuperProperties(p.asOWLObjectProperty(),
+                            getOntologies());
                 }
-                else if (supers.equals(getRoots())){
+                if (properties.isEmpty()) {
+                    // do nothing
+                } else if (properties.equals(getRoots())) {
                     // do nothing
                 }
                 else{

@@ -1,23 +1,63 @@
 package org.coode.owl.mngr.impl;
 
-import org.apache.log4j.Logger;
-import org.coode.owl.mngr.*;
-import org.coode.owl.util.MySimpleShortFormProvider;
-import org.coode.owl.util.OWLObjectComparator;
-import org.coode.owl.util.OWLUtils;
-import org.semanticweb.owlapi.expression.OWLEntityChecker;
-import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
-import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.util.*;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.coode.owl.mngr.HierarchyProvider;
+import org.coode.owl.mngr.OWLClassExpressionParser;
+import org.coode.owl.mngr.OWLEntityFinder;
+import org.coode.owl.mngr.OWLReasonerManager;
+import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.mngr.ServerConstants;
+import org.coode.owl.mngr.ServerPropertiesAdapter;
+import org.coode.owl.mngr.ServerProperty;
+import org.coode.owl.util.MySimpleShortFormProvider;
+import org.coode.owl.util.OWLObjectComparator;
+import org.coode.owl.util.OWLUtils;
+import org.semanticweb.owlapi.expression.OWLEntityChecker;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
+import org.semanticweb.owlapi.model.AddImport;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyDocumentAlreadyExistsException;
+import org.semanticweb.owlapi.model.OWLOntologyID;
+import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderListener;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.RemoveImport;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
+import org.semanticweb.owlapi.util.CachingBidirectionalShortFormProvider;
+import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -31,7 +71,8 @@ import java.util.*;
  */
 public class OWLServerImpl implements OWLServer {
 
-    private static final Logger logger = Logger.getLogger(OWLServerImpl.class.getName());
+    private static final Logger logger = LoggerFactory
+            .getLogger(OWLServerImpl.class.getName());
 
     private OWLOntologyManager mngr;
 
@@ -69,6 +110,7 @@ public class OWLServerImpl implements OWLServer {
 
     private PropertyChangeListener propertyChangeListener = new PropertyChangeListener(){
 
+        @Override
         public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
             try{
                 handlePropertyChange(ServerProperty.valueOf(propertyChangeEvent.getPropertyName()),
@@ -81,10 +123,12 @@ public class OWLServerImpl implements OWLServer {
     };
 
     private OWLOntologyLoaderListener ontLoadListener = new OWLOntologyLoaderListener() {
+        @Override
         public void startedLoadingOntology(LoadingStartedEvent loadingStartedEvent) {
             // do nothing
         }
 
+        @Override
         public void finishedLoadingOntology(LoadingFinishedEvent loadingFinishedEvent) {
             if (loadingFinishedEvent.isSuccessful() && !loadingFinishedEvent.isImported()){
                 OWLOntologyID id = loadingFinishedEvent.getOntologyID();
@@ -105,9 +149,6 @@ public class OWLServerImpl implements OWLServer {
 
         mngr.addOntologyLoaderListener(ontLoadListener);
 
-        // always default to trying the URI of the ontology
-        mngr.addIRIMapper(new NonMappingOntologyIRIMapper());
-
         setActiveOntology(rootOntology);
 
         reasonerManager = new OWLReasonerManagerImpl(this);
@@ -116,6 +157,7 @@ public class OWLServerImpl implements OWLServer {
         getProperties().setAllowedValues(ServerProperty.optionReasoner, reasonerManager.getAvailableReasonerNames());
     }
 
+    @Override
     public OWLOntology loadOntology(URI physicalURI) throws OWLOntologyCreationException {
         IRI iri = IRI.create(physicalURI);
         for (OWLOntology ont : getOntologies()){
@@ -130,8 +172,10 @@ public class OWLServerImpl implements OWLServer {
     }
 
 
+    @Override
     public void loadOntologies(final Map<IRI, IRI> ontMap) {
         OWLOntologyIRIMapper mapper = new OWLOntologyIRIMapper(){
+            @Override
             public IRI getDocumentIRI(IRI ontologyIRI) {
                 return ontMap.get(ontologyIRI);
             }
@@ -161,6 +205,7 @@ public class OWLServerImpl implements OWLServer {
     }
 
 
+    @Override
     public OWLOntology reloadOntology(OWLOntology ontology) throws OWLOntologyCreationException {
         URI physicalLocation = getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI();
 
@@ -178,6 +223,7 @@ public class OWLServerImpl implements OWLServer {
     /**
      * Required because there are currently no listeners on the manager to tell this has happened
      */
+    @Override
     public void removeOntology(OWLOntology ont) {
         if (ont.equals(rootOntology)){
             logger.warn("Cannot remove the root ontology");
@@ -197,6 +243,7 @@ public class OWLServerImpl implements OWLServer {
         clear();
     }
 
+    @Override
     public void clearOntologies() {
 
         final Set<OWLOntology> onts = mngr.getOntologies();
@@ -226,6 +273,7 @@ public class OWLServerImpl implements OWLServer {
         }
     }
 
+    @Override
     public OWLOntology getOntologyForIRI(IRI iri) {
         for (OWLOntology ontology : getOntologies()){
             if (iri.equals(ontology.getOntologyID().getVersionIRI())){
@@ -247,6 +295,7 @@ public class OWLServerImpl implements OWLServer {
         return getAnonymousOntology(iri.toString());
     }
 
+    @Override
     public ServerPropertiesAdapter<ServerProperty> getProperties() {
         if (properties == null){
 
@@ -276,6 +325,7 @@ public class OWLServerImpl implements OWLServer {
         return properties;
     }
 
+    @Override
     public void resetProperties() {
         properties.removePropertyChangeListener(propertyChangeListener);
         properties = null;
@@ -283,6 +333,7 @@ public class OWLServerImpl implements OWLServer {
     }
 
 
+    @Override
     public OWLOntology getActiveOntology() {
         if (activeOntology == null){
             String ont = getProperties().get(ServerProperty.optionActiveOnt);
@@ -299,10 +350,12 @@ public class OWLServerImpl implements OWLServer {
         return activeOntology;
     }
 
+    @Override
     public void addActiveOntologyListener(Listener l) {
         listeners.add(l);
     }
 
+    @Override
     public void removeActiveOntologyListener(Listener l) {
         listeners.add(l);
     }
@@ -316,6 +369,7 @@ public class OWLServerImpl implements OWLServer {
         return null;
     }
 
+    @Override
     public void setActiveOntology(OWLOntology ont) {
         if (ont == null){
             ont = activeOntology;
@@ -327,18 +381,22 @@ public class OWLServerImpl implements OWLServer {
         }
     }
 
+    @Override
     public Set<OWLOntology> getOntologies() {
         return mngr.getOntologies();
     }
 
+    @Override
     public Set<OWLOntology> getActiveOntologies() {
         return mngr.getImportsClosure(getActiveOntology());
     }
 
+    @Override
     public OWLOntologyManager getOWLOntologyManager() {
         return mngr;
     }
 
+    @Override
     public synchronized OWLReasoner getOWLReasoner() {
         if (isDead()){
             throw new RuntimeException("Cannot getOWLReasoner - server is dead");
@@ -380,9 +438,10 @@ public class OWLServerImpl implements OWLServer {
         return reasoner;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <N extends OWLObject> HierarchyProvider<N> getHierarchyProvider(Class<N> cls) {
-        HierarchyProvider<N> hp = (HierarchyProvider<N>)hps.get(cls);
+        HierarchyProvider<N> hp = hps.get(cls);
         if (hp == null){
             if (OWLClass.class.isAssignableFrom(cls)){
                 hp = (HierarchyProvider<N>)new ClassHierarchyProvider(this);
@@ -409,6 +468,7 @@ public class OWLServerImpl implements OWLServer {
         return hp;
     }
 
+    @Override
     public Comparator<OWLObject> getComparator() {
         if (isDead()){
             throw new RuntimeException("Cannot getComparator - server is dead");
@@ -419,6 +479,7 @@ public class OWLServerImpl implements OWLServer {
         return comparator;
     }
 
+    @Override
     public OWLEntityFinder getFinder() {
         if (isDead()){
             throw new RuntimeException("Cannot getFinder - server is dead");
@@ -431,6 +492,7 @@ public class OWLServerImpl implements OWLServer {
     }
 
 
+    @Override
     public OWLEntityChecker getOWLEntityChecker() {
         if (isDead()){
             throw new RuntimeException("Cannot getOWLEntityChecker - server is dead");
@@ -441,6 +503,7 @@ public class OWLServerImpl implements OWLServer {
         return owlEntityChecker;
     }
 
+    @Override
     public ShortFormProvider getShortFormProvider() {
         if (isDead()){
             throw new RuntimeException("Cannot getShortFormProvider - server is dead");
@@ -457,6 +520,7 @@ public class OWLServerImpl implements OWLServer {
     }
 
 
+    @Override
     public OntologyIRIShortFormProvider getOntologyShortFormProvider() {
         if (uriShortFormProvider == null){
             uriShortFormProvider = new OntologyIRIShortFormProvider(){
@@ -476,6 +540,7 @@ public class OWLServerImpl implements OWLServer {
     }
 
 
+    @Override
     public final OWLClassExpressionParser getClassExpressionParser(String type){
         if (isDead()){
             throw new RuntimeException("Cannot getClassExpressionParser - server is dead");
@@ -484,14 +549,17 @@ public class OWLServerImpl implements OWLServer {
         return parsers.get(type);
     }
 
+    @Override
     public final void registerDescriptionParser(String syntax, OWLClassExpressionParser parser) {
         parsers.put(syntax, parser);
     }
 
+    @Override
     public Set<String> getSupportedSyntaxes() {
         return parsers.keySet();
     }
 
+    @Override
     public void dispose() {
 
         clearOntologies();
@@ -508,14 +576,17 @@ public class OWLServerImpl implements OWLServer {
         serverIsDead = true;
     }
 
+    @Override
     public boolean isDead() {
         return serverIsDead;
     }
 
+    @Override
     public OWLOntology getRootOntology() {
         return rootOntology;
     }
 
+    @Override
     public void clear() {
         resetRendererCache();
         resetHierarchies();
@@ -600,7 +671,7 @@ public class OWLServerImpl implements OWLServer {
             // see OWL API bug - https://sourceforge.net/tracker/?func=detail&aid=3110834&group_id=90989&atid=595534
             return mngr.getOntologyDocumentIRI(root);
         }
-        return root.getOntologyID().getDefaultDocumentIRI();
+        return root.getOntologyID().getDefaultDocumentIRI().orNull();
     }
 
     private void resetAllowedLabels() {
@@ -634,7 +705,9 @@ public class OWLServerImpl implements OWLServer {
             throw new RuntimeException("Cannot getNameCache - server is dead");
         }
         if (nameCache == null){
-            nameCache = new CachingBidirectionalShortFormProvider(){
+            nameCache = new BidirectionalShortFormProviderAdapter(
+                    getActiveOntologies(), new SimpleShortFormProvider()) {
+                @Override
                 protected String generateShortForm(OWLEntity owlEntity) {
                     String shortform = getShortFormProvider().getShortForm(owlEntity);
                     if (shortform.indexOf(" ") > -1){ // if this is a multiword name
@@ -643,8 +716,6 @@ public class OWLServerImpl implements OWLServer {
                     return shortform;
                 }
             };
-            // TODO: should names also include all standard xsd datatypes - not just the ones referenced?
-            nameCache.rebuild(new ReferencedEntitySetProvider(getActiveOntologies()));
         }
         return nameCache;
     }

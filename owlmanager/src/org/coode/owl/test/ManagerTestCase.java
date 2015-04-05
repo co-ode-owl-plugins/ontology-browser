@@ -1,17 +1,5 @@
 package org.coode.owl.test;
 
-import junit.framework.TestCase;
-import org.apache.log4j.Logger;
-import org.coode.owl.mngr.OWLServer;
-import org.coode.owl.mngr.impl.OWLServerImpl;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
-import org.semanticweb.owlapi.owllink.OWLlinkReasoner;
-import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
-import org.semanticweb.owlapi.reasoner.Node;
-import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +27,27 @@ import java.util.Set;
 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+import junit.framework.TestCase;
+
+import org.coode.owl.mngr.OWLServer;
+import org.coode.owl.mngr.impl.OWLServerImpl;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
+import org.semanticweb.owlapi.owllink.OWLlinkReasoner;
+import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Author: Nick Drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
@@ -49,7 +58,7 @@ import java.util.Set;
  */
 public class ManagerTestCase extends TestCase {
 
-    private Logger logger = Logger.getLogger(ManagerTestCase.class);
+    private Logger logger = LoggerFactory.getLogger(ManagerTestCase.class);
 
         public void testFindNamedClassDoesNotExist(){
 
@@ -76,7 +85,7 @@ public class ManagerTestCase extends TestCase {
             assertTrue(matchesForZ.isEmpty());
         }
         catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             fail();
         }
     }

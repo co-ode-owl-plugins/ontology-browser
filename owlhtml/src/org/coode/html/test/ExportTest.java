@@ -1,11 +1,5 @@
 package org.coode.html.test;
 
-import junit.framework.TestCase;
-import org.apache.log4j.Logger;
-import org.coode.html.OWLHTMLKit;
-import org.coode.html.OntologyExporter;
-import org.coode.html.impl.OWLHTMLKitImpl;
-
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -32,6 +26,12 @@ import java.net.URL;
 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+import junit.framework.TestCase;
+
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.OntologyExporter;
+import org.coode.html.impl.OWLHTMLKitImpl;
+
 /**
  * Author: Nick Drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
@@ -42,10 +42,8 @@ import java.net.URL;
  */
 public class ExportTest extends TestCase {
 
-    private Logger logger = Logger.getLogger(ExportTest.class);
 
-    public void testPerformExport(){
-        try {
+    public void testPerformExport() throws Exception {
             URL base = new URL("http://purl.uniprot.org/core/");
             OWLHTMLKit kit = new OWLHTMLKitImpl("core", base);
             URI source = URI.create("file:////Users/drummond/Work/CO-ODE/Ontologies/uniprot/core.owl");
@@ -53,10 +51,5 @@ public class ExportTest extends TestCase {
             OntologyExporter exporter = new OntologyExporter(kit);
             File target = new File(URI.create("file:////Users/drummond/temp/testowldoc"));
             File index = exporter.export(target);
-            logger.info("index created at: " + index);
-        }
-        catch (Exception e) {
-            logger.error(e);
-        }
     }
 }

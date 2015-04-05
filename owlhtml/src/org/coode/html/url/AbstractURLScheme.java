@@ -3,14 +3,16 @@
 */
 package org.coode.html.url;
 
-import org.apache.log4j.Logger;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -22,7 +24,8 @@ import java.net.URL;
  */
 public abstract class AbstractURLScheme implements URLScheme {
 
-    private static final Logger logger = Logger.getLogger(AbstractURLScheme.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(AbstractURLScheme.class);
 
     protected final OWLHTMLKit kit;
 
@@ -31,6 +34,7 @@ public abstract class AbstractURLScheme implements URLScheme {
         this.kit = kit;
     }
 
+    @Override
     public NamedObjectType getType(URL url) {
         try{
             return NamedObjectType.valueOf(getTypeString(url));
@@ -47,6 +51,7 @@ public abstract class AbstractURLScheme implements URLScheme {
         return path[0]; // always the first element
     }
 
+    @Override
     public URL getURLForIndex(NamedObjectType type) {
         try {
             return new URL(kit.getBaseURL(), type.toString() + OWLHTMLConstants.SLASH);
@@ -57,6 +62,7 @@ public abstract class AbstractURLScheme implements URLScheme {
         return null;
     }
 
+    @Override
     public URL getURLForRelativePage(String pageRelativeToBase) {
         try {
             return new URL(getBaseURL() + pageRelativeToBase);
@@ -68,14 +74,17 @@ public abstract class AbstractURLScheme implements URLScheme {
     }
 
 
+    @Override
     public URL getURLForAbsolutePage(URL pageURL) {
         return pageURL;
     }
 
+    @Override
     public URL getBaseURL(){
         return kit.getBaseURL();
     }
 
+    @Override
     public OWLHTMLKit getOWLHTMLKit(){
         return kit;
     }

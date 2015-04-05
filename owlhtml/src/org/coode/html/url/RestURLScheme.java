@@ -3,7 +3,12 @@
 */
 package org.coode.html.url;
 
-import org.apache.log4j.Logger;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
@@ -13,12 +18,8 @@ import org.coode.owl.util.OWLUtils;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashSet;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -45,7 +46,8 @@ import java.util.Set;
  */
 public class RestURLScheme extends AbstractURLScheme {
 
-    private static final Logger logger = Logger.getLogger(RestURLScheme.class.getName());
+    private static final Logger logger = LoggerFactory
+            .getLogger(RestURLScheme.class.getName());
 
     private String additionalLinkArguments;
 
@@ -54,6 +56,7 @@ public class RestURLScheme extends AbstractURLScheme {
     }
 
 
+    @Override
     public URL getURLForOWLObject(OWLObject owlObject) {
         if (owlObject == null){
             throw new NullPointerException("OWLObject may not be null");
@@ -93,6 +96,7 @@ public class RestURLScheme extends AbstractURLScheme {
     }
 
 
+    @Override
     public OWLObject getOWLObjectForURL(URL url) {
         try {
             NamedObjectType type = getType(url);
@@ -123,6 +127,7 @@ public class RestURLScheme extends AbstractURLScheme {
     }
 
 
+    @Override
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
             String encodedURI = URLEncoder.encode(OWLUtils.getOntologyIdString(ont), OWLHTMLConstants.DEFAULT_ENCODING);
@@ -137,15 +142,17 @@ public class RestURLScheme extends AbstractURLScheme {
             return new URL(getBaseURL(), sb.toString());
         }
         catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         return null;
     }
 
+    @Override
     public void setAdditionalLinkArguments(String s) {
         additionalLinkArguments = s;
     }
 
+    @Override
     public void clearAdditionalLinkArguments() {
         additionalLinkArguments = null;
     }

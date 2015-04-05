@@ -3,16 +3,21 @@
 */
 package org.coode.html.doclet;
 
-import org.apache.log4j.Logger;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.renderer.OWLHTMLRenderer;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.semanticweb.owlapi.model.OWLObject;
-
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -24,7 +29,8 @@ import java.util.*;
  */
 public class LeafNodeDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O>{
 
-    private static final Logger logger = Logger.getLogger(LeafNodeDoclet.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(LeafNodeDoclet.class);
 
     private final HierarchyProvider<O> hp;
 
@@ -90,7 +96,7 @@ public class LeafNodeDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O>
             for (HTMLDoclet subdoclet : getDoclets()){
                 if (subdoclet instanceof LeafNodeDoclet &&
                     getHierarchyProvider().hasAncestor(((LeafNodeDoclet<O>)subdoclet).getUserObject(), focus)){
-                    lastPathContainingFocusedNode = ((LeafNodeDoclet)subdoclet);
+                    lastPathContainingFocusedNode = (LeafNodeDoclet)subdoclet;
                 }
             }
             if (lastPathContainingFocusedNode != null){
@@ -115,6 +121,7 @@ public class LeafNodeDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O>
     }
 
 
+    @Override
     public String getID() {
         return getUserObject().toString();
     }

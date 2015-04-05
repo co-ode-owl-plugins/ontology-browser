@@ -3,15 +3,16 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -27,12 +28,9 @@ public class SameAsDoclet extends AbstractOWLElementsDoclet<OWLNamedIndividual, 
         super("Same As", Format.list, kit);
     }
 
+    @Override
     protected Collection<OWLIndividual> getAssertedElements(Set<OWLOntology> onts) {
-        Set<OWLIndividual> sameAs = new HashSet<OWLIndividual>();
-        for (OWLOntology ont : onts){
-            sameAs.addAll(getUserObject().getSameIndividuals(ont));
-        }
-        return sameAs;
+        return EntitySearcher.getSameIndividuals(getUserObject(), onts);
     }
 
     @Override
@@ -46,11 +44,7 @@ public class SameAsDoclet extends AbstractOWLElementsDoclet<OWLNamedIndividual, 
 
         // now get all anon individuals
         for (OWLIndividual syn : namedSynonyms){
-            for (OWLOntology ont : ontologies){
-                for (OWLIndividual ind : syn.getSameIndividuals(ont)){
-                    synonyms.add(ind);
-                }
-            }
+            synonyms.addAll(EntitySearcher.getSameIndividuals(syn, ontologies));
         }
 
         synonyms.remove(getUserObject());

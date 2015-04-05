@@ -3,13 +3,13 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.model.OWLPropertyExpression;
-
-import java.util.Collection;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -19,13 +19,17 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jan 25, 2008<br><br>
  */
-public class DisjointPropertiesDoclet<O extends OWLProperty> extends AbstractOWLElementsDoclet<O, OWLPropertyExpression> {
+public class DisjointPropertiesDoclet<O extends OWLProperty> extends
+        AbstractOWLElementsDoclet<O, O> {
 
     public DisjointPropertiesDoclet(OWLHTMLKit kit) {
         super("Disjoint Properties", Format.csv, kit);
     }
 
-    protected Collection<OWLPropertyExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return getUserObject().getDisjointProperties(onts);
+    @Override
+    protected Collection<O> getAssertedElements(Set<OWLOntology> onts) {
+        O userObject = getUserObject();
+        return (Collection<O>) EntitySearcher.getDisjointProperties(
+                userObject, onts);
     }
 }

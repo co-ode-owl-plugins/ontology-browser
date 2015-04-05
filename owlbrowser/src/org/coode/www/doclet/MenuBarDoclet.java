@@ -3,7 +3,9 @@
 */
 package org.coode.www.doclet;
 
-import org.apache.log4j.Logger;
+import java.io.PrintWriter;
+import java.net.URL;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.doclet.HTMLDoclet;
@@ -14,9 +16,8 @@ import org.coode.owl.mngr.ServerPropertiesAdapter;
 import org.coode.owl.mngr.ServerProperty;
 import org.coode.owl.mngr.impl.LabelShortFormProvider;
 import org.semanticweb.owlapi.util.ShortFormProvider;
-
-import java.io.PrintWriter;
-import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -28,7 +29,8 @@ import java.net.URL;
  */
 public class MenuBarDoclet extends AbstractOWLDocDoclet {
 
-    private static final Logger logger = Logger.getLogger(MenuBarDoclet.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(MenuBarDoclet.class);
 
     public static final String ID = "doclet.menubar";
 

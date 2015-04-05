@@ -1,11 +1,28 @@
 package org.coode.owl.mngr.impl;
 
+import static org.semanticweb.owlapi.search.EntitySearcher.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.coode.owl.mngr.ActiveOntologyProvider;
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLServer;
-import org.semanticweb.owlapi.model.*;
-
-import java.util.*;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 
 /**
  * Author: drummond<br>
@@ -22,6 +39,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
     private Map<OWLClassExpression, Set<OWLIndividual>> cache;
 
     private ActiveOntologyProvider.Listener serverListener = new ActiveOntologyProvider.Listener(){
+        @Override
         public void activeOntologyChanged(OWLOntology ont) {
             reset();
         }
@@ -29,6 +47,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
 
     private OWLOntologyChangeListener ontologyListener = new OWLOntologyChangeListener(){
 
+        @Override
         public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
             for (OWLOntologyChange change : changes){
                 if (change.isAxiomChange()){
@@ -50,28 +69,34 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
     }
 
 
+    @Override
     public Class<? extends OWLObject> getNodeClass() {
         return OWLNamedIndividual.class;
     }
 
+    @Override
     public Set<OWLObject> getRoots() {
         return new HashSet<OWLObject>(cache.keySet());
     }
 
+    @Override
     public boolean isRoot(OWLObject node) {
         return node instanceof OWLClassExpression;
     }
 
+    @Override
     public boolean isLeaf(OWLObject node) {
         return node instanceof OWLIndividual;
     }
 
 
+    @Override
     public Set<OWLObject> getParents(OWLObject node) {
         if (node instanceof OWLClassExpression){
             return Collections.emptySet();
         }
-        Set<OWLObject> types = new HashSet<OWLObject>(((OWLIndividual)node).getTypes(getOntologies()));
+        Set<OWLObject> types = new HashSet<OWLObject>(getTypes(
+                (OWLIndividual) node, getOntologies()));
         if (types.isEmpty()){
             types = Collections.<OWLObject>singleton(server.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
         }
@@ -79,19 +104,22 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
     }
 
 
+    @Override
     public Set<OWLObject> getChildren(OWLObject node) {
         if (node instanceof OWLIndividual){
             return Collections.emptySet();
         }
-        return new HashSet<OWLObject>(cache.get((OWLClassExpression)node));
+        return new HashSet<OWLObject>(cache.get(node));
     }
 
 
+    @Override
     public Set<OWLObject> getEquivalents(OWLObject node) {
         if (node instanceof OWLIndividual){
             Set<OWLObject> sameIndividuals = new HashSet<OWLObject>();
             for (OWLOntology ont : getOntologies()){
-                sameIndividuals.addAll(((OWLIndividual)node).getSameIndividuals(ont));
+                sameIndividuals.addAll(getSameIndividuals((OWLIndividual) node,
+                        ont));
             }
             return sameIndividuals;
         }
@@ -99,15 +127,18 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
     }
 
 
+    @Override
     public Set<OWLObject> getDescendants(OWLObject node) {
         return getChildren(node);
     }
 
 
+    @Override
     public Set<OWLObject> getAncestors(OWLObject node) {
         return getParents(node);
     }
 
+    @Override
     public boolean hasAncestor(OWLObject node, OWLObject ancestor) {
         return getParents(node).contains(ancestor);
     }
@@ -118,6 +149,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
     }
 
 
+    @Override
     public void dispose() {
         server.getOWLOntologyManager().removeOntologyChangeListener(ontologyListener);
         server.removeActiveOntologyListener(serverListener);

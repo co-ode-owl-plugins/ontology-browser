@@ -3,12 +3,13 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLProperty;
-
-import java.util.Collection;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -24,7 +25,9 @@ public class AssertedEquivpropertiesDoclet<O extends OWLProperty> extends Abstra
         super("Equivalent Properties", Format.list, kit);
     }
 
+    @Override
     protected Collection<O> getAssertedElements(Set<OWLOntology> onts) {
-        return getUserObject().getEquivalentProperties(onts);
+        return (Collection<O>) EntitySearcher.getEquivalentProperties(
+        getUserObject(), onts);
     }
 }

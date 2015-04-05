@@ -3,16 +3,17 @@
 */
 package org.coode.html.url;
 
-import org.apache.log4j.Logger;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -26,7 +27,8 @@ import java.net.URL;
  */
 public class PermalinkURLScheme implements URLScheme {
 
-    private static final Logger logger = Logger.getLogger(PermalinkURLScheme.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(PermalinkURLScheme.class);
 
     private URLScheme baseScheme;
 
@@ -56,46 +58,57 @@ public class PermalinkURLScheme implements URLScheme {
         return url;
     }
 
+    @Override
     public URL getURLForOWLObject(OWLObject entity) {
         return append(baseScheme.getURLForOWLObject(entity));
     }
 
+    @Override
     public OWLObject getOWLObjectForURL(URL url) {
         return baseScheme.getOWLObjectForURL(url);
     }
 
+    @Override
     public OWLHTMLKit getOWLHTMLKit() {
         return baseScheme.getOWLHTMLKit();
     }
 
+    @Override
     public NamedObjectType getType(URL url) {
         return baseScheme.getType(url);
     }
 
+    @Override
     public URL getBaseURL() {
         return baseScheme.getBaseURL();
     }
 
+    @Override
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         return append(baseScheme.getURLForOntologyIndex(ont, type));
     }
 
+    @Override
     public void setAdditionalLinkArguments(String s) {
         baseScheme.setAdditionalLinkArguments(s);
     }
 
+    @Override
     public void clearAdditionalLinkArguments() {
         baseScheme.clearAdditionalLinkArguments();
     }
 
+    @Override
     public URL getURLForIndex(NamedObjectType type) {
         return append(baseScheme.getURLForIndex(type));
     }
 
+    @Override
     public URL getURLForRelativePage(String pageRelativeToBase) {
         return append(baseScheme.getURLForRelativePage(pageRelativeToBase));
     }
 
+    @Override
     public URL getURLForAbsolutePage(URL pageURL) {
         return append(baseScheme.getURLForAbsolutePage(pageURL));
     }

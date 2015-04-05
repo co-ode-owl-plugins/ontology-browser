@@ -1,13 +1,29 @@
 package org.coode.owl.util;
 
-import org.coode.owl.mngr.NamedObjectType;
-import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import static org.semanticweb.owlapi.search.EntitySearcher.getAnnotationAssertionAxioms;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.coode.owl.mngr.NamedObjectType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAnnotationValue;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /**
  * Author: Nick Drummond<br>
@@ -115,7 +131,8 @@ public class OWLUtils {
     public static Map<OWLAnnotationProperty, Set<OWLAnnotationValue>> getAnnotationPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
         Map<OWLAnnotationProperty, Set<OWLAnnotationValue>> props = new HashMap<OWLAnnotationProperty, Set<OWLAnnotationValue>>();
         for (OWLOntology ont : onts){
-            for (OWLAnnotationAssertionAxiom ax : individual.getAnnotationAssertionAxioms(ont)){
+            for (OWLAnnotationAssertionAxiom ax : getAnnotationAssertionAxioms(
+                    individual, ont)) {
                 OWLAnnotationProperty p = ax.getProperty();
                 Set<OWLAnnotationValue> objects = props.get(p);
                 if (objects == null){
@@ -131,7 +148,7 @@ public class OWLUtils {
     public static Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> getAssertedPropertyMap(OWLNamedIndividual individual, Set<OWLOntology> onts) {
         Map<OWLPropertyExpression, Set<OWLPropertyAssertionObject>> props = new HashMap<OWLPropertyExpression, Set<OWLPropertyAssertionObject>>();
         for (OWLOntology ont : onts){
-            for (OWLAxiom ax : individual.getReferencingAxioms(ont)){
+            for (OWLAxiom ax : ont.getReferencingAxioms(individual)) {
                 if (ax instanceof OWLPropertyAssertionAxiom){
                     OWLPropertyAssertionAxiom propAssertion = (OWLPropertyAssertionAxiom)ax;
                     if (propAssertion.getSubject().equals(individual)){

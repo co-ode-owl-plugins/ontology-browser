@@ -3,14 +3,14 @@
 */
 package org.coode.html.doclet;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
@@ -26,11 +26,8 @@ public class DifferentFromDoclet extends AbstractOWLElementsDoclet<OWLNamedIndiv
         super("Different From", Format.csv, kit);
     }
 
+    @Override
     protected Collection<OWLIndividual> getAssertedElements(Set<OWLOntology> onts) {
-        Set<OWLIndividual> sameAs = new HashSet<OWLIndividual>();
-        for (OWLOntology ont : onts){
-            sameAs.addAll(getUserObject().getDifferentIndividuals(ont));
-        }
-        return sameAs;
+        return EntitySearcher.getDifferentIndividuals(getUserObject(), onts);
     }
 }

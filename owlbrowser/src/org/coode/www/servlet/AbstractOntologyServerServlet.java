@@ -1,6 +1,18 @@
 package org.coode.www.servlet;
 
-import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.Doclet;
 import org.coode.html.doclet.HTMLDoclet;
@@ -22,17 +34,8 @@ import org.coode.www.exception.OntServerException;
 import org.coode.www.exception.RedirectException;
 import org.coode.www.exception.SignOutException;
 import org.coode.www.mngr.SessionManager;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Nick Drummond<br>
@@ -48,7 +51,7 @@ import java.util.Set;
  */
 public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
-    protected Logger logger = Logger.getLogger(getClass().getName());
+    protected Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     protected abstract Doclet handleXMLRequest(Map<OWLHTMLParam, String> params,
                                                OWLHTMLKit kit,
