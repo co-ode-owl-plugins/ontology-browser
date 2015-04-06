@@ -1,6 +1,16 @@
 package org.coode.www;
 
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URI;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.util.FileUtils;
 import org.coode.www.mngr.SessionManager;
@@ -10,11 +20,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import java.io.*;
-import java.net.URI;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 
 /**
  * Author: drummond<br>
@@ -30,7 +36,7 @@ public class Bookmarks {
         Map<String, URI> bookmarks = Collections.emptyMap();
         File bookmarksFile = SessionManager.getFile(OntologyBrowserConstants.BOOKMARKS_XML);
         if (!bookmarksFile.exists()){
-            FileUtils fileUtils = new FileUtils(".", OWLHTMLConstants.DEFAULT_ENCODING); // path not used
+            FileUtils fileUtils = new FileUtils(OWLHTMLConstants.DEFAULT_ENCODING); // path not used
             InputStream in = Bookmarks.class.getResourceAsStream(OntologyBrowserConstants.DEFAULT_BOOKMARKS_XML);
             try {
                 fileUtils.saveFile(in, bookmarksFile);

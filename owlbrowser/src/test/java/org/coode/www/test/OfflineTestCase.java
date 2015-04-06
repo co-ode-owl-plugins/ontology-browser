@@ -5,11 +5,10 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLKitImpl;
 import org.coode.html.renderer.OWLHTMLRenderer;
+import org.junit.Ignore;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -17,6 +16,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import junit.framework.TestCase;
 
 /**
  * Author: drummond<br>
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * nick.drummond@cs.manchester.ac.uk<br>
  * www.cs.man.ac.uk/~drummond<br><br>
  */
+@Ignore
 public class OfflineTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory
