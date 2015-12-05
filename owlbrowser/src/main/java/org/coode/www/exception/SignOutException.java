@@ -12,6 +12,8 @@ package org.coode.www.exception;
  */
 public class SignOutException extends OntServerException {
 
+    private static final long serialVersionUID = 995088638662654193L;
+
     public SignOutException() {
         super();
     }

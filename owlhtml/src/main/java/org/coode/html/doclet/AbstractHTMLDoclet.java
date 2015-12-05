@@ -164,8 +164,8 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
         renderBoxStart(name, id, out, pageURL);
     }
 
-    protected void renderBoxStart(String name, String id, PrintWriter out, @SuppressWarnings("unused") URL pageURL) {
-        HTMLUtils.renderBoxStart(name, id, out);        
+    protected void renderBoxStart(String name, String id, PrintWriter out, URL pageURL) {
+        HTMLUtils.renderBoxStart(name, id, out);
     }
 
     protected final static void renderBoxEnd(String name, PrintWriter out) {

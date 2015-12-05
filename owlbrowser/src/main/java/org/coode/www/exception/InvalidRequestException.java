@@ -20,6 +20,8 @@ import java.util.Set;
  */
 public class InvalidRequestException extends OntServerException {
 
+    private static final long serialVersionUID = 7200878155304292145L;
+
     public InvalidRequestException(HttpServletRequest request, Map<OWLHTMLParam, Set<String>> requiredParams) {
         super("<h2>INCORRECT USAGE:</h2>" + renderRequest(request) + "<p>should be:<br />" + renderRequiredParams(requiredParams));
     }
@@ -70,9 +72,9 @@ public class InvalidRequestException extends OntServerException {
 //            s.append("<br />getServletPath: " + request.getServletPath());
 
             s.append("<br />Parameters:");
-            Enumeration paramNames = request.getParameterNames();
+            Enumeration<String> paramNames = request.getParameterNames();
             while (paramNames.hasMoreElements()) {
-                String name = (String) paramNames.nextElement();
+                String name = paramNames.nextElement();
                 String[] values = request.getParameterValues(name);
                 s.append("    " + name + ":");
                 for (int i = 0; i < values.length; i++) {

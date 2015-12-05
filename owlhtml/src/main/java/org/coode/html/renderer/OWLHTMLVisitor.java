@@ -3,22 +3,11 @@
 */
 package org.coode.html.renderer;
 
-import static org.semanticweb.owlapi.search.EntitySearcher.*;
-
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import static org.semanticweb.owlapi.search.EntitySearcher.getDataPropertyValues;
+import static org.semanticweb.owlapi.search.EntitySearcher.getNegativeDataPropertyValues;
+import static org.semanticweb.owlapi.search.EntitySearcher.getNegativeObjectPropertyValues;
+import static org.semanticweb.owlapi.search.EntitySearcher.getObjectPropertyValues;
+import static org.semanticweb.owlapi.search.EntitySearcher.getTypes;
 
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
@@ -126,6 +115,23 @@ import org.semanticweb.owlapi.model.SWRLVariable;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWLFacet;
+
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.base.Optional;
 
 /**
  * Author: Nick Drummond<br>
@@ -285,7 +291,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     @Override
     public void visit(IRI iri) {
-        writeIRIWithBoldFragment(iri, iri.getFragment());
+        writeIRIWithBoldFragment(iri, iri.getRemainder());
         try {
             URL url = iri.toURI().toURL();
             URLUtils.renderURLLinks(url, kit, pageURL, out);
@@ -955,21 +961,19 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 //        writeIRIWithBoldFragment(ont.getOntologyID().getOntologyIRI(), ontologyIriSFProvider.getShortForm(ont));
 //    }
 
-    private void writeIRIWithBoldFragment(IRI iri, String shortForm) {
+    private void writeIRIWithBoldFragment(IRI iri, Optional<String> shortForm) {
         final String fullURI = iri.toString();
-        int index = 0;
-        if (shortForm != null) {
-            index = fullURI.lastIndexOf(shortForm);
-        }
-        if (index == 0){
-            write(fullURI);
-        }
-        else{
+        if (shortForm.isPresent()) {
+            String shortFormString = shortForm.get();
+            int index = fullURI.lastIndexOf(shortFormString);
             write(fullURI.substring(0, index));
             write("<b>");
-            write(shortForm);
+            write(shortForm.get());
             write("</b>");
-            write(fullURI.substring(index+shortForm.length()));
+            write(fullURI.substring(index+shortFormString.length()));
+        }
+        else {
+            write(fullURI);
         }
     }
 

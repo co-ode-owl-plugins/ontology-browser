@@ -3,11 +3,6 @@
 */
 package org.coode.www.doclet;
 
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.List;
-import java.util.Set;
-
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.doclet.AbstractOWLDocDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
@@ -15,6 +10,11 @@ import org.coode.html.url.PermalinkURLScheme;
 import org.coode.html.util.URLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AutocompleteDoclet extends AbstractOWLDocDoclet {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(AutocompleteDoclet.class);
+    private static final Logger logger = LoggerFactory.getLogger(AutocompleteDoclet.class);
 
 
     private String id;

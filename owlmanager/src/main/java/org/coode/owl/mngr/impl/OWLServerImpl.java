@@ -1,20 +1,5 @@
 package org.coode.owl.mngr.impl;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.coode.owl.mngr.HierarchyProvider;
 import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLEntityFinder;
@@ -58,6 +43,21 @@ import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -182,7 +182,7 @@ public class OWLServerImpl implements OWLServer {
                 return ontMap.get(ontologyIRI);
             }
         };
-        mngr.addIRIMapper(mapper);
+        mngr.getIRIMappers().add(mapper);
 
         for (IRI iri : ontMap.keySet()){
             try {
@@ -201,7 +201,7 @@ public class OWLServerImpl implements OWLServer {
             }
         }
 
-        mngr.removeIRIMapper(mapper);
+        mngr.getIRIMappers().remove(mapper);
 
         resetRootImports();
     }
@@ -735,7 +735,7 @@ public class OWLServerImpl implements OWLServer {
             if (baseMapper.get(baseURI) == null){
                 final BaseURIMapper mapper = new BaseURIMapper(baseURI);
                 baseMapper.put(baseURI, mapper);
-                mngr.addIRIMapper(mapper);
+                mngr.getIRIMappers().add(mapper);
             }
         }
     }
@@ -773,6 +773,8 @@ public class OWLServerImpl implements OWLServer {
                 for (Listener l : listeners){
                     l.activeOntologyChanged(ont);
                 }
+                break;
+            default:
                 break;
         }
     }

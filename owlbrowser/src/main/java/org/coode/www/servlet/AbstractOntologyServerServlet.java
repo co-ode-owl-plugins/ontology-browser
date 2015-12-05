@@ -51,6 +51,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractOntologyServerServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 5515129116837995902L;
+
     protected Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     protected abstract Doclet handleXMLRequest(Map<OWLHTMLParam, String> params,

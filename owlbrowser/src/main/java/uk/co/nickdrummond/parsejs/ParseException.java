@@ -2,6 +2,8 @@ package uk.co.nickdrummond.parsejs;
 
 public class ParseException extends Exception
 {
+    private static final long serialVersionUID = -1279156154451470441L;
+
     private final String expression;
     private final String message;
     private final int position;

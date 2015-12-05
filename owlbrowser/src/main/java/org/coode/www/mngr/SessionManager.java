@@ -1,5 +1,24 @@
 package org.coode.www.mngr;
 
+import org.coode.html.OWLHTMLKit;
+import org.coode.html.impl.OWLHTMLConstants;
+import org.coode.html.impl.OWLHTMLKitImpl;
+import org.coode.html.impl.OWLHTMLProperty;
+import org.coode.html.url.RestURLScheme;
+import org.coode.owl.mngr.ServerConstants;
+import org.coode.owl.mngr.ServerPropertiesAdapter;
+import org.coode.owl.mngr.ServerProperty;
+import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
+import org.coode.owl.util.OWLUtils;
+import org.coode.www.OntologyBrowserConstants;
+import org.coode.www.exception.OntServerException;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,25 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
-
-import org.coode.html.OWLHTMLKit;
-import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.impl.OWLHTMLKitImpl;
-import org.coode.html.impl.OWLHTMLProperty;
-import org.coode.html.url.RestURLScheme;
-import org.coode.owl.mngr.ServerConstants;
-import org.coode.owl.mngr.ServerPropertiesAdapter;
-import org.coode.owl.mngr.ServerProperty;
-import org.coode.owl.mngr.impl.ManchesterOWLSyntaxParser;
-import org.coode.owl.util.OWLUtils;
-import org.coode.www.OntologyBrowserConstants;
-import org.coode.www.exception.OntServerException;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -162,11 +162,7 @@ public class SessionManager {
             throw new OntServerException("Cannot find stored state for unknown session " + label);
         }
 
-        try{
-            // we are currently reading the file twice - @@TODO make this much nicer
-
-            // pass 1 to get the ontology mappings
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             Map<IRI, IRI> ontMap = new HashMap<IRI, IRI>();
             while ((line = reader.readLine()) != null){
@@ -183,7 +179,6 @@ public class SessionManager {
                     ontMap.put(ontURI, physicalURI);
                 }
             }
-
             kit.getOWLServer().loadOntologies(ontMap);
 
             // pass 2 to get the properties
@@ -346,6 +341,9 @@ public class SessionManager {
      * The ID will get notified when a session expires and calls the session manager to cleanup
      */
     static class SessionID implements HttpSessionBindingListener, java.io.Serializable {
+
+        private static final long serialVersionUID = -5832143745927990712L;
+
         private static Integer i = 0;
 
         private String id;

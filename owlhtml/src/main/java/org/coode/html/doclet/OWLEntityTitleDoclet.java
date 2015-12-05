@@ -39,7 +39,7 @@ public class OWLEntityTitleDoclet<O extends OWLEntity> extends AbstractTitleDocl
 
     @Override
     public String getSubtitle() {
-        return getUserObject().getIRI().toString();
+        return null; //getUserObject().getIRI().toString();
     }
 
     private boolean isShowMiniHierarchiesEnabled() {

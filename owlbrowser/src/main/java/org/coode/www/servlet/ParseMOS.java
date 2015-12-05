@@ -6,15 +6,17 @@ import org.coode.html.doclet.HTMLDoclet;
 import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.coode.www.exception.OntServerException;
-import org.semanticweb.owlapi.expression.ParserException;
-import uk.co.nickdrummond.parsejs.ParseException;
-import uk.co.nickdrummond.parsejs.ParseResult;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ParserException;
+import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Map;
+
+import uk.co.nickdrummond.parsejs.ParseException;
+import uk.co.nickdrummond.parsejs.ParseResult;
 
 /**
  * Author: drummond<br>
@@ -26,11 +28,13 @@ import java.util.Map;
  */
 public class ParseMOS extends AbstractOntologyServerServlet {
 
+    private static final long serialVersionUID = -8031572153870956950L;
+
     public ParseResult parse(String expression, OWLHTMLKit kit) throws ParseException {
 
         final OWLServer server = kit.getOWLServer();
 
-        ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(server.getOWLOntologyManager().getOWLDataFactory(), expression);
+        ManchesterOWLSyntaxParser parser = OWLManager.createManchesterParser();
         parser.setDefaultOntology(server.getActiveOntology());
         parser.setOWLEntityChecker(server.getOWLEntityChecker());
 

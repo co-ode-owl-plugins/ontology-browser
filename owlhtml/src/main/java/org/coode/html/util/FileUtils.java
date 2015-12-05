@@ -40,6 +40,8 @@ import java.io.Writer;
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
  * Date: Mar 27, 2008<br><br>
+ * 
+ * @deprecated Use org.apache.commons.io.FileUtils instead
  */
 public class FileUtils {
 
@@ -49,7 +51,9 @@ public class FileUtils {
         this.encoding = encoding;
     }
 
-
+    /**
+     * @deprecated Use {@link org.apache.commons.io.FileUtils#copyFile(File, File)} instead.
+     */
     public  void copyFile(File in, File out) throws Exception {
         FileInputStream fis  = new FileInputStream(in);
         FileOutputStream fos = new FileOutputStream(out);
@@ -62,7 +66,9 @@ public class FileUtils {
         fos.close();
     }
 
-
+    /**
+     * @deprecated Use {@link org.apache.commons.io.FileUtils#copyInputStreamToFile(InputStream, File)} instead.
+     */
     public  void saveFile(InputStream fis, File file) throws IOException {
         OutputStream fos = new FileOutputStream(file);
         byte[] buffer = new byte[1024];
@@ -74,11 +80,9 @@ public class FileUtils {
         fos.close();
     }
 
-
     public  PrintWriter open(File file) throws IOException {
         return new PrintWriter(getFileWriter(file));
     }
-
 
     private Writer getFileWriter(File file) throws IOException{
         OutputStream fos = new FileOutputStream(file);

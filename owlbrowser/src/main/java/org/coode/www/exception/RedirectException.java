@@ -15,6 +15,8 @@ package org.coode.www.exception;
  */
 public class RedirectException extends OntServerException {
 
+    private static final long serialVersionUID = 6052241902669314826L;
+
     private String page;
 
     public RedirectException(String page) {

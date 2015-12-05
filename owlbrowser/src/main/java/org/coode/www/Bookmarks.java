@@ -1,5 +1,13 @@
 package org.coode.www;
 
+import org.apache.commons.io.FileUtils;
+import org.coode.www.mngr.SessionManager;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,16 +19,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.coode.html.impl.OWLHTMLConstants;
-import org.coode.html.util.FileUtils;
-import org.coode.www.mngr.SessionManager;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Author: drummond<br>
@@ -36,10 +37,9 @@ public class Bookmarks {
         Map<String, URI> bookmarks = Collections.emptyMap();
         File bookmarksFile = SessionManager.getFile(OntologyBrowserConstants.BOOKMARKS_XML);
         if (!bookmarksFile.exists()){
-            FileUtils fileUtils = new FileUtils(OWLHTMLConstants.DEFAULT_ENCODING); // path not used
-            InputStream in = Bookmarks.class.getResourceAsStream(OntologyBrowserConstants.DEFAULT_BOOKMARKS_XML);
             try {
-                fileUtils.saveFile(in, bookmarksFile);
+                InputStream in = Bookmarks.class.getResourceAsStream(OntologyBrowserConstants.DEFAULT_BOOKMARKS_XML);
+                FileUtils.copyInputStreamToFile(in, bookmarksFile);
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -55,12 +55,12 @@ public class Bookmarks {
         return bookmarks;
     }
 
-    private static Map<String, URI> loadBookmarks(Reader reader) throws IOException, SAXException {
+    private static Map<String, URI> loadBookmarks(Reader reader) throws IOException, SAXException, ParserConfigurationException {
         Map<String, URI> bookmarkMap = new LinkedHashMap<String, URI>();
-        DOMParser parser = new DOMParser();
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         InputSource inputSource = new InputSource(reader);
-        parser.parse(inputSource);
-        Document doc = parser.getDocument();
+        Document doc = dBuilder.parse(inputSource);
         NodeList bookmarkElements = doc.getElementsByTagName("bookmark");
         for (int i=0; i<bookmarkElements.getLength(); i++){
             Node element = bookmarkElements.item(i);

@@ -3,16 +3,14 @@
 */
 package org.coode.owl.mngr.impl;
 
-import java.text.ParseException;
-
 import org.coode.owl.mngr.OWLClassExpressionParser;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
-import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ParserException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import java.text.ParseException;
 
 /**
  * Author: Nick Drummond<br>
@@ -43,14 +41,11 @@ public class ManchesterOWLSyntaxParser implements OWLClassExpressionParser {
     }
 
 
-    private ManchesterOWLSyntaxEditorParser getParser(String expression){
-        final OWLOntologyManager ontMngr = server.getOWLOntologyManager();
-
+    private org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser getParser(String expression){
         OWLEntityChecker checker = server.getOWLEntityChecker();
 
-        final OWLDataFactory df = ontMngr.getOWLDataFactory();
+        org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser parser = OWLManager.createManchesterParser();
 
-        ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(df, expression);
         parser.setDefaultOntology(server.getActiveOntology());
         parser.setOWLEntityChecker(checker);
 

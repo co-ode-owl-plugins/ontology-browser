@@ -1,19 +1,7 @@
 package org.coode.html;
 
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import org.apache.commons.io.FileUtils;
 import org.coode.html.doclet.OWLOntologySummaryDoclet;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLKitImpl;
@@ -22,7 +10,6 @@ import org.coode.html.index.OWLContentsHTMLPage;
 import org.coode.html.index.OWLObjectIndexDoclet;
 import org.coode.html.page.OWLDocPage;
 import org.coode.html.url.URLScheme;
-import org.coode.html.util.FileUtils;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerConstants;
@@ -39,6 +26,19 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Author: Nick Drummond<br>
@@ -69,8 +69,6 @@ public class OntologyExporter {
     private OWLObjectIndexDoclet<OWLObject> indexAllResourcesRenderer;
 
     private Map<NamedObjectType, OWLObjectIndexDoclet<OWLObject>> typeIndices = new HashMap<>();
-
-    private final FileUtils fileUtils;
 
 
     public static void main(String[] args) {
@@ -151,7 +149,6 @@ public class OntologyExporter {
 
     public OntologyExporter(OWLHTMLKit kit) {
         this.kit = kit;
-        this.fileUtils = new FileUtils(OWLHTMLConstants.DEFAULT_ENCODING);
     }
 
     public File export(File rootFile) throws Exception {
@@ -188,9 +185,9 @@ public class OntologyExporter {
 
     private void copyResource(String resourceName, File rootFile) throws IOException {
         logger.debug("copying... " + resourceName);
-        InputStream in = kit.getClass().getClassLoader().getResourceAsStream("resources/" + resourceName);
-        File out = new File(rootFile, resourceName);
-        fileUtils.saveFile(in, out);
+        InputStream source = kit.getClass().getClassLoader().getResourceAsStream(resourceName);
+        File dest = new File(rootFile, resourceName);
+        FileUtils.copyInputStreamToFile(source, dest);
     }
 
 
@@ -206,11 +203,11 @@ public class OntologyExporter {
         File ontologySummaryFile = new File(root, localFilename);
         ensureExists(ontologySummaryFile);
 
-        PrintWriter out = fileUtils.open(ontologySummaryFile);
-        ontologySummary.renderAll(pageURL, out);
+        PrintWriter writer = createPrintWriter(ontologySummaryFile);
+        ontologySummary.renderAll(pageURL, writer);
 
-        out.flush();
-        out.close();
+        writer.flush();
+        writer.close();
 
         OWLObjectIndexDoclet<OWLOntology> ontologyIndexRenderer = getTypeIndexRenderer(NamedObjectType.ontologies);
         ontologyIndexRenderer.add(ont);
@@ -283,7 +280,7 @@ public class OntologyExporter {
             String localFilename = URLUtils.createRelativeURL(kit.getBaseURL(), indexBaseURL);
             File ontologyEntityIndexFile = new File(root, localFilename);
             ensureExists(ontologyEntityIndexFile);
-            PrintWriter indexWriter = fileUtils.open(ontologyEntityIndexFile);
+            PrintWriter indexWriter = createPrintWriter(ontologyEntityIndexFile);
             OWLObjectIndexDoclet<O> ontIndexRenderer = new OWLObjectIndexDoclet<>(kit);
             ontIndexRenderer.setTitle(kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont) + ": " + type);
 
@@ -383,7 +380,7 @@ public class OntologyExporter {
 
     private void createIndices() throws IOException {
         for (NamedObjectType type : typeIndices.keySet()){
-            PrintWriter writer = fileUtils.open(new File(root, type + "/" + OWLHTMLConstants.INDEX_HTML));
+            PrintWriter writer = createPrintWriter(new File(root, type + "/" + OWLHTMLConstants.INDEX_HTML));
             URL pageURL = kit.getURLScheme().getURLForIndex(type);
             typeIndices.get(type).renderAll(pageURL, writer);
             writer.flush();
@@ -394,7 +391,7 @@ public class OntologyExporter {
     private void createAllResourcesIndex() throws IOException {
         // by this point we've accumulated the resources into the renderer
         String indexFile = kit.getHTMLProperties().get(OWLHTMLProperty.optionIndexAllURL);
-        PrintWriter indexAllWriter = fileUtils.open(new File(root, indexFile));
+        PrintWriter indexAllWriter = createPrintWriter(new File(root, indexFile));
         URL pageURL = kit.getURLScheme().getURLForRelativePage(indexFile);
 
         OWLDocPage<OWLObject> page = new OWLDocPage<>(kit);
@@ -406,7 +403,7 @@ public class OntologyExporter {
 
     private void createContents() throws IOException {
         OWLContentsHTMLPage contentsRenderer = new OWLContentsHTMLPage(kit);
-        PrintWriter contentsWriter = fileUtils.open(new File(root, OWLHTMLConstants.CONTENTS_HTML));
+        PrintWriter contentsWriter = createPrintWriter(new File(root, OWLHTMLConstants.CONTENTS_HTML));
         URL pageURL = kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.CONTENTS_HTML);
         contentsRenderer.renderAll(pageURL, contentsWriter);
         contentsWriter.flush();
@@ -415,7 +412,7 @@ public class OntologyExporter {
 
     private File createHTMLFrames() throws IOException {
         final File indexFile = new File(root, OWLHTMLConstants.INDEX_HTML);
-        PrintWriter htmlFramesWriter = fileUtils.open(indexFile);
+        PrintWriter htmlFramesWriter = createPrintWriter(indexFile);
         exportHTMLFrames(htmlFramesWriter);
         htmlFramesWriter.flush();
         htmlFramesWriter.close();
@@ -431,5 +428,9 @@ public class OntologyExporter {
         referencedClasses.add(df.getOWLThing());
         referencedClasses.add(df.getOWLNothing());
         return referencedClasses;
+    }
+
+    private static PrintWriter createPrintWriter(File file) throws IOException {
+        return new PrintWriter(FileUtils.openOutputStream(file));
     }
 }

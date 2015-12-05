@@ -7,18 +7,32 @@ import org.coode.html.impl.OWLHTMLParam;
 import org.coode.html.page.HTMLPage;
 import org.coode.owl.mngr.OWLEntityFinder;
 import org.coode.owl.mngr.OWLServer;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.coode.www.exception.OntServerException;
-import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntax;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ParserException;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.util.ShortFormProvider;
-import uk.co.nickdrummond.parsejs.AutocompleteResult;
-import uk.co.nickdrummond.parsejs.ParseException;
+import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import uk.co.nickdrummond.parsejs.AutocompleteResult;
+import uk.co.nickdrummond.parsejs.ParseException;
 
 /**
  * Author: drummond<br>
@@ -30,14 +44,16 @@ import java.util.*;
  */
 public class AutocompleteMOS extends AbstractOntologyServerServlet {
 
+    private static final long serialVersionUID = 4661911230155463035L;
+
     private static final String ERROR_TOKEN = "$$";
 
     public AutocompleteResult parse(String expression, OWLHTMLKit kit) throws ParseException {
 
         final OWLServer server = kit.getOWLServer();
 
-        ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(server.getOWLOntologyManager().getOWLDataFactory(),
-                                                                                     expression + ERROR_TOKEN); // force error
+        ManchesterOWLSyntaxParser parser = OWLManager.createManchesterParser();
+
         parser.setDefaultOntology(server.getActiveOntology());
         parser.setOWLEntityChecker(server.getOWLEntityChecker());
 

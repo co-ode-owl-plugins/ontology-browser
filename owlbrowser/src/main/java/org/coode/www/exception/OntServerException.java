@@ -14,6 +14,8 @@ package org.coode.www.exception;
  */
 public class OntServerException extends Exception {
 
+    private static final long serialVersionUID = -4946029988759160348L;
+
     public OntServerException(){
     }
 
