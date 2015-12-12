@@ -5,14 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.sourceforge.owlapi</groupId>
+        <groupId>edu.stanford.protege</groupId>
         <artifactId>ontology-browser</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.2.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
     <artifactId>ontology-browser-owlmanager</artifactId>
-    <name>owlmanager</name>
-    <url>http://maven.apache.org</url>
+    <packaging>bundle</packaging>
 
+    <name>owlmanager</name>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License</name>
+            <url>http://www.gnu.org/copyleft/lesser.html</url>
+        </license>
+    </licenses>
 </project>
