@@ -4,21 +4,25 @@
 package org.coode.html.doclet;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import org.coode.html.OWLHTMLKit;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * Author: Nick Drummond<br>
- * http://www.cs.man.ac.uk/~drummond/<br><br>
+ * http://www.cs.man.ac.uk/~drummond/<br>
+ * <br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jan 25, 2008<br><br>
+ * Date: Jan 25, 2008<br>
+ * <br>
  */
 public class DomainsDoclet<O extends OWLProperty> extends AbstractOWLElementsDoclet<O, OWLClassExpression> {
 
@@ -29,7 +33,15 @@ public class DomainsDoclet<O extends OWLProperty> extends AbstractOWLElementsDoc
     @Override
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
         O userObject = getUserObject();
-        return EntitySearcher.getDomains(userObject.asOWLDataProperty(),
-                onts);
+        if (userObject.isOWLDataProperty()) {
+            return EntitySearcher.getDomains(userObject.asOWLDataProperty(), onts);
+        }
+        if (userObject.isOWLObjectProperty()) {
+            return EntitySearcher.getDomains(userObject.asOWLObjectProperty(), onts);
+        }
+        if (userObject.isObjectPropertyExpression()) {
+            return EntitySearcher.getDomains((OWLObjectPropertyExpression) userObject, onts);
+        }
+        return Collections.emptyList();
     }
 }
