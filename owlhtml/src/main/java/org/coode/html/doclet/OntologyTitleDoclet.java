@@ -31,11 +31,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
  * Author: drummond<br>
- * http://www.cs.man.ac.uk/~drummond/<br><br>
+ * http://www.cs.man.ac.uk/~drummond/<br>
+ * <br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Aug 5, 2009<br><br>
+ * Date: Aug 5, 2009<br>
+ * <br>
  */
 public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
 
@@ -47,7 +49,7 @@ public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
     protected void renderHeader(URL pageURL, PrintWriter out) {
         super.renderHeader(pageURL, out);
         IRI docIRI = getOWLHTMLKit().getOWLServer().getOWLOntologyManager().getOntologyDocumentIRI(getUserObject());
-        if (!docIRI.equals(getUserObject().getOntologyID().getDefaultDocumentIRI())){
+        if (!docIRI.equals(getUserObject().getOntologyID().getDefaultDocumentIRI())) {
             out.println("<h3>Loaded from " + docIRI + "</h3>");
         }
     }
@@ -57,17 +59,14 @@ public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
         return getOWLHTMLKit().getOWLServer().getOntologyShortFormProvider().getShortForm(getUserObject());
     }
 
-
     @Override
     public String getSubtitle() {
-        if (getUserObject().isAnonymous()){
+        if (getUserObject().isAnonymous()) {
             return null;
         }
-        String s = getUserObject().getOntologyID().getOntologyIRI().toString();
-
-        IRI versionIRI = getUserObject().getOntologyID().getVersionIRI()
-                .orNull();
-        if (versionIRI != null){
+        String s = getUserObject().getOntologyID().getOntologyIRI().get().toString();
+        IRI versionIRI = getUserObject().getOntologyID().getVersionIRI().orNull();
+        if (versionIRI != null) {
             s += "<br />" + versionIRI.toString();
         }
         return s;
