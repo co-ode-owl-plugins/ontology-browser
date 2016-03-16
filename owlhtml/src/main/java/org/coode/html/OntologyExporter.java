@@ -152,6 +152,15 @@ public class OntologyExporter {
     }
 
     public File export(File rootFile) throws Exception {
+        if(!rootFile.exists()) {
+            boolean done = rootFile.mkdirs();
+            if(!done) {
+                throw new Exception("Root directory could not be created: " + rootFile);
+            }
+        }
+        
+        assert rootFile.exists();
+        
         if (rootFile.isDirectory()){
             this.root = rootFile;
 
@@ -178,7 +187,7 @@ public class OntologyExporter {
             return createHTMLFrames();
         }
         else{
-            throw new Exception("Root is not a directory: " + rootFile);
+            throw new Exception("Root exists but is not a directory: " + rootFile);
         }
     }
 
