@@ -199,6 +199,6 @@ public class OWLUtils {
     }
 
     public static boolean isStructural(OWLReasoner r) {
-        return r.getReasonerName().equals("Structural Reasoner");
+        return r!=null && "Structural Reasoner".equals(r.getReasonerName());
     }
 }
