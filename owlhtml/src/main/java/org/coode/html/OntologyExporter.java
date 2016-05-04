@@ -166,6 +166,7 @@ public class OntologyExporter {
 
             copyResource(kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS), rootFile);
             copyResource(OWLHTMLConstants.JS_TREE, rootFile);
+            copyResource(OWLHTMLConstants.EXTERNAL_IMAGE, rootFile);
 
             // initialise the all resources index
             indexAllResourcesRenderer = new OWLObjectIndexDoclet<>(kit);
