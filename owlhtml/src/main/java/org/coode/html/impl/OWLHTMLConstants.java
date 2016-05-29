@@ -37,7 +37,7 @@ import java.net.URL;
  */
 public class OWLHTMLConstants extends ServerConstants {
 
-    public static final URL HOME_PAGE = createURL("http://code.google.com/p/ontology-browser/");
+    public static final URL HOME_PAGE = createURL("https://github.com/co-ode-owl-plugins/ontology-browser");
 
     public static String ONTOLOGY_SERVER_NAME = "Ontology Browser";
 
