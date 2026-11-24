@@ -9,3 +9,5 @@ Run `mvn --batch-mode clean verify` to build all modules and execute the unit an
 The export tests check local links, imports, classes/properties/individuals, restrictions, Unicode and reserved characters, language-tagged annotations, anonymous ontologies, and property relationships. Static exports omit server-only Clouds and DL Query navigation. Generated page filenames use decoded UTF-8 paths with Windows-reserved characters sanitized, while HTML links remain URL-encoded.
 
 Legacy Javadoc comments use HTML that modern doclint rejects; Javadoc generation retains doclint=none. Tracking: https://github.com/protegeproject/protege/issues/1363.
+
+Framed exports route category links to the index pane and entity/ontology links to the main content pane. Export-only frame targeting is restored afterward so it does not affect the in-app viewer. A regression test checks frame names and link targets.
