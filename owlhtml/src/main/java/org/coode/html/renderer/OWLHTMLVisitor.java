@@ -238,9 +238,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             write("<a class='" + cssClass + "'");
             String id = OWLUtils.getOntologyIdString(ontology);
             write(" href=\"" + link + "\" title='" + id + "'");
-//            if (targetWindow != null){
-//                write(" target=\"" + targetWindow + "\"");
-//            }
+            writeContentTarget();
             write(">");
             write(ontologyIriSFProvider.getShortForm(ontology));
             write("</a>");
@@ -1034,6 +1032,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         if (pageURL == null){
             final URL urlForTarget = urlRenderer.getURLForOWLObject(entity);
             write("<a href=\"" + urlForTarget + "\"");
+            writeContentTarget();
             writeCSSClasses(cssClasses);
             write(" title=\"" + uri + "\">" + name + "</a>");
         }
@@ -1048,12 +1047,20 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             else{
                 final URL urlForTarget = urlRenderer.getURLForOWLObject(entity);
                 write("<a href=\"" + URLUtils.createRelativeURL(pageURL, urlForTarget) + "\"");
+                writeContentTarget();
 
                 writeCSSClasses(cssClasses);
                 write(" title=\"" + uri + "\">");
                 write(name);
                 write("</a>");
             }
+        }
+    }
+
+    private void writeContentTarget() {
+        String target = kit.getHTMLProperties().get(org.coode.html.impl.OWLHTMLProperty.optionContentWindow);
+        if (target != null && !target.isEmpty()) {
+            write(" target=\"" + target.replace("&", "&amp;").replace("\"", "&quot;") + "\"");
         }
     }
 

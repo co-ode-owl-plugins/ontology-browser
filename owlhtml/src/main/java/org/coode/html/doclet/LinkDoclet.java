@@ -120,9 +120,9 @@ public class LinkDoclet<O extends OWLEntity> implements HTMLDoclet<O>{
         this.target = target;
     }
 
-    private static boolean isSingleFrameNavigation() {
-        return true;
-//        return kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow) == null;
+    private boolean isSingleFrameNavigation() {
+        String target = kit.getHTMLProperties().get(org.coode.html.impl.OWLHTMLProperty.optionContentWindow);
+        return target == null || target.isEmpty();
     }
 
     public void addAttribute(String attr, String value) {

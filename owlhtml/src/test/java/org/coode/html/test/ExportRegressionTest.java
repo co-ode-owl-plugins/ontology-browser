@@ -122,6 +122,38 @@ public class ExportRegressionTest {
         assertLocalLinksExist(export());
     }
 
+    @Test public void framedExportKeepsIndexesAndDetailsInTheirNamedPanes() throws Exception {
+        manager.addAxiom(ontology, df.getOWLSubClassOfAxiom(cls("Child"), cls("Parent")));
+        Path output = export();
+        String frames = Files.readString(output.resolve("index.html"));
+        assertTrue(frames.contains("name=\"nav\""));
+        assertTrue(frames.contains("name=\"subnav\""));
+        assertTrue(frames.contains("name=\"content\""));
+        assertLinkTarget(Files.readString(output.resolve("classes/index.html")), "Child___", "content");
+        assertLinkTarget(Files.readString(output.resolve("index-all.html")), "Child___", "content");
+        String contents = Files.readString(output.resolve("contents.html"));
+        assertLinkTarget(contents, "classes/index.html", "subnav");
+        assertLinkTarget(contents, base.toURI().relativize(kit.getURLScheme().getURLForOWLObject(ontology).toURI()).toString(), "content");
+        assertLinkTarget(Files.readString(page(output, cls("Child"))), "Parent___", "content");
+        // Export configuration must not leak into the in-app single-pane renderer.
+        assertNull(kit.getHTMLProperties().get(org.coode.html.impl.OWLHTMLProperty.optionContentWindow));
+        String rendered = new org.coode.html.renderer.OWLHTMLRenderer(kit).render(cls("Child"), base);
+        assertFalse(rendered, rendered.contains("target="));
+    }
+
+    private void assertLinkTarget(String html, String destination, String target) {
+        Matcher anchors = Pattern.compile("<a\\b[^>]*>").matcher(html);
+        boolean found = false;
+        while (anchors.find()) {
+            String anchor = anchors.group();
+            if (anchor.contains(destination)) {
+                found = true;
+                assertTrue(anchor, Pattern.compile("target=[\"']" + target + "[\"']").matcher(anchor).find());
+            }
+        }
+        assertTrue("No link to " + destination, found);
+    }
+
     private OWLClass cls(String name) { return df.getOWLClass(IRI.create("urn:owldoc:" + name)); }
     private Path export() throws Exception {
         Path output = temp.newFolder().toPath();

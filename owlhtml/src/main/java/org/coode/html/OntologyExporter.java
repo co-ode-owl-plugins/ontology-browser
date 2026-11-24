@@ -152,6 +152,17 @@ public class OntologyExporter {
     }
 
     public File export(File rootFile) throws Exception {
+        String previousTarget = kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
+        kit.getHTMLProperties().set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
+        try {
+            return exportFramed(rootFile);
+        }
+        finally {
+            kit.getHTMLProperties().set(OWLHTMLProperty.optionContentWindow, previousTarget);
+        }
+    }
+
+    private File exportFramed(File rootFile) throws Exception {
         if(!rootFile.exists()) {
             boolean done = rootFile.mkdirs();
             if(!done) {
