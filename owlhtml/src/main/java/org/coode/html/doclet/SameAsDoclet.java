@@ -30,7 +30,7 @@ public class SameAsDoclet extends AbstractOWLElementsDoclet<OWLNamedIndividual, 
 
     @Override
     protected Collection<OWLIndividual> getAssertedElements(Set<OWLOntology> onts) {
-        return EntitySearcher.getSameIndividuals(getUserObject(), onts);
+        return EntitySearcher.getSameIndividuals(getUserObject(), onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SameAsDoclet extends AbstractOWLElementsDoclet<OWLNamedIndividual, 
 
         // now get all anon individuals
         for (OWLIndividual syn : namedSynonyms){
-            synonyms.addAll(EntitySearcher.getSameIndividuals(syn, ontologies));
+            synonyms.addAll(EntitySearcher.getSameIndividuals(syn, ontologies.stream()).collect(java.util.stream.Collectors.toSet()));
         }
 
         synonyms.remove(getUserObject());

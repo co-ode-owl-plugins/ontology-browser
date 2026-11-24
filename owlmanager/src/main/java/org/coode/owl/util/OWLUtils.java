@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.coode.owl.mngr.NamedObjectType;
 import org.semanticweb.owlapi.model.IRI;
@@ -129,7 +130,7 @@ public class OWLUtils {
         Map<OWLAnnotationProperty, Set<OWLAnnotationValue>> props = new HashMap<>();
         for (OWLOntology ont : onts){
             for (OWLAnnotationAssertionAxiom ax : getAnnotationAssertionAxioms(
-                    individual, ont)) {
+                    individual, ont).collect(Collectors.toList())) {
                 OWLAnnotationProperty p = ax.getProperty();
                 Set<OWLAnnotationValue> objects = props.get(p);
                 if (objects == null){

@@ -71,15 +71,16 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
                 if (owlObject instanceof OWLEntity){
                     OWLEntity owlEntity = (OWLEntity)owlObject;
                     String name = shortFormProvider.getShortForm(owlEntity) + ID_SPLITTER + owlEntity.getIRI().hashCode();
-                    name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
+                    name = encodeFilename(name);
                     url = new URL(getBaseURL(), NamedObjectType.getType(owlEntity) + OWLHTMLConstants.SLASH + name + OWLHTMLConstants.DEFAULT_EXTENSION);
 
                 }
                 else if (owlObject instanceof OWLOntology){
-                    IRI iri = ((OWLOntology) owlObject).getOntologyID()
-                            .getOntologyIRI().orNull();
-                    String name = ontologyShortFormProvider.getShortForm(iri) + ID_SPLITTER + iri.hashCode();
-                    name = URLEncoder.encode(name, OWLHTMLConstants.DEFAULT_ENCODING);
+                    OWLOntology ontology = (OWLOntology) owlObject;
+                    String name = ontologyShortFormProvider.getShortForm(ontology) + ID_SPLITTER
+                            + ontology.getOntologyID().getOntologyIRI().map(IRI::hashCode)
+                                    .orElseGet(() -> ontology.getOntologyID().hashCode());
+                    name = encodeFilename(name);
                     url = new URL(getBaseURL(), NamedObjectType.ontologies + OWLHTMLConstants.SLASH + name + OWLHTMLConstants.DEFAULT_EXTENSION);
                 }
 
@@ -92,11 +93,13 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
         catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);
         }
-        catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-        }
 
         return url;
+    }
+
+    private static String encodeFilename(String name) {
+        String safe = name.replaceAll("[\\\\/:*?\"<>|]", "_");
+        return URLEncoder.encode(safe, java.nio.charset.StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     @Override
@@ -107,7 +110,7 @@ public class StaticFilesURLScheme extends AbstractURLScheme {
     @Override
     public URL getURLForOntologyIndex(OWLOntology ont, NamedObjectType type) {
         try {
-            return new URL(getBaseURL(), type + OWLHTMLConstants.SLASH + INDEX_PREFIX + ontologyShortFormProvider.getShortForm(ont) + OWLHTMLConstants.DEFAULT_EXTENSION);
+            return new URL(getBaseURL(), type + OWLHTMLConstants.SLASH + INDEX_PREFIX + encodeFilename(ontologyShortFormProvider.getShortForm(ont)) + OWLHTMLConstants.DEFAULT_EXTENSION);
         }
         catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);

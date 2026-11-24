@@ -28,6 +28,6 @@ public class DifferentFromDoclet extends AbstractOWLElementsDoclet<OWLNamedIndiv
 
     @Override
     protected Collection<OWLIndividual> getAssertedElements(Set<OWLOntology> onts) {
-        return EntitySearcher.getDifferentIndividuals(getUserObject(), onts);
+        return EntitySearcher.getDifferentIndividuals(getUserObject(), onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 }

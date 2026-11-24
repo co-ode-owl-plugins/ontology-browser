@@ -31,7 +31,7 @@ public class AnnotationsDoclet<O extends OWLEntity> extends AbstractOWLElementsD
     protected Collection<OWLAnnotation> getAssertedElements(Set<OWLOntology> onts) {
         Set<OWLAnnotation> annots = new HashSet<>();
         for (OWLOntology ont : onts){
-            annots.addAll(EntitySearcher.getAnnotations(getUserObject(), ont));
+            annots.addAll(EntitySearcher.getAnnotations(getUserObject(), ont).collect(java.util.stream.Collectors.toSet()));
         }
         return annots;
     }

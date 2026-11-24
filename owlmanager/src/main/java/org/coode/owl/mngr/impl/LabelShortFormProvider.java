@@ -52,8 +52,8 @@ public class LabelShortFormProvider implements ShortFormProvider {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Set<OWLOntology> getOntologies() {
-                return server.getActiveOntologies();
+            public java.util.stream.Stream<OWLOntology> ontologies() {
+                return server.getActiveOntologies().stream();
             }
         };
         

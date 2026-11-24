@@ -32,7 +32,7 @@ public class SuperclassesDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLC
 
     @Override
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return getSuperClasses(getUserObject(), onts);
+        return getSuperClasses(getUserObject(), onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 
     @Override
@@ -47,7 +47,7 @@ public class SuperclassesDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLC
         Set<OWLClassExpression> supers = new HashSet<>();
         supers.addAll(r.getSuperClasses(getUserObject(), true).getFlattened());
         for (OWLClass ancestor : r.getSuperClasses(getUserObject(), false).getFlattened()){
-            for (OWLClassExpression e : getSuperClasses(ancestor, onts)) {
+            for (OWLClassExpression e : getSuperClasses(ancestor, onts.stream()).collect(java.util.stream.Collectors.toSet())) {
                 if (e.isAnonymous()){
                     supers.add(e);
                 }
@@ -56,7 +56,7 @@ public class SuperclassesDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLC
 
         if (OWLUtils.isStructural(r)){
             for (OWLClass equiv : r.getEquivalentClasses(getUserObject())){
-                for (OWLClassExpression e : getSuperClasses(equiv, onts)) {
+                for (OWLClassExpression e : getSuperClasses(equiv, onts.stream()).collect(java.util.stream.Collectors.toSet())) {
                     supers.add(e);
                 }
             }

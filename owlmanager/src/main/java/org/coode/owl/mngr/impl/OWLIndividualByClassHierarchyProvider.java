@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.coode.owl.mngr.ActiveOntologyProvider;
 import org.coode.owl.mngr.HierarchyProvider;
@@ -95,7 +96,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
             return Collections.emptySet();
         }
         Set<OWLObject> types = new HashSet<OWLObject>(getTypes(
-                (OWLIndividual) node, getOntologies()));
+                (OWLIndividual) node, getOntologies().stream()).collect(Collectors.toSet()));
         if (types.isEmpty()){
             types = Collections.<OWLObject>singleton(server.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
         }
@@ -118,7 +119,7 @@ public class OWLIndividualByClassHierarchyProvider implements HierarchyProvider<
             Set<OWLObject> sameIndividuals = new HashSet<>();
             for (OWLOntology ont : getOntologies()){
                 sameIndividuals.addAll(getSameIndividuals((OWLIndividual) node,
-                        ont));
+                        ont).collect(Collectors.toSet()));
             }
             return sameIndividuals;
         }

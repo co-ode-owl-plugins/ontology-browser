@@ -89,7 +89,8 @@ public class URLTests extends TestCase {
             URL current = new URL("http://www.co-ode.org/ontologies/classes/");
             URL target = new URL("http://www.co-ode.org/ontologies/classes/Tree.html");
             assertEquals("Tree.html", URLUtils.createRelativeURL(current, target));
-            assertEquals("/", URLUtils.createRelativeURL(target, current));
+            // A slash points at the site root; dot points at the current directory.
+            assertEquals(".", URLUtils.createRelativeURL(target, current));
         }
         catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);

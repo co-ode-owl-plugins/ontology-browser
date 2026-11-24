@@ -30,7 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLUnaryPropertyAxiom;
-import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
+import org.semanticweb.owlapi.model.OWLAxiomVisitor;
 
 /**
  * Author: Nick Drummond<br>
@@ -74,7 +74,7 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
     }
 
 
-    private class UsageVisibilityVisitor extends OWLAxiomVisitorAdapter {
+    private class UsageVisibilityVisitor implements OWLAxiomVisitor {
 
         private boolean showUsage;
         private OWLEntity currentEntity;

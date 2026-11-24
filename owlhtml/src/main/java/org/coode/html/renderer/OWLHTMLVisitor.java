@@ -131,7 +131,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * Author: Nick Drummond<br>
@@ -297,7 +297,8 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             URLUtils.renderURLLinks(url, kit, pageURL, out);
         }
         catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            // An IRI such as a URN need not have a navigable URL protocol.
+            // Its text has already been rendered above.
         }
     }
 
@@ -754,7 +755,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
             writeLiteralContents(node.getLiteral());
             write("\"");
             write("</span>");
-            if (node.isRDFPlainLiteral()){
+            if (node.hasLang()){
                 if (node.hasLang()){
                     final String lang = node.getLang();
                     if (!lang.isEmpty()){
@@ -1058,7 +1059,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     private void writeAnonymousIndividual(OWLAnonymousIndividual individual) {
         write("<span class=\"anon\">");
-        Collection<OWLClassExpression> types = getTypes(individual, ontologies);
+        Collection<OWLClassExpression> types = getTypes(individual, ontologies.stream()).collect(java.util.stream.Collectors.toSet());
         if (!types.isEmpty()){
             writeOpList(types, ", ", false);
         }
@@ -1173,6 +1174,7 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         }
         finally{
             if (!writtenExternalRef){
+                literal = literal.replace("&", "&amp;");
                 literal = literal.replace("<", "&lt;");
                 literal = literal.replace(">", "&gt;");
                 literal = literal.replace("\n", "<br />");

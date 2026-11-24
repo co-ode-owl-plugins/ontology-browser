@@ -28,6 +28,6 @@ public class AssertedEquivalentsDoclet extends AbstractOWLElementsDoclet<OWLClas
 
     @Override
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return EntitySearcher.getEquivalentClasses(getUserObject(), onts);
+        return EntitySearcher.getEquivalentClasses(getUserObject(), onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 }

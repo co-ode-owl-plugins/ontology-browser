@@ -28,6 +28,6 @@ public class InversesDoclet extends AbstractOWLElementsDoclet<OWLObjectProperty,
 
     @Override
     protected Collection<OWLObjectPropertyExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return EntitySearcher.getInverses(getUserObject(), onts);
+        return EntitySearcher.getInverses(getUserObject(), onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 }

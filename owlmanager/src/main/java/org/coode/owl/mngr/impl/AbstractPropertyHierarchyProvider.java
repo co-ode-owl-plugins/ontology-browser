@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.coode.owl.mngr.ActiveOntologyProvider;
 import org.coode.owl.mngr.HierarchyProvider;
@@ -104,10 +105,10 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
             Collection properties;
             if (node.isDataPropertyExpression()) {
                 properties = getSuperProperties(node.asOWLDataProperty(),
-                        getOntologies());
+                        getOntologies().stream()).collect(Collectors.toSet());
             } else {
                 properties = getSuperProperties(node.asOWLObjectProperty(),
-                        getOntologies());
+                        getOntologies().stream()).collect(Collectors.toSet());
             }
             for (Object pe : properties) {
                 if (pe instanceof OWLProperty){
@@ -132,10 +133,10 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
         Collection properties;
         if (node.isDataPropertyExpression()) {
             properties = getSubProperties(node.asOWLDataProperty(),
-                    getOntologies());
+                    getOntologies().stream()).collect(Collectors.toSet());
         } else {
             properties = getSubProperties(node.asOWLObjectProperty(),
-                    getOntologies());
+                    getOntologies().stream()).collect(Collectors.toSet());
         }
         for (Object pe : properties) {
                 subs.add((P)pe);
@@ -151,10 +152,10 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
         Collection properties;
         if (node.isDataPropertyExpression()) {
             properties = getEquivalentProperties(node.asOWLDataProperty(),
-                    getOntologies());
+                    getOntologies().stream()).collect(Collectors.toSet());
         } else {
             properties = getEquivalentProperties(node.asOWLObjectProperty(),
-                    getOntologies());
+                    getOntologies().stream()).collect(Collectors.toSet());
         }
         for (Object pe : properties) {
                 equivs.add((P)pe);
@@ -242,10 +243,10 @@ public abstract class AbstractPropertyHierarchyProvider<P extends OWLProperty> i
                 Collection properties;
                 if (p.isDataPropertyExpression()) {
                     properties = getSuperProperties(p.asOWLDataProperty(),
-                            getOntologies());
+                            getOntologies().stream()).collect(Collectors.toSet());
                 } else {
                     properties = getSuperProperties(p.asOWLObjectProperty(),
-                            getOntologies());
+                            getOntologies().stream()).collect(Collectors.toSet());
                 }
                 if (properties.isEmpty()) {
                     // do nothing

@@ -104,7 +104,7 @@ public class TestServlet extends HttpServlet {
                 writer.write(value2);
             }
             else{
-                writer.write("Ž (e ecoute directly in java string)<br />");
+                writer.write("Ã© (e ecoute directly in java string)<br />");
                 writer.write("?? (chinese characters directly in java string)<br />");
                 writer.write("%E5%A4%A7%E5%9E%8B (chinese characters % URL escaped)<br />");
                 writer.write("<a href='?redirect=??'>redirect to ??</a><br />");

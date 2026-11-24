@@ -27,9 +27,18 @@ public class DisjointPropertiesDoclet<O extends OWLProperty> extends
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Collection<O> getAssertedElements(Set<OWLOntology> onts) {
-        O userObject = getUserObject();
-        return EntitySearcher.getDisjointProperties(
-                userObject, onts);
+        O property = getUserObject();
+        java.util.stream.Stream<? extends org.semanticweb.owlapi.model.OWLPropertyExpression> values;
+        if (property.isOWLDataProperty()) {
+            values = EntitySearcher.getDisjointProperties(property.asOWLDataProperty(), onts.stream());
+        } else if (property.isOWLAnnotationProperty()) {
+            values = EntitySearcher.getDisjointProperties(property.asOWLAnnotationProperty(), onts.stream());
+        } else {
+            values = EntitySearcher.getDisjointProperties(property.asOWLObjectProperty(), onts.stream());
+        }
+        return values.filter(OWLProperty.class::isInstance).map(value -> (O) value)
+                .collect(java.util.stream.Collectors.toSet());
     }
 }

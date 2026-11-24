@@ -34,13 +34,13 @@ public class DomainsDoclet<O extends OWLProperty> extends AbstractOWLElementsDoc
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
         O userObject = getUserObject();
         if (userObject.isOWLDataProperty()) {
-            return EntitySearcher.getDomains(userObject.asOWLDataProperty(), onts);
+            return EntitySearcher.getDomains(userObject.asOWLDataProperty(), onts.stream()).collect(java.util.stream.Collectors.toSet());
         }
         if (userObject.isOWLObjectProperty()) {
-            return EntitySearcher.getDomains(userObject.asOWLObjectProperty(), onts);
+            return EntitySearcher.getDomains(userObject.asOWLObjectProperty(), onts.stream()).collect(java.util.stream.Collectors.toSet());
         }
         if (userObject.isObjectPropertyExpression()) {
-            return EntitySearcher.getDomains((OWLObjectPropertyExpression) userObject, onts);
+            return EntitySearcher.getDomains((OWLObjectPropertyExpression) userObject, onts.stream()).collect(java.util.stream.Collectors.toSet());
         }
         return Collections.emptyList();
     }

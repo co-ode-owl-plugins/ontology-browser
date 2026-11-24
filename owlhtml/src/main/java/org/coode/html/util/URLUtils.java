@@ -254,7 +254,7 @@ public class URLUtils {
             Loc loc = new Loc();
             for (OWLOntology ont : onts){
                 for (OWLLiteral val : getDataPropertyValues(
-                        owlEntity.asOWLNamedIndividual(), point, ont)) {
+                        owlEntity.asOWLNamedIndividual(), point, ont).collect(java.util.stream.Collectors.toList())) {
                     String[] latLong = val.getLiteral().trim().split("\\s+");
                     if (latLong.length == 2){
                         loc.latitude = latLong[0];
@@ -263,12 +263,12 @@ public class URLUtils {
                     }
                 }
                 for (OWLLiteral val : getDataPropertyValues(
-                        owlEntity.asOWLNamedIndividual(), latProp, ont)) {
+                        owlEntity.asOWLNamedIndividual(), latProp, ont).collect(java.util.stream.Collectors.toList())) {
                     loc.latitude = val.getLiteral().trim();
                     break; // use the first value
                 }
                 for (OWLLiteral val : getDataPropertyValues(
-                        owlEntity.asOWLNamedIndividual(), longProp, ont)) {
+                        owlEntity.asOWLNamedIndividual(), longProp, ont).collect(java.util.stream.Collectors.toList())) {
                     loc.longitude = val.getLiteral().trim();
                     break; // use the first value
                 }

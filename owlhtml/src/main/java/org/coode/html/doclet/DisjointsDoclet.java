@@ -28,6 +28,6 @@ public class DisjointsDoclet extends AbstractOWLElementsDoclet<OWLClass, OWLClas
 
     @Override
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return EntitySearcher.getDisjointClasses(getUserObject(), onts);
+        return EntitySearcher.getDisjointClasses(getUserObject(), onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 }

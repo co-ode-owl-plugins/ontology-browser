@@ -32,7 +32,7 @@ public class TypesDoclet extends AbstractOWLElementsDoclet<OWLNamedIndividual, O
 
     @Override
     protected Collection<OWLClassExpression> getAssertedElements(Set<OWLOntology> onts) {
-        return getTypes(getUserObject(), onts);
+        return getTypes(getUserObject(), onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 
     @Override

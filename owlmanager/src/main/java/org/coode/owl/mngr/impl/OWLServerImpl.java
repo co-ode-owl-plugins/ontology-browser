@@ -672,7 +672,7 @@ public class OWLServerImpl implements OWLServer {
             // see OWL API bug - https://sourceforge.net/tracker/?func=detail&aid=3110834&group_id=90989&atid=595534
             return mngr.getOntologyDocumentIRI(root);
         }
-        return root.getOntologyID().getDefaultDocumentIRI().orNull();
+        return root.getOntologyID().getDefaultDocumentIRI().orElse(null);
     }
 
     private void resetAllowedLabels() {

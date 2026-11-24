@@ -26,8 +26,18 @@ public class AssertedSuperpropertiesDoclet<O extends OWLProperty> extends Abstra
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Collection<O> getAssertedElements(Set<OWLOntology> onts) {
-        return EntitySearcher.getSuperProperties(
-        getUserObject(), onts);
+        O property = getUserObject();
+        java.util.stream.Stream<? extends org.semanticweb.owlapi.model.OWLPropertyExpression> values;
+        if (property.isOWLDataProperty()) {
+            values = EntitySearcher.getSuperProperties(property.asOWLDataProperty(), onts.stream());
+        } else if (property.isOWLAnnotationProperty()) {
+            values = EntitySearcher.getSuperProperties(property.asOWLAnnotationProperty(), onts.stream());
+        } else {
+            values = EntitySearcher.getSuperProperties(property.asOWLObjectProperty(), onts.stream());
+        }
+        return values.filter(OWLProperty.class::isInstance).map(value -> (O) value)
+                .collect(java.util.stream.Collectors.toSet());
     }
 }

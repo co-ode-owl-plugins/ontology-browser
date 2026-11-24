@@ -158,9 +158,9 @@ public class OntologyExporter {
                 throw new Exception("Root directory could not be created: " + rootFile);
             }
         }
-        
+
         assert rootFile.exists();
-        
+
         if (rootFile.isDirectory()){
             this.root = rootFile;
 
@@ -210,7 +210,7 @@ public class OntologyExporter {
 
         URL pageURL = kit.getURLScheme().getURLForOWLObject(ont);
         String localFilename = URLUtils.createRelativeURL(kit.getBaseURL(), pageURL);
-        File ontologySummaryFile = new File(root, localFilename);
+        File ontologySummaryFile = new File(root, java.net.URI.create(localFilename).getPath());
         ensureExists(ontologySummaryFile);
 
         PrintWriter writer = createPrintWriter(ontologySummaryFile);
@@ -276,7 +276,7 @@ public class OntologyExporter {
 
     private <O extends OWLEntity> void exportReferencedEntities(NamedObjectType type, OWLDocPage<O> ren,
                                           Set<O>entities, OWLOntology ont) throws IOException {
-        if (!entities.isEmpty()){
+
 
 //            File subDirFile = new File(root, type.toString());
 //            if (!subDirFile.exists()){
@@ -288,7 +288,7 @@ public class OntologyExporter {
 
             URL indexBaseURL = urlScheme.getURLForOntologyIndex(ont, type);
             String localFilename = URLUtils.createRelativeURL(kit.getBaseURL(), indexBaseURL);
-            File ontologyEntityIndexFile = new File(root, localFilename);
+            File ontologyEntityIndexFile = new File(root, java.net.URI.create(localFilename).getPath());
             ensureExists(ontologyEntityIndexFile);
             PrintWriter indexWriter = createPrintWriter(ontologyEntityIndexFile);
             OWLObjectIndexDoclet<O> ontIndexRenderer = new OWLObjectIndexDoclet<>(kit);
@@ -321,21 +321,21 @@ public class OntologyExporter {
             page.renderAll(indexBaseURL, indexWriter);
             indexWriter.flush();
             indexWriter.close();
-        }
+
     }
 
     private <O extends OWLEntity> boolean exportEntity(O entity, OWLDocPage<O> ren) throws IOException {
 
         URL entityURL = kit.getURLScheme().getURLForOWLObject(entity);
         String localFilename = URLUtils.createRelativeURL(kit.getBaseURL(), entityURL);
-        File entitySummaryFile = new File(root, localFilename);
+        File entitySummaryFile = new File(root, java.net.URI.create(localFilename).getPath());
 
         if (entitySummaryFile.exists()){ // already generated this entity summary
             return false;
         }
 
         ensureExists(entitySummaryFile);
-        Writer fileWriter = new FileWriter(entitySummaryFile);
+        Writer fileWriter = new java.io.OutputStreamWriter(FileUtils.openOutputStream(entitySummaryFile), java.nio.charset.StandardCharsets.UTF_8);
         PrintWriter writer = new PrintWriter(fileWriter);
 
         ren.setUserObject(entity);
@@ -441,6 +441,6 @@ public class OntologyExporter {
     }
 
     private static PrintWriter createPrintWriter(File file) throws IOException {
-        return new PrintWriter(FileUtils.openOutputStream(file));
+        return new PrintWriter(new java.io.OutputStreamWriter(FileUtils.openOutputStream(file), java.nio.charset.StandardCharsets.UTF_8));
     }
 }

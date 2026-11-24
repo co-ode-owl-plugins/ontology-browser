@@ -4,7 +4,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * Author: drummond<br>

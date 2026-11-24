@@ -33,8 +33,8 @@ public class RangesDoclet<O extends OWLPropertyExpression, E extends OWLProperty
     protected Collection<E> getAssertedElements(Set<OWLOntology> onts) {
         O userObject = getUserObject();
         if(userObject.isDataPropertyExpression()) {
-            return (Collection<E>) EntitySearcher.getRanges((OWLDataProperty)userObject, onts);
+            return (Collection<E>) EntitySearcher.getRanges((OWLDataProperty)userObject, onts.stream()).collect(java.util.stream.Collectors.toSet());
         }
-        return (Collection<E>) EntitySearcher.getRanges((OWLObjectPropertyExpression)userObject, onts);
+        return (Collection<E>) EntitySearcher.getRanges((OWLObjectPropertyExpression)userObject, onts.stream()).collect(java.util.stream.Collectors.toSet());
     }
 }

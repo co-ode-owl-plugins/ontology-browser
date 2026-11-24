@@ -65,7 +65,7 @@ public class OntologyTitleDoclet extends AbstractTitleDoclet<OWLOntology> {
             return null;
         }
         String s = getUserObject().getOntologyID().getOntologyIRI().get().toString();
-        IRI versionIRI = getUserObject().getOntologyID().getVersionIRI().orNull();
+        IRI versionIRI = getUserObject().getOntologyID().getVersionIRI().orElse(null);
         if (versionIRI != null) {
             s += "<br />" + versionIRI.toString();
         }

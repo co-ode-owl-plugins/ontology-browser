@@ -65,7 +65,8 @@ public class TabsDoclet<O extends OWLObject> extends AbstractOWLDocDoclet<O> {
             }
         }
 
-        if (entitiesExist){
+        // Clouds and DL Query are server endpoints, not static export pages.
+        if (entitiesExist && !(kit.getURLScheme() instanceof org.coode.html.url.StaticFilesURLScheme)){
             HTMLUtils.renderLink("Clouds",
                                  kit.getURLScheme().getURLForRelativePage("cloud/"),
                                  OWLHTMLConstants.LinkTarget.subnav,
