@@ -9,6 +9,7 @@ import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLContentsHTMLPage;
 import org.coode.html.index.OWLObjectIndexDoclet;
 import org.coode.html.page.OWLDocPage;
+import org.coode.html.page.DefaultHTMLPage;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
@@ -403,9 +404,24 @@ public class OntologyExporter {
         for (NamedObjectType type : typeIndices.keySet()){
             PrintWriter writer = createPrintWriter(new File(root, type + "/" + OWLHTMLConstants.INDEX_HTML));
             URL pageURL = kit.getURLScheme().getURLForIndex(type);
-            typeIndices.get(type).renderAll(pageURL, writer);
+            new IndexPage(typeIndices.get(type)).renderAll(pageURL, writer);
             writer.flush();
             writer.close();
+        }
+    }
+
+    private class IndexPage extends DefaultHTMLPage<OWLObject> {
+        IndexPage(OWLObjectIndexDoclet<OWLObject> index) {
+            String css = kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS);
+            if (css != null) {
+                addCSS(kit.getURLScheme().getURLForRelativePage(css));
+            }
+            addDoclet(index);
+        }
+
+        @Override
+        protected String getTitle() {
+            return "OWLDoc index";
         }
     }
 

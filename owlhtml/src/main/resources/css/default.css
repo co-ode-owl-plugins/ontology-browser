@@ -1,42 +1,94 @@
-body {font-family: Verdana, Arial, sans-serif; font-size: 9pt; padding: 5px;}
-
-img {border: none;}
-img.button {position: relative; top: 8px;}
-
-.literal {color: green;}
-.annotation-uri {color: gray;}
-.ontology-uri {color: #990099;}
-.active-ontology-uri {color: #330033;}
-.active-entity {color: darkblue; font-weight: bold;}
-
-/* keywords - default cyan */
-.keyword {color: #007777;}
-.comment {color: green;}
-.some {color: #770077;}
-.only {color: #770077;}
-.value {color: #770077;}
-.min {color: #770077;}
-.max {color: #770077;}
-.exactly {color: #770077;}
-
-div.codebox {overflow: hidden;
-    background: #f1f5f9; width: 95%; padding: 5px;
-    border-width: 1px; border-style: solid; border-color: #c7cfd5;
+/* Shared, self-contained styling for exported OWLDoc pages. */
+:root {
+    color-scheme: light;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1f2937;
+    background: #f7f9fc;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
-#queryform {background: #ddddff; padding: 5px;}
-#most_used_classes {text-align: center;}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 24px; }
+img { border: 0; max-width: 100%; }
+img.button { width: 12px; height: 12px; margin-left: 4px; vertical-align: baseline; }
 
-p.footer {font-size: 8pt; text-align: right;}
+h1, h2, h3, h4 { color: #17243b; line-height: 1.3; overflow-wrap: anywhere; }
+h1, h2 { font-size: 1.65rem; font-weight: 650; letter-spacing: -0.025em; margin: 0 0 20px; }
+h3 { font-size: 1rem; font-weight: 500; color: #64748b; margin: 12px 0; }
+h4 { font-size: 0.85rem; font-weight: 650; color: #52627a; margin: 26px 0 10px; }
+p { margin: 12px 0; }
 
-h1 {margin-top: 5px; font-size: 14pt; font-weight: bold;}
-h2 {margin-top: 5px; margin-bottom: 3px; font-size: 12pt; font-weight: normal;}
+a { color: #245eb3; text-decoration: none; overflow-wrap: anywhere; }
+a:hover { color: #174683; text-decoration: underline; text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid #3578ce; outline-offset: 3px; border-radius: 3px; }
+a:visited { color: #5a58a0; }
 
-a {text-decoration: none; color: black;}
-a:hover {text-decoration: underline; color: blue;}
+#tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin: -24px -24px 26px;
+    padding: 14px 24px;
+    border-bottom: 1px solid #dfe6ef;
+    background: #fff;
+    font-size: 0.82rem;
+    color: #7a879b;
+}
+#tabs a { color: #52627a; font-weight: 550; padding: 3px 0; }
+#tabs a:hover { color: #245eb3; }
 
-a.subsexpand {color: #555555; font-size: 7pt; text-decoration: underline; line-height: 180%;}
+.codebox {
+    overflow-wrap: anywhere;
+    background: #fff;
+    border: 1px solid #dfe6ef;
+    border-radius: 9px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 2px rgba(23, 36, 59, 0.025);
+}
+ul { margin: 0; padding-left: 20px; }
+li { padding: 3px 0; }
+li::marker { color: #94a3b8; }
 
-ul {margin-top: 1px; margin-bottom: 1px; margin-left: 10px; padding-left: 5px;}
+/* The index remains a compact, scannable list inside its own frame. */
+.owlselector h2 { font-size: 1.15rem; letter-spacing: -0.01em; margin-bottom: 16px; }
+.owlselector .codebox { padding: 0; border: 0; box-shadow: none; background: transparent; }
+.owlselector ul { list-style: none; padding: 0; }
+.owlselector li { padding: 0; }
+.owlselector a {
+    display: block;
+    padding: 6px 10px;
+    margin: 1px -10px;
+    border-radius: 5px;
+    color: #364860;
+    font-size: 0.93rem;
+}
+.owlselector a:hover { background: #e8effa; color: #174e98; text-decoration: none; }
+.owlselector a:visited { color: #53627a; }
 
-ul.minihierarchy {list-style-type: disc;}
+.literal, .comment { color: #327150; }
+.annotation-uri { color: #64748b; }
+.ontology-uri, .active-ontology-uri { color: #52627a; }
+.active-entity { color: #17243b; font-weight: 650; }
+.keyword { color: #327b83; }
+.some, .only, .value, .min, .max, .exactly { color: #7955a5; }
+a.subsexpand { color: #64748b; font-size: 0.8rem; }
+ul.minihierarchy { list-style-type: disc; }
+#queryform { background: #edf3fc; border-radius: 9px; padding: 16px; }
+#most_used_classes { text-align: center; }
+p.footer { margin-top: 32px; color: #94a3b8; font-size: 0.75rem; text-align: left; }
+p.footer a { color: inherit; }
+
+@media (max-width: 420px) {
+    body { padding: 16px; }
+    #tabs { margin: -16px -16px 20px; padding: 12px 16px; gap: 6px 12px; }
+    .codebox { padding: 12px; }
+}
+@media print {
+    :root, .codebox { background: #fff; }
+    #tabs, p.footer { display: none; }
+    body { padding: 0; }
+    .codebox { box-shadow: none; break-inside: avoid; }
+}
