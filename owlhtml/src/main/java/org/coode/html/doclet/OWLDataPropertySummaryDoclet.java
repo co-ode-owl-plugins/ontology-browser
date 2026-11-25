@@ -17,7 +17,9 @@ import org.semanticweb.owlapi.model.OWLDataRange;
  */
 public class OWLDataPropertySummaryDoclet extends AbstractOWLDocDoclet<OWLDataProperty> {
 
-    public OWLDataPropertySummaryDoclet(OWLHTMLKit kit) {
+    public OWLDataPropertySummaryDoclet(OWLHTMLKit kit) { this(kit, null); }
+
+    public OWLDataPropertySummaryDoclet(OWLHTMLKit kit, UsageDoclet.PaginationHandler pagination) {
         super(kit);
 
         addDoclet(new OWLEntityTitleDoclet<OWLDataProperty>(kit));
@@ -28,7 +30,7 @@ public class OWLDataPropertySummaryDoclet extends AbstractOWLDocDoclet<OWLDataPr
         addDoclet(new AssertedSuperpropertiesDoclet<OWLDataProperty>(kit));
         addDoclet(new AssertedEquivpropertiesDoclet<OWLDataProperty>(kit));
         addDoclet(new DisjointPropertiesDoclet<OWLDataProperty>(kit));
-        addDoclet(new UsageDoclet<OWLDataProperty>(kit));
+        addDoclet(new UsageDoclet<OWLDataProperty>(kit, pagination));
     }
 
     @Override

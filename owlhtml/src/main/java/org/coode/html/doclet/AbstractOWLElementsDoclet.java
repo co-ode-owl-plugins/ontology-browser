@@ -38,6 +38,10 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
 
     protected boolean inlineMedia = true;
 
+    private Set<E> renderedAssertedElements;
+    private Set<E> renderedElements;
+    private boolean renderingInferences;
+
 
     public AbstractOWLElementsDoclet(String name, Format format, OWLHTMLKit kit) {
         super(name, format);
@@ -57,15 +61,37 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
         this.inlineMedia = inlineMedia;
     }
 
+    private Set<OWLOntology> effectiveOntologies() {
+        return ontologies == null ? getOWLHTMLKit().getVisibleOntologies() : ontologies;
+    }
+
     @Override
-    protected final Collection<E> getElements(){
-        Set<OWLOntology> onts = ontologies;
-        if (onts == null){
-            onts = getOWLHTMLKit().getVisibleOntologies();
+    protected void beforeRender() {
+        Set<OWLOntology> onts = effectiveOntologies();
+        renderingInferences = showInferences();
+        renderedAssertedElements = new HashSet<>(getAssertedElements(onts));
+        renderedElements = new HashSet<>(renderedAssertedElements);
+        if (renderingInferences) {
+            renderedElements.addAll(getInferredElements(onts));
         }
-        Set<E> elements = new HashSet<>();
-        elements.addAll(getAssertedElements(onts));
-        if (showInferences()){
+    }
+
+    @Override
+    protected void afterRender() {
+        renderedAssertedElements = null;
+        renderedElements = null;
+        renderingInferences = false;
+    }
+
+    @Override
+    protected final Collection<E> getElements() {
+        if (renderedElements != null) {
+            return renderedElements;
+        }
+        // getID() can also be called outside rendering. Keep those lookups fresh.
+        Set<OWLOntology> onts = effectiveOntologies();
+        Set<E> elements = new HashSet<>(getAssertedElements(onts));
+        if (showInferences()) {
             elements.addAll(getInferredElements(onts));
         }
         return elements;
@@ -83,13 +109,16 @@ public abstract class AbstractOWLElementsDoclet<O extends OWLObject, E extends O
     }
 
     @Override
-    protected String getCSSClass(E object) { // TODO: should we cache to prevent multiple queries?
-        if (showInferences() && !getAssertedElements(getOWLHTMLKit().getVisibleOntologies()).contains(object)){
-            return OWLHTMLConstants.INFERRED_CSS_CLASS;
+    protected String getCSSClass(E object) {
+        boolean inferences = renderedElements == null ? showInferences() : renderingInferences;
+        if (inferences) {
+            Collection<E> asserted = renderedAssertedElements == null
+                    ? getAssertedElements(effectiveOntologies()) : renderedAssertedElements;
+            if (!asserted.contains(object)) {
+                return OWLHTMLConstants.INFERRED_CSS_CLASS;
+            }
         }
-        else{
-            return OWLHTMLConstants.ASSERTED_CSS_CLASS;
-        }
+        return OWLHTMLConstants.ASSERTED_CSS_CLASS;
     }
 
     @Override

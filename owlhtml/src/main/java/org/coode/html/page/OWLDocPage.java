@@ -31,6 +31,9 @@ import org.semanticweb.owlapi.model.OWLObject;
 public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
     private OWLHTMLKit kit;
+    private String sectionTitle;
+
+    public void setSectionTitle(String sectionTitle) { this.sectionTitle = sectionTitle; }
 
 
     public OWLDocPage(OWLHTMLKit kit) {
@@ -44,7 +47,10 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
 
 //        addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JQUERY_JS));
 //        addJavascript(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.JS_DEFAULT));
-        if (kit.isActive()){
+        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionStaticSite)) {
+            addJavascript(kit.getURLScheme().getURLForRelativePage("js/entities.js"));
+            addJavascript(kit.getURLScheme().getURLForRelativePage("js/owldoc.js"));
+        } else if (kit.isActive()){
             addDoclet(new TabsDoclet<O>(kit));
         }
 
@@ -61,13 +67,32 @@ public class OWLDocPage<O extends OWLObject> extends DefaultHTMLPage<O> {
     }
 
     @Override
+    protected void renderHeader(URL pageURL, PrintWriter out) {
+        super.renderHeader(pageURL, out);
+        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionStaticSite)) {
+            String root = org.coode.html.util.URLUtils.createRelativeURL(pageURL, kit.getBaseURL());
+            if (root.isEmpty() || root.equals(".")) root = "./";
+            String context = "";
+            if (sectionTitle != null && getUserObject() != null) {
+                String entityPath = org.coode.html.util.URLUtils.createRelativeURL(kit.getBaseURL(), kit.getURLScheme().getURLForOWLObject(getUserObject()));
+                context = " data-entity-path=\"" + entityPath.replace("&", "&amp;").replace("\"", "&quot;")
+                        + "\" data-section=\"" + sectionTitle.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;") + "\"";
+            }
+            out.println("<div id=\"owldoc-page\" data-root=\"" + root.replace("&", "&amp;").replace("\"", "&quot;") + "\"" + context + ">");
+            out.println("<noscript><p>Browse documentation: <a href=\"" + root + "contents.html\">Contents</a></p></noscript>");
+        }
+    }
+
+    @Override
     protected final void renderFooter(URL pageURL, PrintWriter out) {
 
         out.println("\n<p class='footer'>");
         out.print("<a href='");
-        out.print(OWLHTMLConstants.HOME_PAGE);
-        out.println("' target='_blank'>OWL HTML inside</a>");
+        out.print("https://github.com/co-ode-owl-plugins/owldoc");
+        out.println("' target='_blank' rel='noopener'>Generated with OWLDoc</a>");
         out.println("</p>");
+
+        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionStaticSite)) out.println("</div>");
 
         super.renderFooter(pageURL, out);
     }

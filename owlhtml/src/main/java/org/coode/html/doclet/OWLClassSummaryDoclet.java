@@ -16,7 +16,9 @@ import org.semanticweb.owlapi.model.OWLClass;
  */
 public class OWLClassSummaryDoclet extends AbstractOWLDocDoclet<OWLClass> {
 
-    public OWLClassSummaryDoclet(OWLHTMLKit kit) {
+    public OWLClassSummaryDoclet(OWLHTMLKit kit) { this(kit, null); }
+
+    public OWLClassSummaryDoclet(OWLHTMLKit kit, UsageDoclet.PaginationHandler pagination) {
         super(kit);
         
         addDoclet(new OWLEntityTitleDoclet<OWLClass>(kit));
@@ -25,7 +27,7 @@ public class OWLClassSummaryDoclet extends AbstractOWLDocDoclet<OWLClass> {
         addDoclet(new SuperclassesDoclet(kit));
         addDoclet(new DisjointsDoclet(kit));
         addDoclet(new MembersDoclet(kit));
-        addDoclet(new UsageDoclet<OWLClass>(kit));
+        addDoclet(new UsageDoclet<OWLClass>(kit, pagination));
     }
 
     @Override

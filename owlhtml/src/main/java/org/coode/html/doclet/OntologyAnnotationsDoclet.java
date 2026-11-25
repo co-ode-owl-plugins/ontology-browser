@@ -22,6 +22,7 @@ public class OntologyAnnotationsDoclet extends AbstractOWLElementsDoclet<OWLOnto
 
     public OntologyAnnotationsDoclet(OWLHTMLKit kit) {
         super("Annotations", ElementsDoclet.Format.list, kit);
+        setComparator(AnnotationOrder.comparator(kit));
     }
 
     @Override

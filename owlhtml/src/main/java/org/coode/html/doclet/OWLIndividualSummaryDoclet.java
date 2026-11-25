@@ -29,7 +29,9 @@ import org.semanticweb.owlapi.model.OWLPropertyExpression;
  */
 public class OWLIndividualSummaryDoclet extends AbstractOWLDocDoclet<OWLNamedIndividual> {
 
-    public OWLIndividualSummaryDoclet(OWLHTMLKit kit) {
+    public OWLIndividualSummaryDoclet(OWLHTMLKit kit) { this(kit, null); }
+
+    public OWLIndividualSummaryDoclet(OWLHTMLKit kit, UsageDoclet.PaginationHandler pagination) {
         super(kit);
 
         addDoclet(new OWLEntityTitleDoclet<OWLNamedIndividual>(kit));

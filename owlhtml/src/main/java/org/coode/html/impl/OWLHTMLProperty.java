@@ -38,6 +38,7 @@ import java.util.Map;
 public enum OWLHTMLProperty {
 
     optionContentWindow("Content window", true, "content-window"),
+    optionStaticSite("Static documentation site"),
     optionIndexAllURL("Index all URL", true, "index-all-url"),
     optionDefaultCSS("CSS file", "css"),
     optionUseFrames("Use frames", true, "frames"),

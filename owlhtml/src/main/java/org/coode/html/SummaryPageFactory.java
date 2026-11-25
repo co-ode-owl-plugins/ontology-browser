@@ -33,9 +33,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 public class SummaryPageFactory {
 
     private OWLHTMLKit kit;
+    private final org.coode.html.doclet.UsageDoclet.PaginationHandler pagination;
 
-    public SummaryPageFactory(OWLHTMLKit kit) {
+    public SummaryPageFactory(OWLHTMLKit kit) { this(kit, null); }
+
+    public SummaryPageFactory(OWLHTMLKit kit, org.coode.html.doclet.UsageDoclet.PaginationHandler pagination) {
         this.kit = kit;
+        this.pagination = pagination;
     }
 
     public <N extends OWLObject> OWLDocPage<N> getSummaryPage(Class<N> cls) {
@@ -68,22 +72,22 @@ public class SummaryPageFactory {
     @SuppressWarnings("unchecked")
     public <N extends OWLObject> HTMLDoclet<N> getSummaryDoclet(Class<N> cls) {
         if (OWLClass.class.isAssignableFrom(cls)){
-            return (HTMLDoclet<N>)new OWLClassSummaryDoclet(kit);
+            return (HTMLDoclet<N>)new OWLClassSummaryDoclet(kit, pagination);
         }
         else if (OWLObjectProperty.class.isAssignableFrom(cls)){
-            return (HTMLDoclet<N>)new OWLObjectPropertySummaryDoclet(kit);
+            return (HTMLDoclet<N>)new OWLObjectPropertySummaryDoclet(kit, pagination);
         }
         else if (OWLDataProperty.class.isAssignableFrom(cls)){
-            return (HTMLDoclet<N>)new OWLDataPropertySummaryDoclet(kit);
+            return (HTMLDoclet<N>)new OWLDataPropertySummaryDoclet(kit, pagination);
         }
         else if (OWLAnnotationProperty.class.isAssignableFrom(cls)){
-            return (HTMLDoclet<N>)new OWLAnnotationPropertySummaryDoclet(kit);
+            return (HTMLDoclet<N>)new OWLAnnotationPropertySummaryDoclet(kit, pagination);
         }
         else if (OWLNamedIndividual.class.isAssignableFrom(cls)){
-            return (HTMLDoclet<N>)new OWLIndividualSummaryDoclet(kit);
+            return (HTMLDoclet<N>)new OWLIndividualSummaryDoclet(kit, pagination);
         }
         else if (OWLDatatype.class.isAssignableFrom(cls)){
-            return (HTMLDoclet<N>)new OWLDatatypeSummaryDoclet(kit);
+            return (HTMLDoclet<N>)new OWLDatatypeSummaryDoclet(kit, pagination);
         }
         else if (OWLOntology.class.isAssignableFrom(cls)){
             return (HTMLDoclet<N>)new OWLOntologySummaryDoclet(kit);

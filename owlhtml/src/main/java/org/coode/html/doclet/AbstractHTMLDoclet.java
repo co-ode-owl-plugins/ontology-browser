@@ -47,15 +47,28 @@ public abstract class AbstractHTMLDoclet<O> implements NestedHTMLDoclet<O> {
     @Override
     public final void renderAll(URL pageURL, PrintWriter out) {
         try{
+            beforeRender();
             renderHeader(pageURL, out);
             renderContent(pageURL, out);
             renderFooter(pageURL, out);
+        }
+        catch (java.io.UncheckedIOException | java.util.concurrent.CancellationException e) {
+            throw e;
         }
         catch (Throwable e) {
             e.printStackTrace();
             out.println("<p>" + e.getMessage() + "</p>");
         }
+        finally {
+            afterRender();
+        }
     }
+
+    /** Prepare state scoped to a single rendering, never to the lifetime of a view. */
+    protected void beforeRender() {}
+
+    /** Release per-render state even when rendering fails. */
+    protected void afterRender() {}
 
     @Override
     public final void addDoclet(HTMLDoclet<O> doclet){

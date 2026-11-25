@@ -16,13 +16,15 @@ import org.semanticweb.owlapi.model.OWLDatatype;
  */
 public class OWLDatatypeSummaryDoclet extends AbstractOWLDocDoclet<OWLDatatype> {
 
-    public OWLDatatypeSummaryDoclet(OWLHTMLKit kit) {
+    public OWLDatatypeSummaryDoclet(OWLHTMLKit kit) { this(kit, null); }
+
+    public OWLDatatypeSummaryDoclet(OWLHTMLKit kit, UsageDoclet.PaginationHandler pagination) {
         super(kit);
 
         addDoclet(new OWLEntityTitleDoclet<OWLDatatype>(kit));
         addDoclet(new AnnotationsDoclet<OWLDatatype>(kit));
         addDoclet(new DatatypeDefinitionDoclet(kit));
-        addDoclet(new UsageDoclet<OWLDatatype>(kit));
+        addDoclet(new UsageDoclet<OWLDatatype>(kit, pagination));
     }
 
     @Override

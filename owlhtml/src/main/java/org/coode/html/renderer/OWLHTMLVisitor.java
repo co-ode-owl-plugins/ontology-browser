@@ -672,8 +672,24 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
         // extract the entities with this IRI
         if (subject instanceof IRI){
             Set<OWLEntity> entities = new HashSet<>();
-            for (OWLOntology ont : ontologies){
-                entities.addAll(ont.getEntitiesInSignature((IRI)subject));
+            // Avoid getEntitiesInSignature(IRI), which scans all entity types,
+            // and containsEntityInSignature(entity), whose miss path scans annotations.
+            IRI iri = (IRI) subject;
+            org.semanticweb.owlapi.model.OWLDataFactory df = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
+            for (OWLOntology ont : ontologies) {
+                if (ont.containsClassInSignature(iri)) entities.add(df.getOWLClass(iri));
+                if (ont.containsObjectPropertyInSignature(iri)) entities.add(df.getOWLObjectProperty(iri));
+                if (ont.containsDataPropertyInSignature(iri)) entities.add(df.getOWLDataProperty(iri));
+                if (ont.containsIndividualInSignature(iri)) entities.add(df.getOWLNamedIndividual(iri));
+                // These two small signatures also include entities used only in ontology annotations.
+                if (ont.containsAnnotationPropertyInSignature(iri)
+                        || ont.annotationPropertiesInSignature().anyMatch(property -> property.getIRI().equals(iri))) {
+                    entities.add(df.getOWLAnnotationProperty(iri));
+                }
+                if (ont.containsDatatypeInSignature(iri)
+                        || ont.datatypesInSignature().anyMatch(datatype -> datatype.getIRI().equals(iri))) {
+                    entities.add(df.getOWLDatatype(iri));
+                }
             }
             if (!entities.isEmpty()){
                 boolean started = false;
@@ -978,12 +994,19 @@ public class OWLHTMLVisitor implements OWLObjectVisitor {
 
     // add a span to allow for css highlighting
     private void writeKeyword(String keyword) {
-        writeKeyword(keyword, CSS_KEYWORD);
+        String cssClass = CSS_KEYWORD;
+        if (keyword.equalsIgnoreCase("and") || keyword.equalsIgnoreCase("or") || keyword.equalsIgnoreCase("not")) {
+            cssClass += " logical-keyword";
+        } else if (keyword.equalsIgnoreCase("self")) {
+            cssClass += " restriction-keyword";
+        }
+        writeKeyword(keyword, cssClass);
     }
 
     // add a span to allow for css highlighting
     private void writeKeyword(String keyword, String cssClass) {
-        write("<span class='" + cssClass + "'>" + keyword + "</span>");
+        boolean mathSymbol = OWLHTMLConstants.SUBCLASS_CHAR.equals(keyword) || OWLHTMLConstants.EQUIV_CHAR.equals(keyword);
+        write("<span class='" + cssClass + (mathSymbol ? " math-symbol" : "") + "'>" + keyword + "</span>");
     }
 
 

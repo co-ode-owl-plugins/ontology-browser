@@ -25,6 +25,7 @@ public class AnnotationsDoclet<O extends OWLEntity> extends AbstractOWLElementsD
 
     public AnnotationsDoclet(OWLHTMLKit kit) {
         super("Annotations", ElementsDoclet.Format.list, kit);
+        setComparator(AnnotationOrder.comparator(kit));
     }
 
     @Override

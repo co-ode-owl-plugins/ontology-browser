@@ -4,6 +4,10 @@
 package org.coode.html.doclet;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import java.net.URL;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,8 +48,43 @@ public class UsageDoclet<O extends OWLEntity> extends AbstractOWLElementsDoclet<
 
     private UsageVisibilityVisitor usageVisibilityVisitor = new UsageVisibilityVisitor();
 
-    public UsageDoclet(OWLHTMLKit kit) {
+    public interface PaginationHandler {
+        void render(UsageDoclet<?> source, List<OWLObject> rows, URL entityPage, PrintWriter out);
+    }
+
+    public static final int PAGE_SIZE = 500;
+    private final PaginationHandler pagination;
+
+    public UsageDoclet(OWLHTMLKit kit) { this(kit, null); }
+
+    public UsageDoclet(OWLHTMLKit kit, PaginationHandler pagination) {
         super("Usage", ElementsDoclet.Format.list, kit);
+        this.pagination = pagination;
+    }
+
+    @Override
+    protected void renderHeader(URL pageURL, PrintWriter out) {
+        Collection<OWLObject> elements = getElements();
+        if (pagination == null || elements.size() <= PAGE_SIZE) {
+            super.renderHeader(pageURL, out);
+            return;
+        }
+        List<OWLObject> rows = new ArrayList<>(elements);
+        rows.sort(kit.getOWLServer().getComparator());
+        renderBoxStart(getID(), out, pageURL);
+        pagination.render(this, rows, pageURL, out);
+    }
+
+    /** Render a slice while this doclet's per-render asserted/inferred snapshot is alive. */
+    public void renderUsageRows(List<OWLObject> rows, URL pageURL, PrintWriter out) {
+        org.coode.html.renderer.ElementRenderer<? super OWLObject> renderer = getElementRenderer();
+        out.println("<ul>");
+        for (OWLObject row : rows) {
+            out.print("<li class=\"" + getCSSClass(row) + "\">");
+            renderer.render(row, pageURL, out);
+            out.println("</li>");
+        }
+        out.println("</ul>");
     }
 
     @Override

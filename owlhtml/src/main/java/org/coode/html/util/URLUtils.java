@@ -15,6 +15,7 @@ import java.util.Set;
 import org.coode.html.OWLHTMLKit;
 import org.coode.html.impl.OWLHTMLConstants;
 import org.coode.html.impl.OWLHTMLParam;
+import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.owl.mngr.NamedObjectType;
 import org.coode.owl.mngr.ServerConstants;
 import org.semanticweb.owlapi.model.IRI;
@@ -173,11 +174,8 @@ public class URLUtils {
     }
 
     public static boolean isImageURL(IRI iri) {
-        String iriStr = iri.toString();
-        return iriStr.endsWith(".png") ||
-               iriStr.endsWith(".gif") ||
-               iriStr.endsWith(".jpg") ||
-               iriStr.endsWith(".jpeg");
+        String path = iri.toURI().getPath();
+        return path != null && path.matches("(?i).*\\.(png|gif|jpe?g|webp|avif)$");
     }
 
     public static boolean isSoundURL(IRI iri) {
@@ -187,6 +185,23 @@ public class URLUtils {
     }
 
     public static void renderURLLinks(URL url, OWLHTMLKit kit, URL pageURL, PrintWriter out) {
+        if (kit.getHTMLProperties().isSet(OWLHTMLProperty.optionStaticSite)) {
+            String href = url.toExternalForm().replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
+            out.print(" <a class=\"external-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Open external link in a new tab\" title=\"Open external link in a new tab\">");
+            out.print("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 3h7v7M21 3 10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5\"/></svg></a>");
+            if ((url.getProtocol().equals("https") || url.getProtocol().equals("http")) && isImageURL(IRI.create(url))) {
+                String source = url.toExternalForm();
+                // Imgur's page host does not reliably serve image bytes; use its image host.
+                if (url.getHost().equalsIgnoreCase("imgur.com") || url.getHost().equalsIgnoreCase("www.imgur.com") || url.getHost().equalsIgnoreCase("i.imgur.com")) {
+                    source = "https://i.imgur.com" + url.getFile();
+                }
+                String image = source.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
+                out.print("<span class=\"annotation-image\"><a href=\"" + href + "\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Open full-size image in a new tab\">");
+                out.print("<img src=\"" + image + "\" alt=\"Linked image\" loading=\"lazy\" decoding=\"async\" referrerpolicy=\"no-referrer\"/></a>");
+                out.print("<span class=\"image-status\" hidden>Image unavailable. Use the link above to open it.</span></span>");
+            }
+            return;
+        }
         try{
             final URL loadBaseURL = kit.getURLScheme().getURLForIndex(NamedObjectType.ontologies);
 

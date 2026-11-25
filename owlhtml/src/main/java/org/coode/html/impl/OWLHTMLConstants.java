@@ -86,7 +86,7 @@ public class OWLHTMLConstants extends ServerConstants {
     public static final String PERMALINK_LABEL = "permalink";
 
     public static final String EQUIV_CHAR = "&equiv;";
-    public static final String SUBCLASS_CHAR = "&sube;";
+    public static final String SUBCLASS_CHAR = "&#x2291;";
 
     public static final String START_QUERY = "?";
     public static final String EQUALS = "=";

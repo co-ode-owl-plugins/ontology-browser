@@ -9,7 +9,6 @@ import org.coode.html.impl.OWLHTMLProperty;
 import org.coode.html.index.OWLContentsHTMLPage;
 import org.coode.html.index.OWLObjectIndexDoclet;
 import org.coode.html.page.OWLDocPage;
-import org.coode.html.page.DefaultHTMLPage;
 import org.coode.html.url.URLScheme;
 import org.coode.html.util.URLUtils;
 import org.coode.owl.mngr.NamedObjectType;
@@ -65,7 +64,30 @@ public class OntologyExporter {
 
     private OWLHTMLKit kit;
 
+    /** Receives worker-thread updates; cancellation is checked between output pages. */
+    public interface ProgressListener {
+        void updateProgress(String stage, int completedEntities, int totalEntities);
+        default boolean isCancelled() { return false; }
+    }
+
+    private ProgressListener progress = (stage, completed, total) -> {};
+    private int completedEntities;
+    private int totalEntities;
+
+    public void setProgressListener(ProgressListener listener) {
+        progress = java.util.Objects.requireNonNull(listener);
+    }
+
+    private void reportProgress(String stage) {
+        if (progress.isCancelled()) {
+            throw new java.util.concurrent.CancellationException("OWLDoc export cancelled");
+        }
+        progress.updateProgress(stage, completedEntities, totalEntities);
+    }
+
     private File root;
+    private StaticSiteIndex siteIndex;
+    private final Set<OWLEntity> exportedEntities = new HashSet<>();
 
     private OWLObjectIndexDoclet<OWLObject> indexAllResourcesRenderer;
 
@@ -154,16 +176,35 @@ public class OntologyExporter {
 
     public File export(File rootFile) throws Exception {
         String previousTarget = kit.getHTMLProperties().get(OWLHTMLProperty.optionContentWindow);
-        kit.getHTMLProperties().set(OWLHTMLProperty.optionContentWindow, OWLHTMLConstants.LinkTarget.content.toString());
+        String previousSite = kit.getHTMLProperties().get(OWLHTMLProperty.optionStaticSite);
+        kit.getHTMLProperties().set(OWLHTMLProperty.optionContentWindow, null);
+        kit.getHTMLProperties().setBoolean(OWLHTMLProperty.optionStaticSite, true);
         try {
-            return exportFramed(rootFile);
+            return exportSite(rootFile);
         }
         finally {
             kit.getHTMLProperties().set(OWLHTMLProperty.optionContentWindow, previousTarget);
+            kit.getHTMLProperties().set(OWLHTMLProperty.optionStaticSite, previousSite);
         }
     }
 
-    private File exportFramed(File rootFile) throws Exception {
+    private File exportSite(File rootFile) throws Exception {
+        completedEntities = 0;
+        totalEntities = 0;
+        reportProgress("Preparing export");
+        Set<OWLOntology> visibleOntologies = new HashSet<>(kit.getVisibleOntologies());
+        Set<OWLEntity> entities = new HashSet<>();
+        for (OWLOntology ontology : visibleOntologies) {
+            entities.addAll(ontology.getSignature());
+        }
+        OWLDataFactory dataFactory = kit.getOWLServer().getOWLOntologyManager().getOWLDataFactory();
+        if (!visibleOntologies.isEmpty()) {
+            entities.add(dataFactory.getOWLThing());
+            entities.add(dataFactory.getOWLNothing());
+        }
+        totalEntities = entities.size();
+        entities.clear();
+        reportProgress("Preparing output files");
         if(!rootFile.exists()) {
             boolean done = rootFile.mkdirs();
             if(!done) {
@@ -175,10 +216,13 @@ public class OntologyExporter {
 
         if (rootFile.isDirectory()){
             this.root = rootFile;
+            this.siteIndex = new StaticSiteIndex(kit);
+            typeIndices.clear();
+            exportedEntities.clear();
 
             copyResource(kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS), rootFile);
             copyResource(OWLHTMLConstants.JS_TREE, rootFile);
-            copyResource(OWLHTMLConstants.EXTERNAL_IMAGE, rootFile);
+            copyResource("js/owldoc.js", rootFile);
 
             // initialise the all resources index
             indexAllResourcesRenderer = new OWLObjectIndexDoclet<>(kit);
@@ -187,17 +231,25 @@ public class OntologyExporter {
             // TODO: the all resources renderer is no longer a full HTML page
 
             // step through the ontologies
-            for (OWLOntology ont : kit.getVisibleOntologies()){
+            for (OWLOntology ont : visibleOntologies){
+                reportProgress("Ontology: " + kit.getOWLServer().getOntologyShortFormProvider().getShortForm(ont));
                 exportOntology(ont);
             }
 
+            reportProgress("Writing category indexes");
             createIndices();
 
+            reportProgress("Writing resource index");
             createAllResourcesIndex();
 
+            reportProgress("Writing contents");
             createContents();
 
-            return createHTMLFrames();
+            reportProgress("Writing home page and search index");
+            File home = createHomePage();
+            siteIndex.write(rootFile);
+            reportProgress("Complete");
+            return home;
         }
         else{
             throw new Exception("Root exists but is not a directory: " + rootFile);
@@ -214,6 +266,7 @@ public class OntologyExporter {
 
 
     private void exportOntology(OWLOntology ont) throws IOException {
+        siteIndex.add(ont);
         // export the ontology summary
         OWLDocPage<OWLOntology> ontologySummary = new OWLDocPage<>(kit);
         ontologySummary.addDoclet(new OWLOntologySummaryDoclet(kit));
@@ -239,7 +292,7 @@ public class OntologyExporter {
 
     private void exportReferencedEntities(OWLOntology ont) throws IOException {
 
-        SummaryPageFactory fac = new SummaryPageFactory(kit);
+        SummaryPageFactory fac = new SummaryPageFactory(kit, new UsagePagination(kit, root, this::reportProgress));
 
 
         final OWLDocPage<OWLClass> clsSummary = fac.getSummaryPage(OWLClass.class);
@@ -337,23 +390,26 @@ public class OntologyExporter {
     }
 
     private <O extends OWLEntity> boolean exportEntity(O entity, OWLDocPage<O> ren) throws IOException {
+        siteIndex.add(entity);
 
         URL entityURL = kit.getURLScheme().getURLForOWLObject(entity);
         String localFilename = URLUtils.createRelativeURL(kit.getBaseURL(), entityURL);
         File entitySummaryFile = new File(root, java.net.URI.create(localFilename).getPath());
 
-        if (entitySummaryFile.exists()){ // already generated this entity summary
+        if (!exportedEntities.add(entity)){ // already generated during this export
             return false;
         }
 
+        reportProgress(NamedObjectType.getType(entity).getSingularRendering() + ": "
+                + kit.getOWLServer().getShortFormProvider().getShortForm(entity));
         ensureExists(entitySummaryFile);
-        Writer fileWriter = new java.io.OutputStreamWriter(FileUtils.openOutputStream(entitySummaryFile), java.nio.charset.StandardCharsets.UTF_8);
-        PrintWriter writer = new PrintWriter(fileWriter);
-
-        ren.setUserObject(entity);
-        ren.renderAll(entityURL, writer);
-
-        fileWriter.close();
+        try (PrintWriter writer = createPrintWriter(entitySummaryFile)) {
+            ren.setUserObject(entity);
+            ren.renderAll(entityURL, writer);
+            if (writer.checkError()) throw new IOException("Could not write " + entitySummaryFile);
+        }
+        completedEntities++;
+        reportProgress("Rendered " + kit.getOWLServer().getShortFormProvider().getShortForm(entity));
         return true;
     }
 
@@ -378,28 +434,6 @@ public class OntologyExporter {
         return indexAllRenderer;
     }
 
-    private void exportHTMLFrames(PrintWriter out) {
-
-        final URL ontURL = kit.getURLScheme().getURLForOWLObject(kit.getOWLServer().getActiveOntology());
-        String activeOntologyPage = URLUtils.createRelativeURL(kit.getBaseURL(), ontURL);
-
-        out.print("<html>\n" +
-                  "<head>\n" +
-                  "<title>\n" +
-                  "OWLDoc\n" +
-                  "</title>\n" +
-                  "</head>\n" +
-                  "<frameset cols=\"30%,70%\">\n" +
-                  "    <frameset rows=\"30%,70%\">\n");
-        out.print("<frame src=\"" + OWLHTMLConstants.CONTENTS_HTML + "\" name=\"nav\" title=\"Contents\"/>\n");
-        out.print("<frame src=\"" + kit.getHTMLProperties().get(OWLHTMLProperty.optionIndexAllURL) + "\" name=\"subnav\" title=\"Index\"/>\n");
-        out.print("    </frameset>\n");
-        out.print("    <frame src=\"" + activeOntologyPage + "\" name=\"content\" title=\"Content\"/>\n");
-        out.print("    <noframes>classes/index.html</noframes>\n" +
-                  "</frameset>\n" +
-                  "</html>");
-    }
-
     private void createIndices() throws IOException {
         for (NamedObjectType type : typeIndices.keySet()){
             PrintWriter writer = createPrintWriter(new File(root, type + "/" + OWLHTMLConstants.INDEX_HTML));
@@ -410,12 +444,9 @@ public class OntologyExporter {
         }
     }
 
-    private class IndexPage extends DefaultHTMLPage<OWLObject> {
+    private class IndexPage extends OWLDocPage<OWLObject> {
         IndexPage(OWLObjectIndexDoclet<OWLObject> index) {
-            String css = kit.getHTMLProperties().get(OWLHTMLProperty.optionDefaultCSS);
-            if (css != null) {
-                addCSS(kit.getURLScheme().getURLForRelativePage(css));
-            }
+            super(OntologyExporter.this.kit);
             addDoclet(index);
         }
 
@@ -447,15 +478,16 @@ public class OntologyExporter {
         contentsWriter.close();
     }
 
-    private File createHTMLFrames() throws IOException {
-        final File indexFile = new File(root, OWLHTMLConstants.INDEX_HTML);
-        PrintWriter htmlFramesWriter = createPrintWriter(indexFile);
-        exportHTMLFrames(htmlFramesWriter);
-        htmlFramesWriter.flush();
-        htmlFramesWriter.close();
-        return indexFile;
+    private File createHomePage() throws IOException {
+        File home = new File(root, OWLHTMLConstants.INDEX_HTML);
+        OWLDocPage<OWLOntology> page = new OWLDocPage<>(kit);
+        page.addDoclet(new OWLOntologySummaryDoclet(kit));
+        page.setUserObject(kit.getOWLServer().getActiveOntology());
+        try (PrintWriter writer = createPrintWriter(home)) {
+            page.renderAll(kit.getURLScheme().getURLForRelativePage(OWLHTMLConstants.INDEX_HTML), writer);
+        }
+        return home;
     }
-
 
     // get all classes (including owl:Thing)
     private Set<OWLClass> getClassesInSignature(OWLOntology ont) {
